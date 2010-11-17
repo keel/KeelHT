@@ -18,13 +18,11 @@ public class Action {
 	 * @param name 动作标记
 	 * @param pre 前一个Action,若无则为null
 	 * @param next 后一个Action,若无则为null
-	 * @param actRes ActionResource
 	 */
-	public Action(String name,Action pre,Action next,ActionResource actRes) {
+	public Action(String name,Action pre,Action next) {
 		this.name = name;
 		this.next = next;
 		this.pre = pre;
-		this.actRes = actRes;
 	}
 	
 	private String name;
@@ -33,25 +31,14 @@ public class Action {
 	
 	private Action pre;
 	private Action next;
-	private ActionResource actRes;
 	
 	
 	
-	public String act(){
+	public String act(String jsonInput,IOInterface ioInput){
 		String re = "";
 		
 		return re;
 	}
-	
-	
-	public Action getNextAction(){
-		return this.next;
-	}
-
-	public Action getPreAction(){
-		return this.pre;
-	}
-
 
 	/**
 	 * @return the id
@@ -74,6 +61,38 @@ public class Action {
 	 */
 	public final String getName() {
 		return name;
+	}
+
+
+	/**
+	 * @return the pre
+	 */
+	public final Action getPre() {
+		return pre;
+	}
+
+
+	/**
+	 * @param pre the pre to set
+	 */
+	public final void setPre(Action pre) {
+		this.pre = pre;
+	}
+
+
+	/**
+	 * @return the next
+	 */
+	public final Action getNext() {
+		return next;
+	}
+
+
+	/**
+	 * @param next the next to set
+	 */
+	public final void setNext(Action next) {
+		this.next = next;
 	}
 	
 	

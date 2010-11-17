@@ -5,8 +5,24 @@
     <welcome-file>index.html</welcome-file>
     <welcome-file>index.htm</welcome-file>
     <welcome-file>index.jsp</welcome-file>
-    <welcome-file>default.html</welcome-file>
-    <welcome-file>default.htm</welcome-file>
-    <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
+  <servlet>
+    <description></description>
+    <display-name>ActionServ</display-name>
+    <servlet-name>ActionServ</servlet-name>
+    <servlet-class>com.k99k.khunter.ActionServ</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ActionServ</servlet-name>
+    <url-pattern>/ActionServ</url-pattern>
+  </servlet-mapping>
+  <filter>
+    <display-name>KFilter</display-name>
+    <filter-name>KFilter</filter-name>
+    <filter-class>com.k99k.khunter.KFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>KFilter</filter-name>
+    <url-pattern>/KFilter</url-pattern>
+  </filter-mapping>
 </web-app>

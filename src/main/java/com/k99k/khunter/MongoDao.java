@@ -18,7 +18,7 @@ import com.mongodb.MongoException;
  * @author keel
  *
  */
-public class MongoDao {
+public class MongoDao implements DaoInterface{
 	
 	static final Logger log = Logger.getLogger(MongoDao.class);
 	

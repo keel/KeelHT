@@ -192,6 +192,7 @@ public class KObject{
 		return sb;
 	}
 	
+	
 	/**
 	 * 以json方式输出toString
 	 * @see java.lang.Object#toString()
