@@ -212,7 +212,8 @@ public class KObject{
 			}
 			sb.append(",");
 		}
-		sb.deleteCharAt(sb.length()-1);
+		sb.append("\"_class\":\"").append(this.getClass().getName()).append("\"");
+		//sb.deleteCharAt(sb.length()-1);
 		sb.append("}");
 		return sb.toString();
 	}
