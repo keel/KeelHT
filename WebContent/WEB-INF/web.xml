@@ -10,7 +10,7 @@
     <description></description>
     <display-name>ActionServ</display-name>
     <servlet-name>ActionServ</servlet-name>
-    <servlet-class>com.k99k.khunter.ActionServ</servlet-class>
+    <servlet-class>com.k99k.khunter.ActionServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>ActionServ</servlet-name>

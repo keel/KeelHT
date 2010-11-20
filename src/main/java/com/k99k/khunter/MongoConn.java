@@ -19,7 +19,7 @@ import com.mongodb.ServerAddress;
  * @author keel
  *
  */
-public final class MongoConn{
+public final class MongoConn implements DataSourceInterface{
 
 	static final Logger log = Logger.getLogger(MongoConn.class);
 	
@@ -33,8 +33,8 @@ public final class MongoConn{
 	private int threadsAllowedToBlockForConnectionMultiplier = 50;
 	private int maxWaitTime = 5000;
 	
-	private static Mongo mongo;
-	private static DB db;
+	private Mongo mongo;
+	private DB db;
 	
 	public MongoConn() {
 		init();
@@ -62,7 +62,7 @@ public final class MongoConn{
 	 * @param colName
 	 * @return DBCollection
 	 */
-	public static final DBCollection getColl(String colName){
+	public final DBCollection getColl(String colName){
 		try {
 			return db.getCollection(colName);
 		} catch (Exception e) {

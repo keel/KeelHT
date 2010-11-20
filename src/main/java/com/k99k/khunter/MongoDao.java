@@ -20,6 +20,8 @@ import com.mongodb.MongoException;
  */
 public class MongoDao implements DaoInterface{
 	
+	
+	
 	static final Logger log = Logger.getLogger(MongoDao.class);
 	
 	/**
@@ -37,14 +39,20 @@ public class MongoDao implements DaoInterface{
 	 */
 	private final String daoName;
 	
+	/**
+	 * 数据源
+	 */
+	private MongoConn dataSource;
+	
 	
 	/**
 	 * 创建建时初始化id生成器
 	 * @param daoName Dao名称，同时也是数据库的表名
 	 */
-	public MongoDao(String daoName) {
+	public MongoDao(String daoName,DataSourceInterface dataSource) {
 		super();
 		this.daoName = daoName;
+		this.dataSource = (MongoConn) dataSource;
 		idm.setId(initIDM(daoName));
 	}
 
@@ -55,7 +63,7 @@ public class MongoDao implements DaoInterface{
 	 */
 	public boolean add(MongoKObject kwObj){
 		try {
-			DBCollection coll = MongoConn.getColl(daoName);
+			DBCollection coll = this.dataSource.getColl(daoName);
 			kwObj.setId(idm.nextId());
 			coll.insert(kwObj);
 		} catch (MongoException e) {
@@ -68,7 +76,7 @@ public class MongoDao implements DaoInterface{
 	public boolean update(long id,MongoKObject newObj) {
 		
 		try {
-			DBCollection coll = MongoConn.getColl(daoName);
+			DBCollection coll = this.dataSource.getColl(daoName);
 			coll.update(new BasicDBObject("id",id),newObj);
 		} catch (MongoException e) {
 			log.error("add error!", e);
@@ -82,8 +90,8 @@ public class MongoDao implements DaoInterface{
 	 * @param tableName
 	 * @return 当前最大id值  long
 	 */
-	static long initIDM(String tableName){
-		DBCollection coll = MongoConn.getColl(tableName);
+	long initIDM(String tableName){
+		DBCollection coll = this.dataSource.getColl(tableName);
 		DBCursor cur = coll.find(emptyBasicDBObject,new BasicDBObject("id",1)).sort(new BasicDBObject("id",-1)).limit(1);
 		if (cur.hasNext()) {
 			DBObject o = cur.next();
@@ -95,7 +103,28 @@ public class MongoDao implements DaoInterface{
 	
 	
 
-	 public static void main(String[] args) throws Exception {
+	 /**
+	 * @return the dataSource
+	 */
+	public final DataSourceInterface getDataSource() {
+		return dataSource;
+	}
+
+	/**
+	 * @param dataSource the dataSource to set
+	 */
+	public final void setDataSource(DataSourceInterface dataSource) {
+		this.dataSource = (MongoConn) dataSource;
+	}
+
+	/**
+	 * @return the daoName
+	 */
+	public final String getDaoName() {
+		return daoName;
+	}
+
+	public static void main(String[] args) throws Exception {
 
 	        // connect to the local database server
 	        Mongo m = new Mongo();

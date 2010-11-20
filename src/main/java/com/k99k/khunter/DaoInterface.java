@@ -6,5 +6,9 @@ package com.k99k.khunter;
  *
  */
 public interface DaoInterface {
-
+	
+	public DataSourceInterface getDataSource();
+	
+	public void setDataSource(DataSourceInterface dataSource);
+	
 }

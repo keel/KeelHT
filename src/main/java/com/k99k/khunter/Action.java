@@ -3,41 +3,42 @@
  */
 package com.k99k.khunter;
 
-import org.apache.log4j.Logger;
+import java.util.Date;
 
 /**
- * 一个动作单元
+ * 同步操作,与Task异步操作相区别,多个Action之间可相互调用
  * @author keel
  *
  */
 public class Action {
 	
-	static final Logger log = Logger.getLogger(Action.class);
-
 	/**
 	 * @param name 动作标记
-	 * @param pre 前一个Action,若无则为null
-	 * @param next 后一个Action,若无则为null
 	 */
-	public Action(String name,Action pre,Action next) {
+	public Action(String name) {
 		this.name = name;
-		this.next = next;
-		this.pre = pre;
 	}
 	
 	private String name;
 	
 	private int id;
 	
-	private Action pre;
-	private Action next;
+
 	
-	
-	
-	public String act(String jsonInput,IOInterface ioInput){
-		String re = "";
+	/**
+	 * 执行动作,如果有下一个动作则在本动作完成后直接调用下一个Action继续执行
+	 * @param msg ActionMsg
+	 * @return 执行后的ActionMsg
+	 */
+	public ActionMsg act(ActionMsg msg){
 		
-		return re;
+		//加入本Action处理的完成时间
+		msg.addData("action_"+this.name, new Date());
+		//如果有下一个Action,则立即执行
+		if (msg.getNextAction() != null) {
+			msg.getNextAction().act(msg);
+		}
+		return msg;
 	}
 
 	/**
@@ -63,38 +64,5 @@ public class Action {
 		return name;
 	}
 
-
-	/**
-	 * @return the pre
-	 */
-	public final Action getPre() {
-		return pre;
-	}
-
-
-	/**
-	 * @param pre the pre to set
-	 */
-	public final void setPre(Action pre) {
-		this.pre = pre;
-	}
-
-
-	/**
-	 * @return the next
-	 */
-	public final Action getNext() {
-		return next;
-	}
-
-
-	/**
-	 * @param next the next to set
-	 */
-	public final void setNext(Action next) {
-		this.next = next;
-	}
-	
-	
 	
 }

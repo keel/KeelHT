@@ -205,11 +205,16 @@ public class KObject{
 			String key = iterator.next();
 			Object o = this.propMap.get(key);
 			sb.append("\"").append(key).append("\":");
-			if (o instanceof Integer || o instanceof Long || o instanceof Float || o instanceof Double) {
-				sb.append(o);
-			} else {
+			if (o instanceof String || o instanceof Character) {
 				sb.append("\"").append(o).append("\"");
+			}else{
+				sb.append(o);
 			}
+//			if (o instanceof Integer || o instanceof Long || o instanceof Float || o instanceof Double) {
+//				sb.append(o);
+//			} else {
+//				sb.append("\"").append(o).append("\"");
+//			}
 			sb.append(",");
 		}
 		sb.append("\"_class\":\"").append(this.getClass().getName()).append("\"");
