@@ -33,6 +33,9 @@ public class HTLoginAction extends Action {
 		
 		//结果为成功和失败两种,成功则直接返回,失败也可直接返回或转到处理失败的Action
 		
+		msg.addData("print", "test HTLoginAction haha");
+		msg.setNextAction(null);
+		
 		return super.act(msg);
 	}
 

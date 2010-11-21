@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
   <display-name>KHunter</display-name>
-  <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-    <welcome-file>index.htm</welcome-file>
-    <welcome-file>index.jsp</welcome-file>
-  </welcome-file-list>
+
   <servlet>
     <description></description>
-    <display-name>ActionServ</display-name>
-    <servlet-name>ActionServ</servlet-name>
+    <display-name>ActionServlet</display-name>
+    <servlet-name>ActionServlet</servlet-name>
     <servlet-class>com.k99k.khunter.ActionServlet</servlet-class>
+   	<init-param>
+		<param-name>ini</param-name>
+		<param-value>f:/works/workspace_keel/KHunter/WebContent/WEB-INF/kconfig.json</param-value>
+	</init-param>
+	<load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
-    <servlet-name>ActionServ</servlet-name>
-    <url-pattern>/ActionServ</url-pattern>
+    <servlet-name>ActionServlet</servlet-name>
+    <url-pattern>/ActionServlet</url-pattern>
   </servlet-mapping>
   <filter>
     <display-name>KFilter</display-name>
@@ -23,6 +24,12 @@
   </filter>
   <filter-mapping>
     <filter-name>KFilter</filter-name>
-    <url-pattern>/KFilter</url-pattern>
+    <url-pattern>/*</url-pattern>
   </filter-mapping>
+  
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
 </web-app>

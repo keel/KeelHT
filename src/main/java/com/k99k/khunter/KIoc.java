@@ -43,7 +43,7 @@ public class KIoc {
 	public final static Object loadClassInstance(String classURL,String className){
 		try {
 			URL url = new URL(classURL);
-			URLClassLoader urlCL = new URLClassLoader(new URL[] { url });
+			URLClassLoader urlCL = URLClassLoader.newInstance(new URL[] { url }, KIoc.class.getClassLoader());
 			Class<?> c = urlCL.loadClass(className);
 			Object object = c.newInstance();
 			return object;
@@ -63,8 +63,14 @@ public class KIoc {
 	public final static Object loadClassInstance(String classURL,String className,Object[] args){
 		try {
 			URL url = new URL(classURL);
-			URLClassLoader urlCL = new URLClassLoader(new URL[] { url });
+			URLClassLoader urlCL = URLClassLoader.newInstance(new URL[] { url }, KIoc.class.getClassLoader());
 			Class<?> c = urlCL.loadClass(className);
+			
+			/*
+			ClassLoader loader = KIoc.class.getClassLoader();
+			Class<?> c = loader.loadClass(className);
+			*/
+			
 			//得到参数的Class数组
 			Class<?>[] argsClass = new Class[args.length];
 			for (int i = 0, j = args.length; i < j; i++) {

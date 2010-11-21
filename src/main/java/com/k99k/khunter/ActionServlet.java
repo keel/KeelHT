@@ -9,7 +9,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -21,7 +20,9 @@ public final class ActionServlet extends HttpServlet {
 	//TODO 定义好log
 	static final Logger log = Logger.getLogger(ActionServlet.class);
 	
-       
+
+//	static boolean isInited = false;
+	
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -33,21 +34,19 @@ public final class ActionServlet extends HttpServlet {
 	 * @see Servlet#init(ServletConfig)
 	 */
 	public void init(ServletConfig config) throws ServletException {
-		// TODO 初始化ActionServlet
-		
-		//初始化ActionManager
-		//if(!ActionManager.init()){
-			//处理ActionManager初始化失败的情况
-		//}
-		
-		
+		String iniPath = config.getInitParameter("ini");
+		boolean initOK = HTManager.init(iniPath);
+		if (!initOK) {
+			log.error("---------KHunter init failed!!!------------");
+		}
 	}
 
 	/**
 	 * @see Servlet#destroy()
 	 */
 	public void destroy() {
-		// TODO 清理ActionServlet
+		// 清理ActionServlet
+		HTManager.exit();
 	}
 	
 	/**
@@ -69,8 +68,10 @@ public final class ActionServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		//全程使用utf-8
-		setCharset("utf-8",req,resp);
+		//setCharset("utf-8",req,resp);
 		
+		//FIXME get方式测试用
+		this.doPost(req, resp);
 	}
 
 	/**
@@ -79,33 +80,43 @@ public final class ActionServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		//全程使用utf-8
 		setCharset("utf-8",req,resp);
-		
-		
-		//由act参数定位Action,此参数在Filter中验证
-		String actName = req.getParameter("act");
-		ActionMsg msg = new HttpActionMsg(actName, req, resp);
-		Action acttion = ActionManager.findAction(actName);
-		//执行action
-		msg = acttion.act(msg);
-		//是否打印
-		if (msg.getData("print") != null) {
-			resp.getWriter().print(msg.getData("print"));
-			return;
-		}
-		//是否发向JSP
-		else if (msg.getData("jsp") != null) {
-			String to = (String) msg.getData("jsp");
-			RequestDispatcher rd = req.getRequestDispatcher(to);
-			rd.forward(req, resp);
-			return;
-		}
-		//是否跳转
-		else if (msg.getData("redirect") != null) {
-			String redirect = (String) msg.getData("redirect");
-			resp.sendRedirect(redirect);
-			return;
-		}else{
-			resp.getWriter().print(msg.getData("404"));
+		try {
+			//由act参数定位Action,此参数在Filter中验证
+			String actName = req.getParameter("act");
+			if (actName == null) {
+				resp.getWriter().print("404 - 1");
+				return;
+			}
+			ActionMsg msg = new HttpActionMsg(actName, req, resp);
+			Action action = ActionManager.findAction(actName);
+			if (action == null) {
+				resp.getWriter().print("404 - 2");
+				return;
+			}
+			//执行action
+			msg = action.act(msg);
+			//是否打印
+			if (msg.getData("print") != null) {
+				resp.getWriter().print(msg.getData("print"));
+				return;
+			}
+			//是否发向JSP
+			else if (msg.getData("jsp") != null) {
+				String to = (String) msg.getData("jsp");
+				RequestDispatcher rd = req.getRequestDispatcher(to);
+				rd.forward(req, resp);
+				return;
+			}
+			//是否跳转
+			else if (msg.getData("redirect") != null) {
+				String redirect = (String) msg.getData("redirect");
+				resp.sendRedirect(redirect);
+				return;
+			}else{
+				resp.getWriter().print(msg.getData("404 - 3"));
+			}
+		} catch (Exception e) {
+			log.error("Action servlet error!", e);
 		}
 
 	}

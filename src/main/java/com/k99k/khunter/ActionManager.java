@@ -32,7 +32,11 @@ public class ActionManager {
 		return me;
 	}
 	
-	private static boolean isInited = false;
+	public static final String getName(){
+		return "actions";
+	}
+	
+	private static boolean isInitOK = false;
 	
 	private static final JSONReader jsonReader = new JSONValidatingReader(new ExceptionErrorListener());
 	
@@ -41,6 +45,8 @@ public class ActionManager {
 	 */
 	private static final Map<String, Action> actionMap = new HashMap<String, Action>(100);
 	
+	
+	
 	/**
 	 * 初始化ActionManager
 	 * @param iniFile 配置文件路径
@@ -48,7 +54,7 @@ public class ActionManager {
 	 * @return 是否初始化成功
 	 */
 	public static boolean init(String iniFile,String classPath){
-		if (!isInited) {
+		if (!isInitOK) {
 			//读取配置文件刷新注入的Action数据
 			try {
 				String ini = KIoc.readTxtInUTF8(iniFile);
@@ -69,7 +75,12 @@ public class ActionManager {
 						//String _type = (m.containsKey("_type"))?"normal":(String) m.get("_type");
 						*/
 						
-						Action action = (Action)KIoc.loadClassInstance("file:/"+classPath, _class, new Object[]{_name});
+						Object o = KIoc.loadClassInstance("file:/"+classPath, _class, new Object[]{_name});
+						if (o == null) {
+							log.error("loadClassInstance error! _class:"+_class+" _name:"+_name);
+							continue;
+						}
+						Action action = (Action)o;
 						
 						for (Iterator<String> it = m.keySet().iterator(); it.hasNext();) {
 							String prop = it.next();
@@ -87,17 +98,24 @@ public class ActionManager {
 									}
 									
 								}
-								//FIXME 对#号引用的对象进行处理
+								//由#号分为name#manager两部分,后部分为指定的manager名
 								else{
-									
-									
+									String[] propArr = prop.split("#");
+									Object value = HTManager.findFromManager(propArr);
+									if (value != null) {
+										KIoc.setProp(action, propArr[0], HTManager.findFromManager(propArr));
+									}else{
+										log.error("------The prop can't find from HTManager, didn't set this prop:"+prop);
+									}
 								}
 								
 							}
 							
 						}
 						//加入Action
-						addAction(action);
+						if(!addAction(action)){
+							log.error("-------Action name alread exist! failed load this Action:"+action.getName()+" id:"+action.getId());
+						}
 						
 					}else{
 						log.error("Action init Error! miss one or more key props. Position:"+i);
@@ -110,10 +128,10 @@ public class ActionManager {
 				
 			} catch (Exception e) {
 				log.error("ActionManager init Error!", e);
-				isInited = false;
+				isInitOK = false;
 				return false;
 			}
-			isInited = true;
+			isInitOK = true;
 		}
 		return true;
 	}
@@ -125,14 +143,18 @@ public class ActionManager {
 	 * @return 是否初始化成功
 	 */
 	public static boolean reInit(String iniFile,String classPath){
-		isInited = false;
+		isInitOK = false;
 		return init(iniFile,classPath);
+	}
+	
+	public static final boolean isInitOK(){
+		return isInitOK;
 	}
 
 	/**
 	 * 获取一个Action
 	 * @param actName
-	 * @return Action
+	 * @return Action,未找到返回null
 	 */
 	public static final Action findAction(String actName){
 		return actionMap.get(actName);
@@ -158,12 +180,7 @@ public class ActionManager {
 	 * @param action 新的Action
 	 */
 	public static final void changeAction(String actName,Action action){
-		if (!actionMap.containsKey(actName)) {
-			addAction(action);
-			return;
-		}else{
-			actionMap.put(action.getName(), action);
-		}
+		actionMap.put(actName, action);
 	}
 	
 	/**
@@ -176,9 +193,12 @@ public class ActionManager {
 	}
 	
 	public static void main(String[] args) {
-		ActionManager.init("f:/works/workspace_keel/KHunter/WebContent/WEB-INF/actions.json", "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/classes/");
+		String webRoot = "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/";
+		String jsonFilePath = webRoot+"kconfig.json";
+		String classPath = webRoot+"classes/";
+		ActionManager.init(jsonFilePath, classPath);
 		Action a = ActionManager.findAction("login");
-		System.out.println(a.getName());
+		System.out.println(a.getName()+ " id:"+a.getId());
 	}
 	
 }
