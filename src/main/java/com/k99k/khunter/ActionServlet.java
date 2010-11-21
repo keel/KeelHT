@@ -36,9 +36,9 @@ public final class ActionServlet extends HttpServlet {
 		// TODO 初始化ActionServlet
 		
 		//初始化ActionManager
-		if(!ActionManager.init()){
+		//if(!ActionManager.init()){
 			//处理ActionManager初始化失败的情况
-		}
+		//}
 		
 		
 	}
@@ -93,17 +93,19 @@ public final class ActionServlet extends HttpServlet {
 			return;
 		}
 		//是否发向JSP
-		if (msg.getData("jsp") != null) {
+		else if (msg.getData("jsp") != null) {
 			String to = (String) msg.getData("jsp");
 			RequestDispatcher rd = req.getRequestDispatcher(to);
 			rd.forward(req, resp);
 			return;
 		}
 		//是否跳转
-		if (msg.getData("redirect") != null) {
+		else if (msg.getData("redirect") != null) {
 			String redirect = (String) msg.getData("redirect");
 			resp.sendRedirect(redirect);
 			return;
+		}else{
+			resp.getWriter().print(msg.getData("404"));
 		}
 
 	}

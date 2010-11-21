@@ -1,9 +1,9 @@
 {
 	"version":1,
-	"updates":[
+	"updates":{
 		"2010-11-20":"始建此文件",
 		"2010-11-21":"可将datasource等分离成不同文件,由不同的类进行控制"
-	],
+	},
 	"info":"所有Action的配置在此，由此文件可初始化ActionManager中的所有Action.更改此文件的配置后，请对发生变化的Action执行reload操作",
 	"dataSources":{
 		"mongodb_local":{
@@ -22,16 +22,17 @@
 			"name":"mongoUserDao",
 			"_class":"com.k99k.khunter.MongoUserDao",
 			"_datasource":"mongodb_local",
-			"_type":"single"
+			"type":"single"
 		}
 	
 	],
 	"actions":[
 		{
-			"name":"login",
+			"_name":"login",
 			"_class":"com.k99k.khunter.HTLoginAction",
-			"_type":"normal",
-			"userDao":"mongoUserDao"
+			"type":"normal",
+			"id":1,
+			"userDao#daos":"mongoUserDao"
 		}
 	
 	]

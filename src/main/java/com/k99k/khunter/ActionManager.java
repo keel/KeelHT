@@ -4,7 +4,14 @@
 package com.k99k.khunter;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.stringtree.json.ExceptionErrorListener;
+import org.stringtree.json.JSONReader;
+import org.stringtree.json.JSONValidatingReader;
 
 /**
  * Action管理器，负责载入和刷新Action，以及添加新的Action等
@@ -16,6 +23,8 @@ public class ActionManager {
 	private ActionManager() {
 	}
 	
+	static final Logger log = Logger.getLogger(ActionManager.class);
+	
 	private static final ActionManager me = new ActionManager();
 	
 	public static final ActionManager getInstance(){
@@ -25,19 +34,99 @@ public class ActionManager {
 	
 	private static boolean isInited = false;
 	
+	private static final JSONReader jsonReader = new JSONValidatingReader(new ExceptionErrorListener());
+	
 	/**
 	 * 存储Action的Map,初始化大小为100
 	 */
 	private static final Map<String, Action> actionMap = new HashMap<String, Action>(100);
 	
-	public static boolean init(){
+	/**
+	 * 初始化ActionManager
+	 * @param iniFile 配置文件路径
+	 * @param classPath class文件所在的路径
+	 * @return 是否初始化成功
+	 */
+	public static boolean init(String iniFile,String classPath){
 		if (!isInited) {
-			//FIXME 初始化
 			//读取配置文件刷新注入的Action数据
-			
+			try {
+				String ini = KIoc.readTxtInUTF8(iniFile);
+				Map<String,?> root = (Map<String,?>) jsonReader.read(ini);
+				//先定位到json的actions属性
+				List<Map<String, ?>> actionList = (List<Map<String, ?>>) root.get("actions");
+				//循环加入Action
+				int i = 0;
+				for (Iterator<Map<String, ?>> map = actionList.iterator(); map.hasNext();) {
+					Map<String, ?> m = map.next();
+					//读取必要的属性，如果少则报错并继续下一个
+					if (m.containsKey("_name") && m.containsKey("_class")) {
+						String _name = (String) m.get("_name");
+						String _class = (String) m.get("_class");
+						
+						/*
+						//type默认为normal //--直接在属性中加入
+						//String _type = (m.containsKey("_type"))?"normal":(String) m.get("_type");
+						*/
+						
+						Action action = (Action)KIoc.loadClassInstance("file:/"+classPath, _class, new Object[]{_name});
+						
+						for (Iterator<String> it = m.keySet().iterator(); it.hasNext();) {
+							String prop = it.next();
+							//不以下划线开头的属性用setter方法注入
+							if (!prop.startsWith("_")) {
+								if (prop.indexOf("#") == -1) {
+									Object value = m.get(prop);
+									//处理Long形式的整数属性值,因为stringtree对数字读取为Long, BigInteger, Double or BigDecimal
+									//TODO 对浮点数未处理 
+									if (value instanceof Long) {
+										int iv = ((Long)value).intValue();
+										KIoc.setProp(action, prop, iv);
+									}else{
+										KIoc.setProp(action, prop, value);
+									}
+									
+								}
+								//FIXME 对#号引用的对象进行处理
+								else{
+									
+									
+								}
+								
+							}
+							
+						}
+						//加入Action
+						addAction(action);
+						
+					}else{
+						log.error("Action init Error! miss one or more key props. Position:"+i);
+						continue;
+					}
+					i++;
+				}
+				
+				
+				
+			} catch (Exception e) {
+				log.error("ActionManager init Error!", e);
+				isInited = false;
+				return false;
+			}
 			isInited = true;
 		}
 		return true;
+	}
+	
+	/**
+	 * 重新初始化
+	 * @param iniFile 配置文件路径
+	 * @param classPath class文件所在的路径
+	 * @return 是否初始化成功
+	 */
+	public static boolean reInit(String iniFile,String classPath){
+		isInited = false;
+		return init(iniFile,classPath);
 	}
 
 	/**
@@ -86,6 +175,10 @@ public class ActionManager {
 		
 	}
 	
-	
+	public static void main(String[] args) {
+		ActionManager.init("f:/works/workspace_keel/KHunter/WebContent/WEB-INF/actions.json", "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/classes/");
+		Action a = ActionManager.findAction("login");
+		System.out.println(a.getName());
+	}
 	
 }
