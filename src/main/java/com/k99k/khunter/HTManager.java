@@ -55,7 +55,7 @@ public final class HTManager {
 				classPath = (String) root.get("classPath");
 				ini = (String) root.get("iniPath");
 				
-				//FIXME 初始化各个Manager
+				
 				//初始化DataSourceManager
 				initOK = DataSourceManager.init(ini,classPath);
 				log.info("DataSourceManager inited OK? " + initOK);
@@ -68,6 +68,7 @@ public final class HTManager {
 				initOK = ActionManager.init(ini,classPath);
 				log.info("ActionManager inited OK? " + initOK);
 				
+				//FIXME 初始化IOManager
 				
 			}
 		} catch (Exception e) {
@@ -87,13 +88,13 @@ public final class HTManager {
 	 * @return 如果未找到则返回null
 	 */
 	public static final Object findFromManager(String managerName,String name){
-		//FIXME 定位到指定的manager
+		
 		if (managerName.equals("actions")) {
 			return ActionManager.findAction(name);
 		}else if(managerName.equals("daos")){
 			return DaoManager.findDao(name);
 		}else if(managerName.equals("io")){
-			
+			//FIXME 定位到指定的IOmanager
 		}else if(managerName.equals("dataSources")){
 			return DataSourceManager.findDataSource(name);
 		}

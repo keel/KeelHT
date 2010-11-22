@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 public final class ActionServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
-	//TODO 定义好log
 	static final Logger log = Logger.getLogger(ActionServlet.class);
 	
 
