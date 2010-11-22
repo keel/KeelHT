@@ -18,7 +18,7 @@ import org.stringtree.json.JSONValidatingReader;
  * @author keel
  *
  */
-public class ActionManager {
+public final class ActionManager {
 
 	private ActionManager() {
 	}
@@ -32,6 +32,10 @@ public class ActionManager {
 		return me;
 	}
 	
+	/**
+	 * 用于在json中定位
+	 * @return 返回"actions"
+	 */
 	public static final String getName(){
 		return "actions";
 	}
@@ -60,7 +64,7 @@ public class ActionManager {
 				String ini = KIoc.readTxtInUTF8(iniFile);
 				Map<String,?> root = (Map<String,?>) jsonReader.read(ini);
 				//先定位到json的actions属性
-				List<Map<String, ?>> actionList = (List<Map<String, ?>>) root.get("actions");
+				List<Map<String, ?>> actionList = (List<Map<String, ?>>) root.get(ActionManager.getName());
 				//循环加入Action
 				int i = 0;
 				for (Iterator<Map<String, ?>> map = actionList.iterator(); map.hasNext();) {
@@ -105,7 +109,7 @@ public class ActionManager {
 									if (value != null) {
 										KIoc.setProp(action, propArr[0], HTManager.findFromManager(propArr));
 									}else{
-										log.error("------The prop can't find from HTManager, didn't set this prop:"+prop);
+										log.error("The prop can't find from HTManager, didn't set this prop:"+prop);
 									}
 								}
 								
@@ -114,7 +118,7 @@ public class ActionManager {
 						}
 						//加入Action
 						if(!addAction(action)){
-							log.error("-------Action name alread exist! failed load this Action:"+action.getName()+" id:"+action.getId());
+							log.error("Action name alread exist! failed load this Action:"+action.getName()+" id:"+action.getId());
 						}
 						
 					}else{
@@ -167,6 +171,9 @@ public class ActionManager {
 	 * @return
 	 */
 	public static final boolean addAction(Action act){
+		if (act == null) {
+			return false;
+		}
 		if (actionMap.containsKey(act.getName())) {
 			return false;
 		}
@@ -180,6 +187,9 @@ public class ActionManager {
 	 * @param action 新的Action
 	 */
 	public static final void changeAction(String actName,Action action){
+		if (action == null) {
+			return;
+		}
 		actionMap.put(actName, action);
 	}
 	

@@ -36,6 +36,8 @@ public final class MongoConn implements DataSourceInterface{
 	private Mongo mongo;
 	private DB db;
 	
+	private String name = "mongodb_local";
+	
 	public MongoConn() {
 		init();
 	}
@@ -242,6 +244,20 @@ public final class MongoConn implements DataSourceInterface{
 	 */
 	public final void setMaxWaitTime(int maxWaitTime) {
 		this.maxWaitTime = maxWaitTime;
+	}
+
+	/**
+	 * @return the name
+	 */
+	public final String getName() {
+		return name;
+	}
+
+	/**
+	 * @param name the name to set
+	 */
+	public final void setName(String name) {
+		this.name = name;
 	}
 	
 	

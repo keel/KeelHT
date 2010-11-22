@@ -70,7 +70,7 @@ public final class ActionServlet extends HttpServlet {
 		//全程使用utf-8
 		//setCharset("utf-8",req,resp);
 		
-		//FIXME get方式测试用
+		//TODO get方式测试用
 		this.doPost(req, resp);
 	}
 
@@ -83,6 +83,7 @@ public final class ActionServlet extends HttpServlet {
 		try {
 			//由act参数定位Action,此参数在Filter中验证
 			String actName = req.getParameter("act");
+			//TODO act参数移向Filter验证
 			if (actName == null) {
 				resp.getWriter().print("404 - 1");
 				return;

@@ -20,7 +20,7 @@ public class HTLoginAction extends Action {
 	private HTUserDaoInterface userDao;
 
 	/**
-	 * 执行登录操作,若为新用户则自动注册
+	 * FIXME 执行登录操作,若为新用户则自动注册
 	 * @see com.k99k.khunter.Action#act(com.k99k.khunter.ActionMsg)
 	 */
 	@Override
@@ -32,8 +32,11 @@ public class HTLoginAction extends Action {
 		//有此用户数据则进行验证
 		
 		//结果为成功和失败两种,成功则直接返回,失败也可直接返回或转到处理失败的Action
+		msg.addData("something", "nothing");
+		msg.addData("dao", this.userDao.getName());
+		msg.addData("dataSource", this.userDao.getDataSource().getName());
 		
-		msg.addData("print", "test HTLoginAction haha");
+		msg.addData("print", msg.toJson());
 		msg.setNextAction(null);
 		
 		return super.act(msg);

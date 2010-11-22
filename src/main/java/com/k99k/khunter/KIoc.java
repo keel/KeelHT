@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
  * @author keel
  *
  */
-public class KIoc {
+public final class KIoc {
 
 	/**
 	 * 
@@ -57,7 +57,9 @@ public class KIoc {
 	 * 装载一个class文件并生成Object,要求此类有一个不带参数的构造方法
 	 * @param classURL class文件所在的路径(不含包路径),本地文件以file:/开头
 	 * @param className 类的全名，含包名在内
-	 * @param args Object[]形式的参数
+	 * @param args Object[]形式的参数,
+	 * <br /><strong>[注意:]</strong>仅根据构造方法参数的数量来创建新对象,不按实际参数类型查找具体的构造方法,
+	 * 避免参数是extends和implement的对象时出现NoSuchMethodException
 	 * @return class生成的Instance,失败则返回null
 	 */
 	public final static Object loadClassInstance(String classURL,String className,Object[] args){
@@ -71,6 +73,20 @@ public class KIoc {
 			Class<?> c = loader.loadClass(className);
 			*/
 			
+
+			
+			//仅根据构造方法参数的数量来创建新对象，不按实际参数查找具体的构造方法
+			Constructor<?>[] consArr = c.getConstructors();
+			for (int i = 0; i < consArr.length; i++) {
+				Constructor<?> co = consArr[i];
+				//Class<?>[] paraTypes = co.getParameterTypes();
+				if (co.getParameterTypes().length == args.length) {
+					return co.newInstance(args);
+				}
+			}
+			
+			/* 往下实际不会被执行到,这是另一种构建方法 */
+			//实际去查找，此时需要参数的类型精确匹配，参数如果是extends和implement的对象均不可以
 			//得到参数的Class数组
 			Class<?>[] argsClass = new Class[args.length];
 			for (int i = 0, j = args.length; i < j; i++) {
@@ -97,17 +113,19 @@ public class KIoc {
 		propName = getSetterMethodName(propName);
 		try {
 			
-			/*
-			 * 因无法处理基本类型而采用的轮循方式
+			//因无法处理基本类型而采用的轮循方式,仅比较方法名，不考虑参数
 			Method[] ms = obj.getClass().getMethods();
 			for (int i = 0,j = ms.length; i < j; i++) {
 				if (ms[i].getName().equals(propName)) {
 					ms[i].invoke(obj, value);
-					return obj;
+					return true;
 				}
 			}
-			*/
+			log.error("setProp ERROR! Method can't be found:"+propName);
+			return false;
 			
+			/*
+			 * 此种方式在参数中运用接口时会出现NoSuchMethodException!
 			//--处理基本类型参数，如setId(int id)
 			Class<?> vc = value.getClass();
 			Class<?> pvc = wrapperPrimitiveMap.get(vc);
@@ -119,6 +137,7 @@ public class KIoc {
 			
 			return true;
 			
+			*/
 		} catch (Exception e) {
 			log.error("setProp ERROR:"+propName, e);
 			return false;
@@ -149,6 +168,8 @@ public class KIoc {
 		int currentProp = 0;
 		int propCounts = propNames.length;
 		
+		/*
+		 * 此种方式在参数中运用接口时会出现NoSuchMethodException!
 		try {
 			for (; currentProp < propCounts; currentProp++) {
 				//--处理基本类型参数，如setId(int id)
@@ -166,28 +187,38 @@ public class KIoc {
 			log.error("setProps ERROR:"+propNames[currentProp], e);
 			return false;
 		}
-		/*
+		*/
+		
+		/* 轮循方式,可解决NoSuchMethodException问题,效率略低 */		
 		//先转化属性为setter方法名,无需在Method循环时每次都生成
 		for (int i = 0; i < propCounts; i++) {
 			propNames[i] = getSetterMethodName(propNames[i]);
 		}
+		boolean setAllOk = true;
 		try {
 			Method[] ms = obj.getClass().getMethods();
 			
-			for (int i = 0,j = ms.length; i < j; i++) {
-				for (; currentProp < propCounts; currentProp++) {
+			for (; currentProp < propCounts; currentProp++) {
+				boolean setOk = false;
+				for (int i = 0,j = ms.length; i < j; i++) {
 					if (ms[i].getName().equals(propNames[currentProp])) {
 						ms[i].invoke(obj, values[currentProp]);
-						return obj;
+						setOk = true;
+						break;
 					}
 				}
+				if (!setOk) {
+					setAllOk = false;
+					log.error("setProps ERROR! one of the props can't be found,para position:"+currentProp);
+				}
 			}
-			log.error("setProps ERROR:"+propNames[currentProp]);
-			return null;
+			
+			return setAllOk;
 		} catch (Exception e) {
-			log.error("setProps ERROR:"+propNames[currentProp], e);
-			return null;
-		}*/
+			log.error("setProps ERROR!para position:"+currentProp, e);
+			return false;
+		}
+		
 	}
 	
 	/**
@@ -259,9 +290,11 @@ public class KIoc {
 		System.out.println(item.getAck()+"|"+item.getFunction()+"|"+item.getSpecial());
 		*/
 		
+		
+		/*
 		String s = KIoc.readTxtInUTF8("f:/works/workspace_keel/KHunter/WebContent/WEB-INF/actions.json");
 		System.out.println(s);
-		
+		*/
 		
 		
 	}

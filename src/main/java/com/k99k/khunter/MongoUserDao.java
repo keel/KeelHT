@@ -4,7 +4,7 @@
 package com.k99k.khunter;
 
 /**
- * Mongodb下的UserDao
+ * FIXME Mongodb下的UserDao
  * @author keel
  *
  */
@@ -12,6 +12,7 @@ public class MongoUserDao extends MongoDao implements HTUserDaoInterface{
 
 	/**
 	 * @param daoName 数据表名
+	 * @param dataSource DataSourceInterface
 	 */
 	public MongoUserDao(String daoName, DataSourceInterface dataSource) {
 		super(daoName,dataSource);

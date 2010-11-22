@@ -68,13 +68,13 @@ public class ActionMsg {
 	 */
 	public String toJson(){
 		StringBuilder sb = new StringBuilder();
-		sb.append("{\"act\":\"").append(this.actitonName).append("\",\"next\":\"");
+		sb.append("{\"act\":\"").append(this.actitonName).append("\",\"next\":");
 		if (this.nextAction == null) {
-			sb.append("null");
+			sb.append("null,");
 		}else{
 			sb.append("\"").append(this.nextAction.getName()).append("\",");
 		}
-		sb.append("\"data\":").append(jsonWriter.write(data));
+		sb.append("\"data\":").append(jsonWriter.write(data)).append(",");
 		sb = this.addToJson(sb);
 		sb.append("}");
 		return sb.toString();

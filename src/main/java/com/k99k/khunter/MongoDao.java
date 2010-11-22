@@ -40,10 +40,24 @@ public class MongoDao implements DaoInterface{
 	private final String daoName;
 	
 	/**
+	 * 用于标识多个实例
+	 */
+	private int id;
+	
+	/**
 	 * 数据源
 	 */
 	private MongoConn dataSource;
 	
+	/**
+	 * 数据库类型
+	 */
+	private String dbType;
+	
+	/**
+	 * 载入类型
+	 */
+	private String type;
 	
 	/**
 	 * 创建建时初始化id生成器
@@ -115,13 +129,6 @@ public class MongoDao implements DaoInterface{
 	 */
 	public final void setDataSource(DataSourceInterface dataSource) {
 		this.dataSource = (MongoConn) dataSource;
-	}
-
-	/**
-	 * @return the daoName
-	 */
-	public final String getDaoName() {
-		return daoName;
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -233,5 +240,52 @@ public class MongoDao implements DaoInterface{
 	        db.resetError();
 	        m.close();
 	    }
+
+	@Override
+	public String getName() {
+		return daoName;
+	}
+
+	@Override
+	public int getId() {
+		return this.id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public final void setId(int id) {
+		this.id = id;
+	}
+
+	/**
+	 * @return the dbType
+	 */
+	public final String getDbType() {
+		return dbType;
+	}
+
+	/**
+	 * @param dbType the dbType to set
+	 */
+	public final void setDbType(String dbType) {
+		this.dbType = dbType;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public final String getType() {
+		return type;
+	}
+
+	/**
+	 * @param type the type to set
+	 */
+	public final void setType(String type) {
+		this.type = type;
+	}
+
+
 	
 }

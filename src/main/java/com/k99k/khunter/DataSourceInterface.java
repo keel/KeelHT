@@ -9,5 +9,5 @@ package com.k99k.khunter;
  */
 public interface DataSourceInterface {
 
-
+	public String getName();
 }

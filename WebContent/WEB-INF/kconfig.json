@@ -9,7 +9,7 @@
 	"iniPath": "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/kconfig.json",
 	"dataSources":{
 		"mongodb_local":{
-			"_dbName":"mongodb",
+			"_dbType":"mongodb",
 			"ip":"127.0.0.1",
 			"port":27017,
 			"db":"kht",
@@ -21,9 +21,10 @@
 	},
 	"daos":[
 		{
-			"name":"mongoUserDao",
+			"_name":"mongoUserDao",
 			"_class":"com.k99k.khunter.MongoUserDao",
-			"_datasource":"mongodb_local",
+			"_dataSource":"mongodb_local",
+			"dbType":"mongodb",
 			"type":"single"
 		}
 	

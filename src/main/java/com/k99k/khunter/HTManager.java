@@ -14,7 +14,7 @@ import org.stringtree.json.JSONValidatingReader;
  * @author keel
  *
  */
-public class HTManager {
+public final class HTManager {
 
 	private HTManager() {
 	}
@@ -54,7 +54,11 @@ public class HTManager {
 				classPath = (String) root.get("classPath");
 				ini = (String) root.get("iniPath");
 				
+				//FIXME 初始化各个Manager
 				
+				//初始化DaoManager
+				initOK = DaoManager.init(ini,classPath);
+				log.info("DaoManager inited OK? " + initOK);
 				
 				//初始化ActionManager
 				initOK = ActionManager.init(ini,classPath);
@@ -81,11 +85,11 @@ public class HTManager {
 		if (propArr.length != 2) {
 			return null;
 		}
-		//定位到指定的manager
+		//FIXME 定位到指定的manager
 		if (propArr[1].equals("actions")) {
 			return ActionManager.findAction(propArr[0]);
 		}else if(propArr[1].equals("daos")){
-			
+			return new MongoUserDao("testMongoUserDao",new MongoConn());
 		}else if(propArr[1].equals("io")){
 			
 		}else if(propArr[1].equals("dataSources")){
@@ -96,7 +100,16 @@ public class HTManager {
 		return null;
 	}
 	
-
+	/**
+	 * FIXME 查找DataSource,需要DataSourceManager
+	 * @param name DataSource的name
+	 * @return DataSource
+	 */
+	public static final DataSourceInterface findDataSource(String name){
+		DataSourceInterface ds = new MongoConn();
+		
+		return ds;
+	}
 	
 	
 	/**
