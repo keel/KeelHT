@@ -5,7 +5,6 @@ package com.k99k.khunter;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -50,6 +49,8 @@ public final class ActionManager {
 	private static final Map<String, Action> actionMap = new HashMap<String, Action>(100);
 	
 	private static String iniFilePath;
+	
+	private static String classFilePath;
 	
 	/**
 	 * 初始化ActionManager
@@ -137,6 +138,7 @@ public final class ActionManager {
 			}
 			isInitOK = true;
 			iniFilePath = iniFile;
+			classFilePath = classPath;
 		}
 		return true;
 	}
@@ -197,20 +199,66 @@ public final class ActionManager {
 	}
 	
 	/**
-	 * FIXME 刷新(重载)一个Action
-	 * @param act
+	 * 刷新(重载)一个Action
+	 * @param act actionName
 	 */
-	public static final void reLoadAction(String act){
+	public static final boolean reLoadAction(String act){
 		try {
 			String ini = KIoc.readTxtInUTF8(iniFilePath);
 			Map<String,?> root = (Map<String,?>) jsonReader.read(ini);
 			//先定位到json的actions属性
 			Map<String, ?> actionsMap = (Map<String, ?>) root.get(ActionManager.getName());
+			Map<String, ?> m = (Map<String, ?>) actionsMap.get(act);
+			if (!m.containsKey("_class")) {
+				log.error("Action init Error! miss key prop:_class");
+				return false;
+			}
+				
+			String _class = (String) m.get("_class");
+			Object o = KIoc.loadClassInstance("file:/"+classFilePath, _class, new Object[]{act});
+			if (o == null) {
+				log.error("loadClassInstance error! _class:"+_class+" _name:"+act);
+				return false;
+			}
+			Action action = (Action)o;
+			for (Iterator<String> it = m.keySet().iterator(); it.hasNext();) {
+				String prop = it.next();
+				//不以下划线开头的属性用setter方法注入
+				if (!prop.startsWith("_")) {
+					if (prop.indexOf("#") == -1) {
+						Object value = m.get(prop);
+						//处理Long形式的整数属性值,因为stringtree对数字读取为Long, BigInteger, Double or BigDecimal
+						//TODO 对浮点数未处理 
+						if (value instanceof Long) {
+							int iv = ((Long)value).intValue();
+							KIoc.setProp(action, prop, iv);
+						}else{
+							KIoc.setProp(action, prop, value);
+						}
+						
+					}
+					//由#号分为name#manager两部分,后部分为指定的manager名
+					else{
+						String[] propArr = prop.split("#");
+						Object value = HTManager.findFromManager(propArr);
+						if (value != null) {
+							KIoc.setProp(action, propArr[0], HTManager.findFromManager(propArr));
+						}else{
+							log.error("The prop can't find from HTManager, didn't set this prop:"+prop);
+						}
+					}
+					
+				}
+				
+			}
+			actionMap.put(act, action);
+			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("ActionManager reLoadAction Error:"+act, e);
+			return false;
 		}
-		
+		log.info("Action reLoaded: "+act);
+		return true;
 	}
 	
 	public static void main(String[] args) {
@@ -219,6 +267,14 @@ public final class ActionManager {
 		String classPath = webRoot+"classes/";
 		ActionManager.init(jsonFilePath, classPath);
 		Action a = ActionManager.findAction("login");
+		System.out.println(a.getName()+ " id:"+a.getId());
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		ActionManager.reLoadAction("login");
+		a = ActionManager.findAction("login");
 		System.out.println(a.getName()+ " id:"+a.getId());
 	}
 	

@@ -25,7 +25,7 @@
 			"_dataSource":"mongodb_local",
 			"dbType":"mongodb",
 			"type":"single",
-			"id":2
+			"id":24
 		}
 	
 	},
@@ -33,7 +33,7 @@
 		"login":{	
 			"_class":"com.k99k.khunter.HTLoginAction",
 			"type":"normal",
-			"id":1,
+			"id":15,
 			"userDao#daos":"mongoUserDao"
 		}
 	

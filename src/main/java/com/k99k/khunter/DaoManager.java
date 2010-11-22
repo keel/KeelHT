@@ -5,7 +5,6 @@ package com.k99k.khunter;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -45,7 +44,7 @@ public final class DaoManager {
 	private static boolean isInitOK = false;
 	
 	private static String iniFilePath;
-	
+	private static String classFilePath;
 	public static final boolean isInitOK(){
 		return isInitOK;
 	}
@@ -140,6 +139,7 @@ public final class DaoManager {
 			isInitOK = true;
 			//更新配置文件位置
 			iniFilePath = iniFile;
+			classFilePath = classPath;
 		}
 		return true;
 	}
@@ -196,23 +196,72 @@ public final class DaoManager {
 	}
 	
 	/**
-	 * FIXME 刷新(重载)一个Dao
-	 * @param name
+	 * 刷新(重载)一个Dao
+	 * @param name dao名
 	 */
 	public static final boolean reLoadDao(String name){
 		try {
 			String ini = KIoc.readTxtInUTF8(iniFilePath);
 			Map<String,?> root = (Map<String,?>) jsonReader.read(ini);
-			//先定位到json的actions属性
-			List<Map<String, ?>> actionList = (List<Map<String, ?>>) root.get(DaoManager.getName());
+			//先定位到json的daos属性
+			Map<String, ?> daosMap = (Map<String, ?>) root.get(DaoManager.getName());
+			Map<String, ?> m = (Map<String, ?>) daosMap.get(name);
+			if (!m.containsKey("_class") ||  !m.containsKey("_dataSource")) {
+				log.error("Dao init Error! miss key prop:_class");
+				return false;
+			}
+				
+			String _class = (String) m.get("_class");
+			String _dataSource = (String) m.get("_dataSource");
+			DataSourceInterface ds = HTManager.findDataSource(_dataSource);
 			
+			Object o = KIoc.loadClassInstance("file:/"+classFilePath, _class, new Object[]{name,ds});
+			if (o == null) {
+				log.error("loadClassInstance error! _class:"+_class+" _name:"+name);
+				return false;
+			}
+			DaoInterface dao = (DaoInterface)o;
+			//加入属性值
+			for (Iterator<String> it = m.keySet().iterator(); it.hasNext();) {
+				String prop = it.next();
+				//不以下划线开头的属性用setter方法注入
+				if (!prop.startsWith("_")) {
+					if (prop.indexOf("#") == -1) {
+						Object value = m.get(prop);
+						//处理Long形式的整数属性值,因为stringtree对数字读取为Long, BigInteger, Double or BigDecimal
+						//TODO 对浮点数未处理 
+						if (value instanceof Long) {
+							int iv = ((Long)value).intValue();
+							KIoc.setProp(dao, prop, iv);
+						}else{
+							KIoc.setProp(dao, prop, value);
+						}
+						
+					}
+					//由#号分为name#manager两部分,后部分为指定的manager名
+					else{
+						String[] propArr = prop.split("#");
+						Object value = HTManager.findFromManager(propArr);
+						if (value != null) {
+							KIoc.setProp(dao, propArr[0], HTManager.findFromManager(propArr));
+						}else{
+							log.error("The prop can't find from HTManager, didn't set this prop:"+prop);
+						}
+					}
+					
+				}
+				
+			}
 			
+			daoMap.put(name, dao);
 		} catch (Exception e) {
 			log.error("DaoManager init Error!", e);
 			return false;
 		}
 		log.info("Dao reLoaded: "+name);
 		return true;
+		
+		
 	}
 	
 	public static void main(String[] args) {
@@ -221,6 +270,14 @@ public final class DaoManager {
 		String classPath = webRoot+"classes/";
 		DaoManager.init(jsonFilePath, classPath);
 		DaoInterface a = DaoManager.findDao("mongoUserDao");
+		System.out.println(a.getName()+ " id:"+a.getId());
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		DaoManager.reLoadDao("mongoUserDao");
+		a = DaoManager.findDao("mongoUserDao");
 		System.out.println(a.getName()+ " id:"+a.getId());
 	}
 	
