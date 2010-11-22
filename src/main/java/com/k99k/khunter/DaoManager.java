@@ -13,7 +13,7 @@ import org.stringtree.json.JSONReader;
 import org.stringtree.json.JSONValidatingReader;
 
 /**
- * FIXME DAO管理器
+ * DAO管理器
  * @author keel
  *
  */
@@ -78,7 +78,11 @@ public final class DaoManager {
 						
 						//定位_dataSource
 						String _dataSource = (String) m.get("_dataSource");
-						DataSourceInterface ds = HTManager.findDataSource(_dataSource);
+						DataSourceInterface ds = DataSourceManager.findDataSource(_dataSource);
+						if (ds == null) {
+							log.error("DataSourceManager.findDataSource error! _class:"+_class+" daoName:"+daoName+" _dataSource:"+_dataSource);
+							continue;
+						}
 						//Dao初始化需要dataSource
 						Object o = KIoc.loadClassInstance("file:/"+classPath, _class, new Object[]{daoName,ds});
 						if (o == null) {
@@ -87,39 +91,14 @@ public final class DaoManager {
 						}
 						DaoInterface dao = (DaoInterface)o;
 						
-						for (Iterator<String> it = m.keySet().iterator(); it.hasNext();) {
-							String prop = it.next();
-							//不以下划线开头的属性用setter方法注入
-							if (!prop.startsWith("_")) {
-								if (prop.indexOf("#") == -1) {
-									Object value = m.get(prop);
-									//处理Long形式的整数属性值,因为stringtree对数字读取为Long, BigInteger, Double or BigDecimal
-									//TODO 对浮点数未处理 
-									if (value instanceof Long) {
-										int iv = ((Long)value).intValue();
-										KIoc.setProp(dao, prop, iv);
-									}else{
-										KIoc.setProp(dao, prop, value);
-									}
-									
-								}
-								//由#号分为name#manager两部分,后部分为指定的manager名
-								else{
-									String[] propArr = prop.split("#");
-									Object value = HTManager.findFromManager(propArr);
-									if (value != null) {
-										KIoc.setProp(dao, propArr[0], HTManager.findFromManager(propArr));
-									}else{
-										log.error("The prop can't find from HTManager, didn't set this prop:"+prop);
-									}
-								}
-								
-							}
-							
-						}
+						HTManager.fetchProps(dao, m);
 						//加入Dao
-						if(!addDao(dao)){
-							log.error("Dao name alread exist! failed load this Dao:"+dao.getName()+" id:"+dao.getId());
+						if (dao.init()) {
+							if(!addDao(dao)){
+								log.error("Dao name alread exist! failed load this Dao:"+dao.getName()+" id:"+dao.getId());
+							}
+						}else{
+							log.error("Dao init failed:"+dao.getName()+" id:"+dao.getId());
 						}
 						
 					}else{
@@ -213,46 +192,18 @@ public final class DaoManager {
 				
 			String _class = (String) m.get("_class");
 			String _dataSource = (String) m.get("_dataSource");
-			DataSourceInterface ds = HTManager.findDataSource(_dataSource);
-			
+			DataSourceInterface ds = DataSourceManager.findDataSource(_dataSource);
+			if (ds == null) {
+				log.error("DataSourceManager.findDataSource error! _class:"+_class+" Name:"+name+" _dataSource:"+_dataSource);
+				return false;
+			}
 			Object o = KIoc.loadClassInstance("file:/"+classFilePath, _class, new Object[]{name,ds});
 			if (o == null) {
 				log.error("loadClassInstance error! _class:"+_class+" _name:"+name);
 				return false;
 			}
 			DaoInterface dao = (DaoInterface)o;
-			//加入属性值
-			for (Iterator<String> it = m.keySet().iterator(); it.hasNext();) {
-				String prop = it.next();
-				//不以下划线开头的属性用setter方法注入
-				if (!prop.startsWith("_")) {
-					if (prop.indexOf("#") == -1) {
-						Object value = m.get(prop);
-						//处理Long形式的整数属性值,因为stringtree对数字读取为Long, BigInteger, Double or BigDecimal
-						//TODO 对浮点数未处理 
-						if (value instanceof Long) {
-							int iv = ((Long)value).intValue();
-							KIoc.setProp(dao, prop, iv);
-						}else{
-							KIoc.setProp(dao, prop, value);
-						}
-						
-					}
-					//由#号分为name#manager两部分,后部分为指定的manager名
-					else{
-						String[] propArr = prop.split("#");
-						Object value = HTManager.findFromManager(propArr);
-						if (value != null) {
-							KIoc.setProp(dao, propArr[0], HTManager.findFromManager(propArr));
-						}else{
-							log.error("The prop can't find from HTManager, didn't set this prop:"+prop);
-						}
-					}
-					
-				}
-				
-			}
-			
+			HTManager.fetchProps(dao, m);
 			daoMap.put(name, dao);
 		} catch (Exception e) {
 			log.error("DaoManager init Error!", e);
@@ -265,10 +216,13 @@ public final class DaoManager {
 	}
 	
 	public static void main(String[] args) {
+		
 		String webRoot = "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/";
 		String jsonFilePath = webRoot+"kconfig.json";
 		String classPath = webRoot+"classes/";
-		DaoManager.init(jsonFilePath, classPath);
+		//需要先初始化HTManager
+		HTManager.init(jsonFilePath);
+		//DaoManager.init(jsonFilePath, classPath);
 		DaoInterface a = DaoManager.findDao("mongoUserDao");
 		System.out.println(a.getName()+ " id:"+a.getId());
 		try {

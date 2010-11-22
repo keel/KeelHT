@@ -13,6 +13,8 @@ public interface DaoInterface {
 	
 	public String getName();
 	
+	public boolean init();
+	
 	public int getId();
 	
 	/**

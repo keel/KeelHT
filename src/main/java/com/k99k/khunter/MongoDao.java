@@ -35,9 +35,14 @@ public class MongoDao implements DaoInterface{
 	static final BasicDBObject emptyBasicDBObject  = new BasicDBObject();
 	
 	/**
-	 * dao名称，同时也是数据库的表名
+	 * 数据库的表名
 	 */
-	private final String daoName;
+	private String tableName;
+	
+	/**
+	 * Dao的标识name
+	 */
+	private String name;
 	
 	/**
 	 * 用于标识多个实例
@@ -61,13 +66,22 @@ public class MongoDao implements DaoInterface{
 	
 	/**
 	 * 创建建时初始化id生成器
-	 * @param daoName Dao名称，同时也是数据库的表名
+	 * @param daoName Dao名称
 	 */
 	public MongoDao(String daoName,DataSourceInterface dataSource) {
 		super();
-		this.daoName = daoName;
+		this.name = daoName;
 		this.dataSource = (MongoConn) dataSource;
-		idm.setId(initIDM(daoName));
+	}
+	
+	public boolean init(){
+		try {
+			idm.setId(initIDM(tableName));
+		} catch (Exception e) {
+			log.error("init error!", e);
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -77,7 +91,7 @@ public class MongoDao implements DaoInterface{
 	 */
 	public boolean add(MongoKObject kwObj){
 		try {
-			DBCollection coll = this.dataSource.getColl(daoName);
+			DBCollection coll = this.dataSource.getColl(tableName);
 			kwObj.setId(idm.nextId());
 			coll.insert(kwObj);
 		} catch (MongoException e) {
@@ -90,7 +104,7 @@ public class MongoDao implements DaoInterface{
 	public boolean update(long id,MongoKObject newObj) {
 		
 		try {
-			DBCollection coll = this.dataSource.getColl(daoName);
+			DBCollection coll = this.dataSource.getColl(tableName);
 			coll.update(new BasicDBObject("id",id),newObj);
 		} catch (MongoException e) {
 			log.error("add error!", e);
@@ -109,7 +123,7 @@ public class MongoDao implements DaoInterface{
 		DBCursor cur = coll.find(emptyBasicDBObject,new BasicDBObject("id",1)).sort(new BasicDBObject("id",-1)).limit(1);
 		if (cur.hasNext()) {
 			DBObject o = cur.next();
-			return ((Long)o.get("id"));
+			return Long.valueOf(o.get("id")+"");
 		}else{
 			return 1;
 		}
@@ -243,7 +257,31 @@ public class MongoDao implements DaoInterface{
 
 	@Override
 	public String getName() {
-		return daoName;
+		return this.name;
+	}
+	
+
+
+
+	/**
+	 * @return the tableName
+	 */
+	public final String getTableName() {
+		return tableName;
+	}
+
+	/**
+	 * @param tableName the tableName to set
+	 */
+	public final void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+
+	/**
+	 * @param name the name to set
+	 */
+	public final void setName(String name) {
+		this.name = name;
 	}
 
 	@Override

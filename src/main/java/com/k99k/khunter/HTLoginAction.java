@@ -17,7 +17,7 @@ public class HTLoginAction extends Action {
 		super(name);
 	}
 	
-	private HTUserDaoInterface userDao;
+	private DaoInterface userDao;
 
 	/**
 	 * FIXME 执行登录操作,若为新用户则自动注册
@@ -45,14 +45,14 @@ public class HTLoginAction extends Action {
 	/**
 	 * @return the userDao
 	 */
-	public final HTUserDaoInterface getUserDao() {
+	public final DaoInterface getUserDao() {
 		return userDao;
 	}
 
 	/**
 	 * @param userDao the userDao to set
 	 */
-	public final void setUserDao(HTUserDaoInterface userDao) {
+	public final void setUserDao(DaoInterface userDao) {
 		this.userDao = userDao;
 	}
 	

@@ -87,36 +87,7 @@ public final class ActionManager {
 						}
 						Action action = (Action)o;
 						
-						for (Iterator<String> it = m.keySet().iterator(); it.hasNext();) {
-							String prop = it.next();
-							//不以下划线开头的属性用setter方法注入
-							if (!prop.startsWith("_")) {
-								if (prop.indexOf("#") == -1) {
-									Object value = m.get(prop);
-									//处理Long形式的整数属性值,因为stringtree对数字读取为Long, BigInteger, Double or BigDecimal
-									//TODO 对浮点数未处理 
-									if (value instanceof Long) {
-										int iv = ((Long)value).intValue();
-										KIoc.setProp(action, prop, iv);
-									}else{
-										KIoc.setProp(action, prop, value);
-									}
-									
-								}
-								//由#号分为name#manager两部分,后部分为指定的manager名
-								else{
-									String[] propArr = prop.split("#");
-									Object value = HTManager.findFromManager(propArr);
-									if (value != null) {
-										KIoc.setProp(action, propArr[0], HTManager.findFromManager(propArr));
-									}else{
-										log.error("The prop can't find from HTManager, didn't set this prop:"+prop);
-									}
-								}
-								
-							}
-							
-						}
+						HTManager.fetchProps(action, m);
 						//加入Action
 						if(!addAction(action)){
 							log.error("Action name alread exist! failed load this Action:"+action.getName()+" id:"+action.getId());
@@ -221,36 +192,7 @@ public final class ActionManager {
 				return false;
 			}
 			Action action = (Action)o;
-			for (Iterator<String> it = m.keySet().iterator(); it.hasNext();) {
-				String prop = it.next();
-				//不以下划线开头的属性用setter方法注入
-				if (!prop.startsWith("_")) {
-					if (prop.indexOf("#") == -1) {
-						Object value = m.get(prop);
-						//处理Long形式的整数属性值,因为stringtree对数字读取为Long, BigInteger, Double or BigDecimal
-						//TODO 对浮点数未处理 
-						if (value instanceof Long) {
-							int iv = ((Long)value).intValue();
-							KIoc.setProp(action, prop, iv);
-						}else{
-							KIoc.setProp(action, prop, value);
-						}
-						
-					}
-					//由#号分为name#manager两部分,后部分为指定的manager名
-					else{
-						String[] propArr = prop.split("#");
-						Object value = HTManager.findFromManager(propArr);
-						if (value != null) {
-							KIoc.setProp(action, propArr[0], HTManager.findFromManager(propArr));
-						}else{
-							log.error("The prop can't find from HTManager, didn't set this prop:"+prop);
-						}
-					}
-					
-				}
-				
-			}
+			HTManager.fetchProps(action, m);
 			actionMap.put(act, action);
 			
 		} catch (Exception e) {

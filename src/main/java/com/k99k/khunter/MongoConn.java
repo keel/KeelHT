@@ -39,7 +39,7 @@ public final class MongoConn implements DataSourceInterface{
 	private String name = "mongodb_local";
 	
 	public MongoConn() {
-		init();
+		//init();
 	}
 	
 	/**
@@ -56,7 +56,7 @@ public final class MongoConn implements DataSourceInterface{
 		this.dbName = dbName;
 		this.user = user;
 		this.pwd = pwd;
-		init();
+		//init();
 	}
 
 	/**
@@ -76,7 +76,7 @@ public final class MongoConn implements DataSourceInterface{
 	/**
 	 * 创建DB对象
 	 */
-	private final boolean init(){
+	public final boolean init(){
 		try {
 			ServerAddress sadd = new ServerAddress(this.ip, this.port);
 			MongoOptions opt = new MongoOptions();
@@ -106,6 +106,8 @@ public final class MongoConn implements DataSourceInterface{
 		return false;
 	}
 	
+	
+
 	
 	/**
 	 * 获取DB

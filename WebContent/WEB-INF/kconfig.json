@@ -4,7 +4,7 @@
 		"2010-11-20":"始建此文件",
 		"2010-11-21":"可将datasource等分离成不同文件,由不同的类进行控制"
 	},
-	"info":"所有Action的配置在此，由此文件可初始化ActionManager中的所有Action.更改此文件的配置后，请对发生变化的Action执行reload操作",
+	"info":"更改此文件的配置后，请对发生变化的Action执行reload操作",
 	"classPath": "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/classes/",
 	"iniPath": "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/kconfig.json",
 	"dataSources":{
@@ -12,9 +12,9 @@
 			"_dbType":"mongodb",
 			"ip":"127.0.0.1",
 			"port":27017,
-			"db":"kht",
-			"dbuser":"sike_ht",
-			"dbpwd":"jsinfo2901_A",
+			"dbName":"kht",
+			"user":"sike_ht",
+			"pwd":"jsinfo2901_A",
 			"maxWaitTime":5000,
 			"connectionsPerHost":50
 		}
@@ -25,7 +25,8 @@
 			"_dataSource":"mongodb_local",
 			"dbType":"mongodb",
 			"type":"single",
-			"id":24
+			"tableName":"testKHT",
+			"id":2433
 		}
 	
 	},
@@ -33,7 +34,7 @@
 		"login":{	
 			"_class":"com.k99k.khunter.HTLoginAction",
 			"type":"normal",
-			"id":15,
+			"id":152,
 			"userDao#daos":"mongoUserDao"
 		}
 	
