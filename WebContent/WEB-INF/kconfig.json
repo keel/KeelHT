@@ -19,26 +19,25 @@
 			"connectionsPerHost":50
 		}
 	},
-	"daos":[
-		{
-			"_name":"mongoUserDao",
+	"daos":{
+		"mongoUserDao":{
 			"_class":"com.k99k.khunter.MongoUserDao",
 			"_dataSource":"mongodb_local",
 			"dbType":"mongodb",
-			"type":"single"
+			"type":"single",
+			"id":2
 		}
 	
-	],
-	"actions":[
-		{
-			"_name":"login",
+	},
+	"actions":{
+		"login":{	
 			"_class":"com.k99k.khunter.HTLoginAction",
 			"type":"normal",
 			"id":1,
 			"userDao#daos":"mongoUserDao"
 		}
 	
-	],
+	},
 	"io":{
 		"email":{
 			

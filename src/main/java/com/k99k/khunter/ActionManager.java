@@ -49,7 +49,7 @@ public final class ActionManager {
 	 */
 	private static final Map<String, Action> actionMap = new HashMap<String, Action>(100);
 	
-	
+	private static String iniFilePath;
 	
 	/**
 	 * 初始化ActionManager
@@ -64,14 +64,14 @@ public final class ActionManager {
 				String ini = KIoc.readTxtInUTF8(iniFile);
 				Map<String,?> root = (Map<String,?>) jsonReader.read(ini);
 				//先定位到json的actions属性
-				List<Map<String, ?>> actionList = (List<Map<String, ?>>) root.get(ActionManager.getName());
+				Map<String, ?> actionsMap = (Map<String, ?>) root.get(ActionManager.getName());
 				//循环加入Action
 				int i = 0;
-				for (Iterator<Map<String, ?>> map = actionList.iterator(); map.hasNext();) {
-					Map<String, ?> m = map.next();
+				for (Iterator<String> iter = actionsMap.keySet().iterator(); iter.hasNext();) {
+					String actionName = iter.next();
+					Map<String, ?> m = (Map<String, ?>) actionsMap.get(actionName);
 					//读取必要的属性，如果少则报错并继续下一个
-					if (m.containsKey("_name") && m.containsKey("_class")) {
-						String _name = (String) m.get("_name");
+					if (m.containsKey("_class")) {
 						String _class = (String) m.get("_class");
 						
 						/*
@@ -79,9 +79,9 @@ public final class ActionManager {
 						//String _type = (m.containsKey("_type"))?"normal":(String) m.get("_type");
 						*/
 						
-						Object o = KIoc.loadClassInstance("file:/"+classPath, _class, new Object[]{_name});
+						Object o = KIoc.loadClassInstance("file:/"+classPath, _class, new Object[]{actionName});
 						if (o == null) {
-							log.error("loadClassInstance error! _class:"+_class+" _name:"+_name);
+							log.error("loadClassInstance error! _class:"+_class+" _name:"+actionName);
 							continue;
 						}
 						Action action = (Action)o;
@@ -136,6 +136,7 @@ public final class ActionManager {
 				return false;
 			}
 			isInitOK = true;
+			iniFilePath = iniFile;
 		}
 		return true;
 	}
@@ -178,6 +179,7 @@ public final class ActionManager {
 			return false;
 		}
 		actionMap.put(act.getName(), act);
+		log.info("Action added: "+act.getName());
 		return true;
 	}
 	
@@ -191,6 +193,7 @@ public final class ActionManager {
 			return;
 		}
 		actionMap.put(actName, action);
+		log.info("Action changed: "+action.getName());
 	}
 	
 	/**
@@ -198,7 +201,15 @@ public final class ActionManager {
 	 * @param act
 	 */
 	public static final void reLoadAction(String act){
-		
+		try {
+			String ini = KIoc.readTxtInUTF8(iniFilePath);
+			Map<String,?> root = (Map<String,?>) jsonReader.read(ini);
+			//先定位到json的actions属性
+			Map<String, ?> actionsMap = (Map<String, ?>) root.get(ActionManager.getName());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	

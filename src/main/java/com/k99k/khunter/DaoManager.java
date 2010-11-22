@@ -44,6 +44,7 @@ public final class DaoManager {
 	
 	private static boolean isInitOK = false;
 	
+	private static String iniFilePath;
 	
 	public static final boolean isInitOK(){
 		return isInitOK;
@@ -59,26 +60,30 @@ public final class DaoManager {
 		if (!isInitOK) {
 			//读取配置文件刷新注入的Dao数据
 			try {
+				
 				String ini = KIoc.readTxtInUTF8(iniFile);
 				Map<String,?> root = (Map<String,?>) jsonReader.read(ini);
 				//先定位到json的actions属性
-				List<Map<String, ?>> actionList = (List<Map<String, ?>>) root.get(DaoManager.getName());
+				Map<String, ?> daoMap = (Map<String, ?>) root.get(DaoManager.getName());
+
 				//循环加入Dao
 				int i = 0;
-				for (Iterator<Map<String, ?>> map = actionList.iterator(); map.hasNext();) {
-					Map<String, ?> m = map.next();
+				for (Iterator<String> iter = daoMap.keySet().iterator(); iter.hasNext();) {
+					String daoName = iter.next();
+					Map<String, ?> m = (Map<String, ?>) daoMap.get(daoName);
+					
 					//读取必要的属性，如果少则报错并继续下一个
-					if (m.containsKey("_name") && m.containsKey("_class") &&  m.containsKey("_dataSource")) {
-						String _name = (String) m.get("_name");
+					if (m.containsKey("_class") &&  m.containsKey("_dataSource")) {
+						
 						String _class = (String) m.get("_class");
 						
 						//定位_dataSource
 						String _dataSource = (String) m.get("_dataSource");
 						DataSourceInterface ds = HTManager.findDataSource(_dataSource);
 						//Dao初始化需要dataSource
-						Object o = KIoc.loadClassInstance("file:/"+classPath, _class, new Object[]{_name,ds});
+						Object o = KIoc.loadClassInstance("file:/"+classPath, _class, new Object[]{daoName,ds});
 						if (o == null) {
-							log.error("loadClassInstance error! _class:"+_class+" _name:"+_name+" _dataSource:"+_dataSource);
+							log.error("loadClassInstance error! _class:"+_class+" actionName:"+daoName+" _dataSource:"+_dataSource);
 							continue;
 						}
 						DaoInterface dao = (DaoInterface)o;
@@ -133,6 +138,8 @@ public final class DaoManager {
 				return false;
 			}
 			isInitOK = true;
+			//更新配置文件位置
+			iniFilePath = iniFile;
 		}
 		return true;
 	}
@@ -171,6 +178,7 @@ public final class DaoManager {
 			return false;
 		}
 		daoMap.put(dao.getName(), dao);
+		log.info("Dao added: "+dao.getName());
 		return true;
 	}
 	
@@ -184,15 +192,27 @@ public final class DaoManager {
 			return;
 		}
 		daoMap.put(name, dao);
+		log.info("Dao changed: "+dao.getName());
 	}
 	
 	/**
 	 * FIXME 刷新(重载)一个Dao
 	 * @param name
 	 */
-	public static final void reLoadDao(String name){
-		
-		
+	public static final boolean reLoadDao(String name){
+		try {
+			String ini = KIoc.readTxtInUTF8(iniFilePath);
+			Map<String,?> root = (Map<String,?>) jsonReader.read(ini);
+			//先定位到json的actions属性
+			List<Map<String, ?>> actionList = (List<Map<String, ?>>) root.get(DaoManager.getName());
+			
+			
+		} catch (Exception e) {
+			log.error("DaoManager init Error!", e);
+			return false;
+		}
+		log.info("Dao reLoaded: "+name);
+		return true;
 	}
 	
 	public static void main(String[] args) {
