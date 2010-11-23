@@ -11,181 +11,122 @@ package com.k99k.khunter;
 public class HTPet extends KObject{
 
 	public HTPet() {
-	}
-
-	/**
-	 * 物品类型,可以是多个类型(质数)合成的复值,也可以是基本类型
-	 */
-	private int type;
+		super();
+		propMap.put("type", 0);
+		propMap.put("age", 0);
+		propMap.put("ack", 0);
+		propMap.put("def", 0);
+		propMap.put("special", "");
+		propMap.put("hp", 0);
+		propMap.put("space", 0);
+		propMap.put("price", 0);
 	
-	/**
-	 * 功能
-	 */
-	private int age;
+	}
+
+//	/**
+//	 * 物品类型,可以是多个类型(质数)合成的复值,也可以是基本类型
+//	 */
+//	private int type;
+//	
+//	/**
+//	 * 功能
+//	 */
+//	private int age;
+//	
+//	/**
+//	 * 攻击力
+//	 */
+//	private int ack;
+//	
+//	/**
+//	 * 防御力
+//	 */
+//	private int def;
+//	
+//	/**
+//	 * 特殊能力,暂以String方式体现,可以是集合
+//	 */
+//	private String special;
+//	
+//	/**
+//	 * 宠物的HP值
+//	 */
+//	private int hp;
+//	
+//	/**
+//	 * 基本价格
+//	 */
+//	private int price;
+//	
+//	/**
+//	 * 占用空间
+//	 */
+//	private int space;
 	
-	/**
-	 * 攻击力
-	 */
-	private int ack;
-	
-	/**
-	 * 防御力
-	 */
-	private int def;
-	
-	/**
-	 * 特殊能力,暂以String方式体现,可以是集合
-	 */
-	private String special;
-	
-	/**
-	 * 宠物的HP值
-	 */
-	private int hp;
-	
-	/**
-	 * 基本价格
-	 */
-	private int price;
-	
-	/**
-	 * 占用空间
-	 */
-	private int space;
-	
-	/* (non-Javadoc)
-	 * @see com.k99k.khunter.KObject#innerPropToJsonString()
-	 */
-	@Override
-	StringBuilder innerPropToJsonString() {
-		StringBuilder sb = super.innerPropToJsonString();
-		sb.append("\"type\":").append(this.type).append(",");
-		sb.append("\"age\":").append(this.age).append(",");
-		sb.append("\"ack\":").append(this.ack).append(",");
-		sb.append("\"def\":").append(this.def).append(",");
-		sb.append("\"special\":\"").append(this.special).append("\",");
-		sb.append("\"hp\":").append(this.hp).append(",");
-		sb.append("\"space\":").append(this.space).append(",");
-		sb.append("\"price\":").append(this.price).append(",");
-		return sb;
-	}
 
-	/**
-	 * @return the type
-	 */
-	public final int getType() {
-		return type;
-	}
-
-	/**
-	 * @param type the type to set
-	 */
-	public final void setType(int type) {
-		this.type = type;
-	}
-
-
-
-	/**
-	 * @return the ack
-	 */
-	public final int getAck() {
-		return ack;
-	}
-
-	/**
-	 * @param ack the ack to set
-	 */
-	public final void setAck(int ack) {
-		this.ack = ack;
-	}
-
-	/**
-	 * @return the def
-	 */
-	public final int getDef() {
-		return def;
-	}
-
-	/**
-	 * @param def the def to set
-	 */
-	public final void setDef(int def) {
-		this.def = def;
-	}
-
-	/**
-	 * @return the special
-	 */
-	public final String getSpecial() {
-		return special;
-	}
-
-	/**
-	 * @param special the special to set
-	 */
-	public final void setSpecial(String special) {
-		this.special = special;
-	}
-
-
-
-	/**
-	 * @return the age
-	 */
-	public final int getAge() {
-		return age;
-	}
-
-	/**
-	 * @param age the age to set
-	 */
-	public final void setAge(int age) {
-		this.age = age;
-	}
-
-	/**
-	 * @return the hp
-	 */
 	public final int getHp() {
-		return hp;
+		return getIntByName("hp");
 	}
 
-	/**
-	 * @param hp the hp to set
-	 */
 	public final void setHp(int hp) {
-		this.hp = hp;
+		this.propMap.put("hp", hp);
 	}
 
-	/**
-	 * @return the price
-	 */
 	public final int getPrice() {
-		return price;
+		return getIntByName("price");
 	}
 
-	/**
-	 * @param price the price to set
-	 */
 	public final void setPrice(int price) {
-		this.price = price;
+		this.propMap.put("price", price);
 	}
 
-	/**
-	 * @return the space
-	 */
+	public final int getDef() {
+		return getIntByName("def");
+	}
+
+	public final void setDef(int def) {
+		this.propMap.put("def", def);
+	}
+
+	public final int getAck() {
+		return getIntByName("ack");
+	}
+
+	public final void setAck(int ack) {
+		this.propMap.put("ack", ack);
+	}
+
+	public final int getAge() {
+		return getIntByName("age");
+	}
+
+	public final void setAge(int age) {
+		this.propMap.put("age", age);
+	}
+
+	public final String getSpecial() {
+		return getStringByName("special");
+	}
+
+	public final void setSpecial(String special) {
+		this.propMap.put("special", special);
+	}
+
 	public final int getSpace() {
-		return space;
+		return getIntByName("space");
 	}
 
-	/**
-	 * @param space the space to set
-	 */
 	public final void setSpace(int space) {
-		this.space = space;
+		this.propMap.put("space", space);
 	}
-	
+
+	public final int getType() {
+		return getIntByName("type");
+	}
+
+	public final void setType(int type) {
+		this.propMap.put("type", type);
+	}
 	
 	
 }

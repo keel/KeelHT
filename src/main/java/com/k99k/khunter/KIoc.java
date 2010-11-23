@@ -157,6 +157,19 @@ public final class KIoc {
 	}
 	
 	/**
+	 * 由属性名得到getter方法名,如属性name，返回getName.<br />
+	 * 注意属性名必须以英文字母开头,getter方法格式为"get+首字母大写的propName",不支持isAbc的注入
+	 * @param propName
+	 * @return 
+	 */
+	static final String getGetterMethodName(String propName){
+		StringBuilder sb = new StringBuilder("get");
+		sb.append(Character.toUpperCase(propName.charAt(0)));
+		sb.append(propName.substring(1));
+		return sb.toString();
+	}
+	
+	/**
 	 * 使用setter注入对象属性,注意属性名必须以英文字母开头,setter方法格式为"set+首字母大写的propName",不支持isAbc的注入
 	 * @param obj 被注入对象
 	 * @param propNames 属性名数组

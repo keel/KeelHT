@@ -60,7 +60,7 @@ public final class MongoConn implements DataSourceInterface{
 	}
 
 	/**
-	 * 获取一个数据库连接
+	 * 获取一个数据库连接,失败时返回null,本方法自身不处理失败情况
 	 * @param colName
 	 * @return DBCollection
 	 */
@@ -90,7 +90,7 @@ public final class MongoConn implements DataSourceInterface{
 			if (!auth) {
 				log.error("auth error! user:"+this.user);
 			}else{
-				log.debug("===========mongoDao init OK!============");
+				log.info("=========== mongoConn init OK! ============");
 				return true;
 			}
 		} catch (UnknownHostException e) {

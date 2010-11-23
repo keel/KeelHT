@@ -10,20 +10,43 @@ package com.k99k.khunter;
  */
 public class HTUser extends KObject{
 
-	/**
-	 * 
-	 */
 	public HTUser() {
+		super();
+		this.propMap.put("pwd", "");
+		this.propMap.put("imei", "");
+		this.propMap.put("ip", "");
+		this.propMap.put("nick", "");
+		this.propMap.put("sex", 0);
+		this.propMap.put("synId", "");
+		this.propMap.put("email", "");
+		this.propMap.put("icon", "");
+		this.propMap.put("hp", 0);
+		this.propMap.put("camp", "");
+		this.propMap.put("lastLogin", "");
+		this.propMap.put("gold", 0);
+		this.propMap.put("medal", 0);
+		this.propMap.put("honor", 0);
+		this.propMap.put("x", 0);
+		this.propMap.put("y", 0);
+		this.propMap.put("z", 0);
+		this.propMap.put("rank", 0);
+		this.propMap.put("maxWareHouse", 0);
+		this.propMap.put("curWareHouse", 0);
+		this.propMap.put("equips", null);
+		this.propMap.put("pets", null);
+		this.propMap.put("dress", null);
+		this.propMap.put("friends", null);
+		
 	}
-	
-	/**
+/*	
+
 	 * 密码
-	 */
+
 	private String upwd;
 	
-	/**
+
 	 * imei设备号
-	 */
+	
 	private String imei;
 	
 	private String ip;
@@ -32,63 +55,63 @@ public class HTUser extends KObject{
 	
 	private int sex;
 	
-	/**
+	
 	 * 同步id
-	 */
+	
 	private String synId;
 	
 	private String email;
 	
-	/**
+	
 	 * 头像ID
-	 */
+	
 	private String icon;
 	
-	/**
+	
 	 * 体力hp值
-	 */
+	
 	private int hp;
 	
-	/**
+	
 	 * 阵营
-	 */
+	
 	private String camp;
 	
 	private String lastLogin;
 	
-	/**
+	
 	 * 钱
-	 */
+	
 	private int gold;
 	
-	/**
+	
 	 * 勋章
-	 */
+	
 	private int medal;
 	
-	/**
+	
 	 * 荣誉值,cash 购买
-	 */
+	
 	private int honor;
 	
-	/**
+	
 	 * 位置x坐标
-	 */
+	
 	private int x;
 	
-	/**
+	
 	 * 位置y坐标
-	 */
+	
 	private int y;
 	
-	/**
+	
 	 * 位置z坐标
-	 */
+	
 	private int z;
 	
-	/**
+	
 	 * 军阶
-	 */
+	
 	private int rank;
 	
 	private int maxWareHouse;
@@ -102,424 +125,206 @@ public class HTUser extends KObject{
 	private Object dress;
 	
 	private Object friends;
-
-	/* (non-Javadoc)
-	 * @see com.k99k.khunter.KObject#innerPropToJsonString()
-	 */
-	@Override
-	StringBuilder innerPropToJsonString() {
-		StringBuilder sb = super.innerPropToJsonString();
-		sb.append("\"upwd\":\"").append(this.upwd).append("\",");
-		sb.append("\"imei\":\"").append(this.imei).append("\",");
-		sb.append("\"ip\":\"").append(this.ip).append("\",");
-		sb.append("\"nick\":\"").append(this.nick).append("\",");
-		sb.append("\"sex\":").append(this.sex).append(",");
-		sb.append("\"synId\":\"").append(this.synId).append("\",");
-		sb.append("\"email\":\"").append(this.email).append("\",");
-		sb.append("\"icon\":\"").append(this.icon).append("\",");
-		sb.append("\"hp\":").append(this.hp).append(",");
-		sb.append("\"camp\":\"").append(this.camp).append("\",");
-		sb.append("\"lastLogin\":\"").append(this.lastLogin).append("\",");
-		sb.append("\"gold\":").append(this.gold).append(",");
-		sb.append("\"medal\":").append(this.medal).append(",");
-		sb.append("\"x\":").append(this.x).append(",");
-		sb.append("\"y\":").append(this.y).append(",");
-		sb.append("\"z\":").append(this.z).append(",");
-		sb.append("\"rank\":").append(this.rank).append(",");
-		sb.append("\"maxWareHouse\":").append(this.maxWareHouse).append(",");
-		sb.append("\"curWareHouse\":").append(this.curWareHouse).append(",");
-		return sb;
-	}
-	
-	
-	/**
-	 * @return the upwd
-	 */
-	public final String getUpwd() {
-		return upwd;
-	}
-
-
-	/**
-	 * @param upwd the upwd to set
-	 */
-	public final void setUpwd(String upwd) {
-		this.upwd = upwd;
-	}
-
-
-	/**
-	 * @return the imei
-	 */
-	public final String getImei() {
-		return imei;
-	}
-
-
-	/**
-	 * @param imei the imei to set
-	 */
-	public final void setImei(String imei) {
-		this.imei = imei;
-	}
-
-
-	/**
-	 * @return the ip
-	 */
-	public final String getIp() {
-		return ip;
-	}
-
-
-	/**
-	 * @param ip the ip to set
-	 */
-	public final void setIp(String ip) {
-		this.ip = ip;
-	}
-
-
-	/**
-	 * @return the nick
-	 */
-	public final String getNick() {
-		return nick;
-	}
-
-
-	/**
-	 * @param nick the nick to set
-	 */
-	public final void setNick(String nick) {
-		this.nick = nick;
-	}
-
-
-	/**
-	 * @return the sex
-	 */
-	public final int getSex() {
-		return sex;
-	}
-
-
-	/**
-	 * @param sex the sex to set
-	 */
-	public final void setSex(int sex) {
-		this.sex = sex;
-	}
-
-
-	/**
-	 * @return the synId
-	 */
-	public final String getSynId() {
-		return synId;
-	}
-
-
-	/**
-	 * @param synId the synId to set
-	 */
-	public final void setSynId(String synId) {
-		this.synId = synId;
-	}
-
-
-	/**
-	 * @return the email
-	 */
-	public final String getEmail() {
-		return email;
-	}
-
-
-	/**
-	 * @param email the email to set
-	 */
-	public final void setEmail(String email) {
-		this.email = email;
-	}
-
-
-	/**
-	 * @return the icon
-	 */
+*/
 	public final String getIcon() {
-		return icon;
+		return getStringByName("icon");
 	}
 
-
-	/**
-	 * @param icon the icon to set
-	 */
 	public final void setIcon(String icon) {
-		this.icon = icon;
+		this.propMap.put("icon", icon);
 	}
 
+	public final int getSex() {
+		return getIntByName("sex");
+	}
 
-	/**
-	 * @return the hp
-	 */
+	public final void setSex(int sex) {
+		this.propMap.put("sex", sex);
+	}
+
 	public final int getHp() {
-		return hp;
+		return getIntByName("hp");
 	}
 
-
-	/**
-	 * @param hp the hp to set
-	 */
 	public final void setHp(int hp) {
-		this.hp = hp;
+		this.propMap.put("hp", hp);
 	}
 
-
-	/**
-	 * @return the camp
-	 */
-	public final String getCamp() {
-		return camp;
-	}
-
-
-	/**
-	 * @param camp the camp to set
-	 */
-	public final void setCamp(String camp) {
-		this.camp = camp;
-	}
-
-
-	/**
-	 * @return the lastLogin
-	 */
-	public final String getLastLogin() {
-		return lastLogin;
-	}
-
-
-	/**
-	 * @param lastLogin the lastLogin to set
-	 */
-	public final void setLastLogin(String lastLogin) {
-		this.lastLogin = lastLogin;
-	}
-
-
-	/**
-	 * @return the gold
-	 */
-	public final int getGold() {
-		return gold;
-	}
-
-
-	/**
-	 * @param gold the gold to set
-	 */
-	public final void setGold(int gold) {
-		this.gold = gold;
-	}
-
-
-	/**
-	 * @return the medal
-	 */
-	public final int getMedal() {
-		return medal;
-	}
-
-
-	/**
-	 * @param medal the medal to set
-	 */
-	public final void setMedal(int medal) {
-		this.medal = medal;
-	}
-
-
-	/**
-	 * @return the honor
-	 */
 	public final int getHonor() {
-		return honor;
+		return getIntByName("honor");
 	}
 
-
-	/**
-	 * @param honor the honor to set
-	 */
 	public final void setHonor(int honor) {
-		this.honor = honor;
+		this.propMap.put("honor", honor);
 	}
 
-
-	/**
-	 * @return the x
-	 */
-	public final int getX() {
-		return x;
-	}
-
-
-	/**
-	 * @param x the x to set
-	 */
-	public final void setX(int x) {
-		this.x = x;
-	}
-
-
-	/**
-	 * @return the y
-	 */
-	public final int getY() {
-		return y;
-	}
-
-
-	/**
-	 * @param y the y to set
-	 */
-	public final void setY(int y) {
-		this.y = y;
-	}
-
-
-	/**
-	 * @return the z
-	 */
-	public final int getZ() {
-		return z;
-	}
-
-
-	/**
-	 * @param z the z to set
-	 */
-	public final void setZ(int z) {
-		this.z = z;
-	}
-
-
-	/**
-	 * @return the rank
-	 */
-	public final int getRank() {
-		return rank;
-	}
-
-
-	/**
-	 * @param rank the rank to set
-	 */
-	public final void setRank(int rank) {
-		this.rank = rank;
-	}
-
-
-	/**
-	 * @return the maxWareHouse
-	 */
-	public final int getMaxWareHouse() {
-		return maxWareHouse;
-	}
-
-
-	/**
-	 * @param maxWareHouse the maxWareHouse to set
-	 */
-	public final void setMaxWareHouse(int maxWareHouse) {
-		this.maxWareHouse = maxWareHouse;
-	}
-
-
-	/**
-	 * @return the curWareHouse
-	 */
 	public final int getCurWareHouse() {
-		return curWareHouse;
+		return getIntByName("curWareHouse");
 	}
 
-
-	/**
-	 * @param curWareHouse the curWareHouse to set
-	 */
 	public final void setCurWareHouse(int curWareHouse) {
-		this.curWareHouse = curWareHouse;
+		this.propMap.put("curWareHouse", curWareHouse);
 	}
 
+	public final String getImei() {
+		return getStringByName("imei");
+	}
 
-	/**
-	 * @return the equips
-	 */
+	public final void setImei(String imei) {
+		this.propMap.put("imei", imei);
+	}
+
+	public final int getMaxWareHouse() {
+		return getIntByName("maxWareHouse");
+	}
+
+	public final void setMaxWareHouse(int maxWareHouse) {
+		this.propMap.put("maxWareHouse", maxWareHouse);
+	}
+
 	public final Object getEquips() {
-		return equips;
+		return getObjectByName("equips");
 	}
 
-
-	/**
-	 * @param equips the equips to set
-	 */
 	public final void setEquips(Object equips) {
-		this.equips = equips;
+		this.propMap.put("equips", equips);
 	}
 
-
-	/**
-	 * @return the pets
-	 */
-	public final Object getPets() {
-		return pets;
+	public final String getSynId() {
+		return getStringByName("synId");
 	}
 
-
-	/**
-	 * @param pets the pets to set
-	 */
-	public final void setPets(Object pets) {
-		this.pets = pets;
+	public final void setSynId(String synId) {
+		this.propMap.put("synId", synId);
 	}
 
-
-	/**
-	 * @return the dress
-	 */
-	public final Object getDress() {
-		return dress;
+	public final String getIp() {
+		return getStringByName("ip");
 	}
 
-
-	/**
-	 * @param dress the dress to set
-	 */
-	public final void setDress(Object dress) {
-		this.dress = dress;
+	public final void setIp(String ip) {
+		this.propMap.put("ip", ip);
 	}
 
+	public final int getRank() {
+		return getIntByName("rank");
+	}
 
-	/**
-	 * @return the friends
-	 */
+	public final void setRank(int rank) {
+		this.propMap.put("rank", rank);
+	}
+
+	public final String getPwd() {
+		return getStringByName("pwd");
+	}
+
+	public final void setPwd(String pwd) {
+		this.propMap.put("pwd", pwd);
+	}
+
+	public final String getCamp() {
+		return getStringByName("camp");
+	}
+
+	public final void setCamp(String camp) {
+		this.propMap.put("camp", camp);
+	}
+
+	public final String getLastLogin() {
+		return getStringByName("lastLogin");
+	}
+
+	public final void setLastLogin(String lastLogin) {
+		this.propMap.put("lastLogin", lastLogin);
+	}
+
 	public final Object getFriends() {
-		return friends;
+		return getObjectByName("friends");
 	}
 
-
-	/**
-	 * @param friends the friends to set
-	 */
 	public final void setFriends(Object friends) {
-		this.friends = friends;
+		this.propMap.put("friends", friends);
 	}
+
+	public final String getNick() {
+		return getStringByName("nick");
+	}
+
+	public final void setNick(String nick) {
+		this.propMap.put("nick", nick);
+	}
+
+	public final String getEmail() {
+		return getStringByName("email");
+	}
+
+	public final void setEmail(String email) {
+		this.propMap.put("email", email);
+	}
+
+	public final Object getDress() {
+		return getObjectByName("dress");
+	}
+
+	public final void setDress(Object dress) {
+		this.propMap.put("dress", dress);
+	}
+
+	public final Object getPets() {
+		return getObjectByName("pets");
+	}
+
+	public final void setPets(Object pets) {
+		this.propMap.put("pets", pets);
+	}
+
+	public final int getGold() {
+		return getIntByName("gold");
+	}
+
+	public final void setGold(int gold) {
+		this.propMap.put("gold", gold);
+	}
+
+	public final long getZ() {
+		return getLongByName("z");
+	}
+
+	public final void setZ(long z) {
+		this.propMap.put("z", z);
+	}
+
+	public final int getMedal() {
+		return getIntByName("medal");
+	}
+
+	public final void setMedal(int medal) {
+		this.propMap.put("medal", medal);
+	}
+
+	public final int getY() {
+		return getIntByName("y");
+	}
+
+	public final void setY(int y) {
+		this.propMap.put("y", y);
+	}
+
+	public final int getX() {
+		return getIntByName("x");
+	}
+
+	public final void setX(int x) {
+		this.propMap.put("x", x);
+	}
+
+
 
 
 	public static void main(String[] args) {
 		HTUser u = new HTUser();
 		u.setId(2323);
-		u.setUpwd("123456");
+		u.setPwd("123456");
 		u.setProp("newprop", "just test prop value");
 		System.out.println(u);
 	}

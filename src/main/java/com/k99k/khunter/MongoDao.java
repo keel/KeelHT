@@ -27,7 +27,7 @@ public class MongoDao implements DaoInterface{
 	/**
 	 * id生成器,默认初始值为1,增量为1
 	 */
-	static final IDManager idm = new IDManager(1,1);
+	final IDManager idm = new IDManager(1,1);
 	
 	/**
 	 * 空BasicDBObject,备用
@@ -74,6 +74,9 @@ public class MongoDao implements DaoInterface{
 		this.dataSource = (MongoConn) dataSource;
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.k99k.khunter.DaoInterface#init()
+	 */
 	public boolean init(){
 		try {
 			idm.setId(initIDM(tableName));
@@ -85,27 +88,16 @@ public class MongoDao implements DaoInterface{
 	}
 
 	/**
-	 * 创建新对象
-	 * @param kwObj KWObject
+	 * 创建新对象,自动生成新ID
+	 * @param kObj KObject
 	 * @return
 	 */
-	public boolean add(MongoKObject kwObj){
+	public boolean add(KObject kObj){
 		try {
 			DBCollection coll = this.dataSource.getColl(tableName);
-			kwObj.setId(idm.nextId());
-			coll.insert(kwObj);
-		} catch (MongoException e) {
-			log.error("add error!", e);
-			return false;
-		}
-		return true;
-	}
-	
-	public boolean update(long id,MongoKObject newObj) {
-		
-		try {
-			DBCollection coll = this.dataSource.getColl(tableName);
-			coll.update(new BasicDBObject("id",id),newObj);
+			kObj.setId(idm.nextId());
+			MongoWrapper w = new MongoWrapper(kObj);
+			coll.insert(w);
 		} catch (MongoException e) {
 			log.error("add error!", e);
 			return false;
@@ -114,16 +106,77 @@ public class MongoDao implements DaoInterface{
 	}
 	
 	/**
-	 * 初始化id生成器
+	 * 创建或更新对象,注意此方法不自动生成ID
+	 * @param kObj KObject
+	 * @return
+	 */
+	public boolean save(KObject kObj){
+		try {
+			DBCollection coll = this.dataSource.getColl(tableName);
+			coll.save(new MongoWrapper(kObj));
+		} catch (MongoException e) {
+			log.error("save error!", e);
+			return false;
+		}
+		return true;
+	}
+	
+	
+	/**
+	 * 更新对象
+	 * @param id long
+	 * @param newObj KObject
+	 * @return
+	 */
+	public boolean update(long id,KObject newObj) {
+		try {
+			DBCollection coll = this.dataSource.getColl(tableName);
+			coll.update(new BasicDBObject("_id",id),new MongoWrapper(newObj));
+		} catch (MongoException e) {
+			log.error("update error!", e);
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * 标记删除,即将stata置为-1
+	 * @param id
+	 * @return
+	 */
+	public boolean delete(long id){
+		try {
+			DBCollection coll = this.dataSource.getColl(tableName);
+			coll.update(new BasicDBObject("_id",id),new BasicDBObject("$set",new BasicDBObject("state",-1)));
+		} catch (MongoException e) {
+			log.error("delete error!", e);
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean deleteForever(long id){
+		try {
+			DBCollection coll = this.dataSource.getColl(tableName);
+			coll.remove(new BasicDBObject("_id",id));
+		} catch (MongoException e) {
+			log.error("deleteForever error!", e);
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * 初始化id生成器,注意这里使用的_id
 	 * @param tableName
 	 * @return 当前最大id值  long
 	 */
 	long initIDM(String tableName){
 		DBCollection coll = this.dataSource.getColl(tableName);
-		DBCursor cur = coll.find(emptyBasicDBObject,new BasicDBObject("id",1)).sort(new BasicDBObject("id",-1)).limit(1);
+		DBCursor cur = coll.find(emptyBasicDBObject,new BasicDBObject("_id",1)).sort(new BasicDBObject("_id",-1)).limit(1);
 		if (cur.hasNext()) {
 			DBObject o = cur.next();
-			return Long.valueOf(o.get("id")+"");
+			return Long.parseLong(o.get("_id").toString());
 		}else{
 			return 1;
 		}

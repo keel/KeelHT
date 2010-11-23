@@ -3,6 +3,8 @@
  */
 package com.k99k.khunter;
 
+import java.util.Date;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -26,17 +28,40 @@ public class MongoConfig {
 		DB db = conn.getDB();
 		DBCollection coll = db.getCollection("testKHT");
 		BasicDBObject ob = new BasicDBObject();
+		ob.append("_id", 1);
 		ob.append("id", 12);
 		coll.save(ob);
 		
 	}
+	
+	public void testMongoDao(){
+		String ini = "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/kconfig.json";
+		HTManager.init(ini);
+		MongoDao mdao = (MongoDao) DaoManager.findDao("mongoUserDao");
+		HTUser user = new HTUser();
+		user.setImei("test IMEI");
+		user.setName("keel");
+		user.setEmail("keel@keel.com");
+		user.setCreateTime(new Date()+"");
+		user.setCreatorName("admin");
+		user.setHp(100);
+		user.setGold(20);
+		mdao.add(user);
+	}
 
+	public void testKObject(){
+		KObject k = new KObject();
+		k.setId(23);
+		System.out.println(k.getPropMap().get("id"));
+	}
+	
+	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		MongoConfig mc = new MongoConfig();
-		mc.test();
+		mc.testMongoDao();
 	}
 
 }

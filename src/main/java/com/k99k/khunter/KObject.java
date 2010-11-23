@@ -6,200 +6,73 @@ package com.k99k.khunter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 /**
- * KObject:基础的可扩展对象,包含一个可扩展的属性列表,(带列表关系的参考KSObject).<br />
- * 直接json方式的toString方法
+ * 
+ * 
  * @author keel
  *
  */
-public class KObject{
+public class KObject {
 	
-
 	public KObject() {
+		//默认初始化propMap大小为50
+		this(50);
 	}
 
-	/**
-	 * @param id
-	 */
-	public KObject(long id) {
-		this.id = id;
-	}
-
-	/**
-	 * @param id
-	 * @param url
-	 */
-	public KObject(long id,  String url) {
-		this.id = id;
-		this.url = url;
-	}
-
-	
-
-	/**
-	 * @param id
-	 * @param state
-	 * @param level
-	 * @param info
-	 * @param createTime
-	 * @param version
-	 * @param name
-	 * @param creatorName
-	 * @param creatorId
-	 * @param url
-	 */
-	public KObject(long id, int state, int level, String info,
-			String createTime, int version, String name, String creatorName,
-			long creatorId, String url) {
-		this.id = id;
-		this.state = state;
-		this.level = level;
-		this.info = info;
-		this.createTime = createTime;
-		this.version = version;
-		this.name = name;
-		this.creatorName = creatorName;
-		this.creatorId = creatorId;
-		this.url = url;
-	}
-
-
-
-	private long id;
-	
-	private int state = 0;
-	
-	private int level = 0;
-	
-	private String info = "";
-	
-	private String createTime = "";
-	
-	private int version = 1;
-	
-	private String name = "";
-	
-	private String creatorName = "";
-	
-	private long creatorId = 0;
-	
-	/**
-	 * 用于标记本对象资源的url，每个KObject都可通过url进行访问和管理,也可作为key
-	 */
-	private String url = "";
-	
-	
-	/**
-	 * 属性hashMap,key为字段名
-	 */
-	final HashMap<String, Object> propMap = new HashMap<String, Object>(50);
-	
-	/**
-	 *  内部属性hashMap
-	 */
-	final HashMap<String,Object> innerPropMap = new HashMap<String,Object>(50){{
-		put("id", id);
-		put("state", state);
-		put("level", level);
-		put("info", info);
-		put("createTime", createTime);
-		put("version", version);
-		put("name", name);
-		put("creatorName", creatorName);
-		put("creatorId", creatorId);
-		put("url", url);
+	public KObject(int maxProp) {
+		this.propMap = new HashMap<String,Object>(maxProp);
+		this.propMap.put("id", 0);
+		this.propMap.put("state", 0);
+		this.propMap.put("level", 0);
+		this.propMap.put("info", "");
+		this.propMap.put("createTime", "");
+		this.propMap.put("version", 1);
+		this.propMap.put("name", "");
+		this.propMap.put("creatorName", "");
+		this.propMap.put("creatorId", 0);
+		this.propMap.put("url", "");
 		
-	}};
+	}
+	
 	
 	
 	
 	/**
-	 * 获取外部属性名称的set
-	 * @return Set<String>
+	 * 唯一的属性Map
 	 */
-	public final Set<String> getPropKeySet(){
-		return propMap.keySet();
-	}
-	
-	/**
-	 * 添加/设置一个属性
-	 * @param propName 属性名
-	 * @param propValue 属性值，此时需要根据type进行转换
-	 * @return Object 之前或新的属性值
-	 */
-	public final Object setProp(String propName,Object propValue) {
-		return this.propMap.put(propName, propValue);
-	}
+	final Map<String,Object> propMap;
 	
 	public final boolean containsProp(String key){
 		return this.propMap.containsKey(key);
 	}
 	
-	/**
-	 * 删除属性
-	 * @param key String
-	 */
 	public final Object removeProp(String key){
 		return this.propMap.remove(key);
 	}
 	
-	public final Map<String, Object> getPropMap(){
+	public final Object getProp(String key){
+		return propMap.get(key);
+	}
+
+	public final Object setProp(String key,Object value){
+		return this.propMap.put(key, value);
+	}
+
+	public final int getPropSize(){
+		return this.propMap.size();
+	}
+	
+	public final Map<String,Object> getPropMap(){
 		return this.propMap;
 	}
-	
-	/**
-	 * 获取属性值,如果外部属性值中没有则到内部属性值中去找
-	 * @param key String
-	 * @return Object
-	 */
-	public final Object getProp(String key){
-		Object o = this.propMap.get(key);
-		if (o == null) {
-			o = this.innerPropMap.get(key);
-		}
-		return o;
-	}
-	
-	/**
-	 * 由内部属性生成json,所有继承于本类的对象只需要覆盖此方法即可自动完成toString方法<br />
-	 * 例如：
-	 * <pre>
-	   StringBuilder innerPropToJsonString() {
-			StringBuilder sb = super.innerPropToJsonString();
-			sb.append("\"nick\":\"").append(this.nick).append("\",");
-			sb.append("\"x\":").append(this.x).append(",");
-			return sb;
-		}
-		</pre>
-	 * @return StringBuilder
-	 */
-	StringBuilder innerPropToJsonString(){
-		StringBuilder sb = new StringBuilder();
-		sb.append("{");
-		//内置属性
-		sb.append("\"id\":").append(this.id).append(",");
-		sb.append("\"name\":\"").append(this.name).append("\",");
-		sb.append("\"state\":").append(this.state).append(",");
-		sb.append("\"level\":").append(this.level).append(",");
-		sb.append("\"version\":").append(this.version).append(",");
-		sb.append("\"creatorId\":").append(this.creatorId).append(",");
-		sb.append("\"info\":\"").append(this.info).append("\",");
-		sb.append("\"createTime\":\"").append(this.createTime).append("\",");
-		sb.append("\"creatorName\":\"").append(this.creatorName).append("\",");
-		sb.append("\"url\":\"").append(this.url).append("\",");
-		return sb;
-	}
-	
-	
 	/**
 	 * 以json方式输出toString
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		StringBuilder sb  = this.innerPropToJsonString();
+		StringBuilder sb  = new StringBuilder("{");
 		//处理动态属性
 		for (Iterator<String> iterator = this.propMap.keySet().iterator(); iterator.hasNext();) {
 			String key = iterator.next();
@@ -210,144 +83,151 @@ public class KObject{
 			}else{
 				sb.append(o);
 			}
-//			if (o instanceof Integer || o instanceof Long || o instanceof Float || o instanceof Double) {
-//				sb.append(o);
-//			} else {
-//				sb.append("\"").append(o).append("\"");
-//			}
 			sb.append(",");
 		}
 		sb.append("\"_class\":\"").append(this.getClass().getName()).append("\"");
-		//sb.deleteCharAt(sb.length()-1);
 		sb.append("}");
 		return sb.toString();
 	}
 	
-
-	/**
-	 * @return the id
-	 */
-	public final long getId() {
-		return id;
+	
+	final int getIntByName(String pName){
+		Object o = this.propMap.get(pName);
+		return (o == null) ? null : Integer.parseInt(o.toString());
 	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public final void setId(long id) {
-		this.id = id;
+	
+	final Object getObjectByName(String pName){
+		return this.propMap.get(pName);
 	}
-
+	
+	final long getLongByName(String pName){
+		Object o = this.propMap.get(pName);
+		return (o == null) ? null : Long.parseLong(o.toString());
+	}
+	
+	final String getStringByName(String pName){
+		Object o = this.propMap.get(pName);
+		return (o == null) ? null : o.toString();
+	}
+	
+	public final void setId(long id){
+		this.propMap.put("id", id);
+	}
+	
+	public final long getId(){
+		return getLongByName("id");
+	}
+	
 	/**
 	 * @return the state
 	 */
 	public final int getState() {
-		return state;
+		return getIntByName("state");
 	}
 
 	/**
 	 * @param state the state to set
 	 */
 	public final void setState(int state) {
-		this.state = state;
+		this.propMap.put("state", state);
 	}
 
 	/**
 	 * @return the level
 	 */
 	public final int getLevel() {
-		return level;
+		return getIntByName("level");
 	}
 
 	/**
 	 * @param level the level to set
 	 */
 	public final void setLevel(int level) {
-		this.level = level;
+		this.propMap.put("level", level);
 	}
 
 	/**
 	 * @return the info
 	 */
 	public final String getInfo() {
-		return info;
+		return getStringByName("level");
 	}
 
 	/**
 	 * @param info the info to set
 	 */
 	public final void setInfo(String info) {
-		this.info = info;
+		this.propMap.put("info", info);
 	}
 
 	/**
 	 * @return the createTime
 	 */
 	public final String getCreateTime() {
-		return createTime;
+		return getStringByName("createTime");
 	}
 
 	/**
 	 * @param createTime the createTime to set
 	 */
 	public final void setCreateTime(String createTime) {
-		this.createTime = createTime;
+		this.propMap.put("createTime", createTime);
 	}
 
 	/**
 	 * @return the version
 	 */
 	public final int getVersion() {
-		return version;
+		return getIntByName("version");
 	}
 
 	/**
 	 * @param version the version to set
 	 */
 	public final void setVersion(int version) {
-		this.version = version;
+		this.propMap.put("version", version);
 	}
 
 	/**
 	 * @return the name
 	 */
 	public final String getName() {
-		return name;
+		return getStringByName("name");
 	}
 
 	/**
 	 * @param name the name to set
 	 */
 	public final void setName(String name) {
-		this.name = name;
+		this.propMap.put("name", name);
 	}
 
 	/**
 	 * @return the creatorName
 	 */
 	public final String getCreatorName() {
-		return creatorName;
+		return getStringByName("creatorName");
 	}
 
 	/**
 	 * @param creatorName the creatorName to set
 	 */
 	public final void setCreatorName(String creatorName) {
-		this.creatorName = creatorName;
+		this.propMap.put("creatorName", creatorName);
 	}
 
 	/**
 	 * @return the creatorId
 	 */
 	public final long getCreatorId() {
-		return creatorId;
+		return getIntByName("creatorId");
 	}
 
 	/**
 	 * @param creatorId the creatorId to set
 	 */
 	public final void setCreatorId(long creatorId) {
-		this.creatorId = creatorId;
+		this.propMap.put("creatorId", creatorId);
 	}
 
 
@@ -355,15 +235,116 @@ public class KObject{
 	 * @return the url
 	 */
 	public final String getUrl() {
-		return url;
+		return getStringByName("url");
 	}
 
 	/**
 	 * @param url the url to set
 	 */
 	public final void setUrl(String url) {
-		this.url = url;
+		this.propMap.put("url", url);
 	}
-
 	
+	private static final StringBuilder createPropGetterAndSetterHelp(StringBuilder sb,String type,String key,boolean isPrim){
+		sb.append("public final ")
+		.append((isPrim)?type.toLowerCase():type).append(" ");
+		sb.append(KIoc.getGetterMethodName(key));
+		sb.append("() {\n return get")
+		.append(type).append("ByName(\"")
+		.append(key).append("\");\n}\n\n");
+		
+		sb.append("public final void ");
+		sb.append(KIoc.getSetterMethodName(key));
+		sb.append("(")
+		.append((isPrim)?type.toLowerCase():type).append(" ")
+		.append(key).append(") {\n");
+		sb.append("this.propMap.put(\"")
+		.append(key).append("\", ")
+		.append(key).append(");\n}\n\n");
+		return sb;
+	}
+	
+	private static final String createPropGetterAndSetterString(Map propMap){
+		StringBuilder sb = new StringBuilder();
+		for (Iterator it = propMap.keySet().iterator(); it.hasNext();) {
+			String key = (String) it.next();
+			Object value = propMap.get(key);
+			if (value instanceof String) {
+				createPropGetterAndSetterHelp(sb,"String",key,false);
+				
+			}else if(value instanceof Integer) {
+				createPropGetterAndSetterHelp(sb,"Int",key,true);
+				
+			}else if(value instanceof Long) {
+				createPropGetterAndSetterHelp(sb,"Long",key,true);
+				
+			}else if(value == null){
+				createPropGetterAndSetterHelp(sb,"Object",key,false);
+				
+			}else if(value instanceof Boolean) {
+				createPropGetterAndSetterHelp(sb,"Boolean",key,true);
+			}else{
+				System.out.println("-----未识别出此value类型:"+value+" prop:"+key);
+			}
+		}
+		return sb.toString();
+	}
+	
+	public static void main(String[] args) {
+		
+		
+		
+		Map propMap = new HashMap();
+		propMap.put("type", 0);
+		propMap.put("x", 0);
+		propMap.put("y", 0);
+		propMap.put("z", 0);
+		propMap.put("special", "");
+		propMap.put("building", "");
+		propMap.put("camp", "");
+		
+		/*StringBuilder sb = new StringBuilder();
+		for (Iterator it = propMap.keySet().iterator(); it.hasNext();) {
+			String key = (String) it.next();
+			Object value = propMap.get(key);
+			if (value instanceof String) {
+				sb.append("public final String ");
+				sb.append(KIoc.getGetterMethodName(key));
+				sb.append("() {\n return getStringByName(\"")
+				.append(key).append("\");\n}\n\n");
+				
+				sb.append("public final void ");
+				sb.append(KIoc.getSetterMethodName(key));
+				sb.append("(String ")
+				.append(key).append(") {\n");
+				sb.append("propMap.put(\"")
+				.append(key).append("\", ")
+				.append(key).append(");\n}\n\n");
+				
+			}else if(value instanceof Integer) {
+				sb.append("public final int ");
+				sb.append(KIoc.getGetterMethodName(key));
+				sb.append("() {\n return getIntByName(\"")
+				.append(key).append("\");\n}\n\n");
+				
+				sb.append("public final void ");
+				sb.append(KIoc.getSetterMethodName(key));
+				sb.append("(int ")
+				.append(key).append(") {\n");
+				sb.append("propMap.put(\"")
+				.append(key).append("\", ")
+				.append(key).append(");\n}\n\n");
+				
+			}else if(value instanceof Long) {
+				
+			}else if(value == null){
+				
+			}else if(value instanceof Boolean) {
+				
+			}else{
+				System.out.println("-----未识别出此value类型:"+value+" prop:"+key);
+			}
+		}*/
+		System.out.println(createPropGetterAndSetterString(propMap));
+	}
 }
