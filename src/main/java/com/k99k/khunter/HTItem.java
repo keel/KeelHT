@@ -3,6 +3,8 @@
  */
 package com.k99k.khunter;
 
+import java.util.Map;
+
 /**
  * 物品
  * @author keel
@@ -12,14 +14,22 @@ public class HTItem extends KObject{
 
 	public HTItem() {
 		super();
-		this.propMap.put("type", 0);
-		this.propMap.put("function", "");
-		this.propMap.put("ack", 0);
-		this.propMap.put("def", 0);
-		this.propMap.put("special", "");
-		this.propMap.put("costHP", 0);
-		this.propMap.put("space", 0);
-		this.propMap.put("price", 0);
+		this.setProp("type", 0);
+		this.setProp("function", "");
+		this.setProp("ack", 0);
+		this.setProp("def", 0);
+		this.setProp("special", "");
+		this.setProp("costHP", 0);
+		this.setProp("space", 0);
+		this.setProp("price", 0);
+	}
+	
+	/**
+	 * 由Map直接创建,不检验参数,比较危险,建议仅供Mongodb使用
+	 * @param map 
+	 */
+	public HTItem(Map<String, ?> map) {
+		super(map);
 	}
 
 //	/**
@@ -67,7 +77,7 @@ public class HTItem extends KObject{
 	}
 
 	public final void setPrice(int price) {
-		this.propMap.put("price", price);
+		this.setProp("price", price);
 	}
 
 	public final int getDef() {
@@ -75,7 +85,7 @@ public class HTItem extends KObject{
 	}
 
 	public final void setDef(int def) {
-		this.propMap.put("def", def);
+		this.setProp("def", def);
 	}
 
 	public final int getAck() {
@@ -83,7 +93,7 @@ public class HTItem extends KObject{
 	}
 
 	public final void setAck(int ack) {
-		this.propMap.put("ack", ack);
+		this.setProp("ack", ack);
 	}
 
 	public final int getCostHP() {
@@ -91,7 +101,7 @@ public class HTItem extends KObject{
 	}
 
 	public final void setCostHP(int costHP) {
-		this.propMap.put("costHP", costHP);
+		this.setProp("costHP", costHP);
 	}
 
 	public final String getSpecial() {
@@ -99,7 +109,7 @@ public class HTItem extends KObject{
 	}
 
 	public final void setSpecial(String special) {
-		this.propMap.put("special", special);
+		this.setProp("special", special);
 	}
 
 	public final int getSpace() {
@@ -107,7 +117,7 @@ public class HTItem extends KObject{
 	}
 
 	public final void setSpace(int space) {
-		this.propMap.put("space", space);
+		this.setProp("space", space);
 	}
 
 	public final int getType() {
@@ -115,7 +125,7 @@ public class HTItem extends KObject{
 	}
 
 	public final void setType(int type) {
-		this.propMap.put("type", type);
+		this.setProp("type", type);
 	}
 
 	public final String getFunction() {
@@ -123,7 +133,7 @@ public class HTItem extends KObject{
 	}
 
 	public final void setFunction(String function) {
-		this.propMap.put("function", function);
+		this.setProp("function", function);
 	}
 	
 	

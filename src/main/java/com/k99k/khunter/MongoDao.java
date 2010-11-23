@@ -1,6 +1,7 @@
 package com.k99k.khunter;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -88,6 +89,51 @@ public class MongoDao implements DaoInterface{
 	}
 
 	/**
+	 * 查找对象,同时加入_id字段
+	 * @param id long
+	 * @return 
+	 */
+	public KObject find(long id){
+		try {
+			DBCollection coll = this.dataSource.getColl(tableName);
+			BasicDBObject query = new BasicDBObject("_id",id);
+			DBCursor cur = coll.find(query);
+	        if(cur.hasNext()) {
+	        	//直接cast成Map
+	        	KObject o =  new  KObject((Map) cur.next());
+	        	o.setId(Integer.parseInt(o.getProp("_id").toString()));
+	        	return o;
+	        }
+	        return null;
+		} catch (MongoException e) {
+			log.error("find error!", e);
+			return null;
+		}
+	}
+	
+	/**
+	 * 查找Map形式对象,同时加入_id字段
+	 * @param id long
+	 * @return Map形式
+	 */
+	public Map<String, ?> findMap(long id){
+		try {
+			DBCollection coll = this.dataSource.getColl(tableName);
+			BasicDBObject query = new BasicDBObject("_id",id);
+			DBCursor cur = coll.find(query);
+	        if(cur.hasNext()) {
+	        	Map<String, Object> m = (Map<String, Object>) cur.next();
+	        	m.put("id", m.get("_id"));
+	        	return m;
+	        }
+	        return null;
+		} catch (MongoException e) {
+			log.error("find error!", e);
+			return null;
+		}
+	}
+	
+	/**
 	 * 创建新对象,自动生成新ID
 	 * @param kObj KObject
 	 * @return
@@ -155,6 +201,11 @@ public class MongoDao implements DaoInterface{
 		return true;
 	}
 	
+	/**
+	 * 从数据库中彻底删除
+	 * @param id
+	 * @return
+	 */
 	public boolean deleteForever(long id){
 		try {
 			DBCollection coll = this.dataSource.getColl(tableName);

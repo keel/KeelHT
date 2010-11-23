@@ -6,6 +6,7 @@ package com.k99k.khunter;
 import java.util.HashMap;
 
 /**
+ * 因为KObject重写，所以此类可能也需要重写，只不过目前还未用到
  * KObject:基础的可扩展对象,包含一个可扩展的属性列表，一个子对象(member)列表，一个父对象(belongTo)列表
  * @author keel
  *

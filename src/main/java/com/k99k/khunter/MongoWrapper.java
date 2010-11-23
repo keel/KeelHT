@@ -18,22 +18,17 @@ import com.mongodb.DBObject;
 public class MongoWrapper implements DBObject {
 
 	/**
-	 * 包装KObject,将其innerPropMap全部放到propMap中
+	 * 包装KObject,并新增_id字段,以适应mongodb
 	 * @param kobj KObject
 	 */
 	public MongoWrapper(KObject kobject) {
 		this.kobj = kobject;
-		this._id = kobj.getId();
-		this.kobj.setProp("_id", this._id);
+		this.kobj.setProp("_id", kobj.getId());
 	}
 	
-	/**
-	 * 用于mongodb的_id字段
-	 */
-	private long _id;
 	
 	/**
-	 * 实际被包装的KObject3
+	 * 实际被包装的KObject
 	 */
 	private KObject kobj;
 	
@@ -42,19 +37,12 @@ public class MongoWrapper implements DBObject {
 	
 	
 	/**
-	 * @return the _id
+	 * @return kobj KObject
 	 */
-	public final long get_id() {
-		return _id;
+	public final KObject getKobj() {
+		return kobj;
 	}
 
-	/**
-	 * @param id the _id to set
-	 */
-	public final void set_id(long id) {
-		_id = id;
-		this.kobj.setId(id);
-	}
 
 	/* (non-Javadoc)
 	 * @see com.mongodb.DBObject#isPartialObject()

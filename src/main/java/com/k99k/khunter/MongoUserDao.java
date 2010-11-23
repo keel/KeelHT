@@ -3,6 +3,8 @@
  */
 package com.k99k.khunter;
 
+import java.util.Map;
+
 /**
  * FIXME Mongodb下的UserDao
  * @author keel
@@ -20,7 +22,18 @@ public class MongoUserDao extends MongoDao implements HTUserDaoInterface{
 	
 	//注册
 	
-	//查找用户
+	/**
+	 * 根据id查找用户
+	 * @param id
+	 * @return
+	 */
+	public HTUser findUser(long id){
+		Map<String, ?> m = this.findMap(id);
+		if (m != null) {
+			return new HTUser(m);
+		}
+		return null;
+	}
 	
 	//按条件查找批量用户
 	

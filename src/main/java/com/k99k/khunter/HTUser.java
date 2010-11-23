@@ -3,6 +3,8 @@
  */
 package com.k99k.khunter;
 
+import java.util.Map;
+
 /**
  * HTUser 玩家
  * @author keel
@@ -11,127 +13,219 @@ package com.k99k.khunter;
 public class HTUser extends KObject{
 
 	public HTUser() {
-		super();
-		this.propMap.put("pwd", "");
-		this.propMap.put("imei", "");
-		this.propMap.put("ip", "");
-		this.propMap.put("nick", "");
-		this.propMap.put("sex", 0);
-		this.propMap.put("synId", "");
-		this.propMap.put("email", "");
-		this.propMap.put("icon", "");
-		this.propMap.put("hp", 0);
-		this.propMap.put("camp", "");
-		this.propMap.put("lastLogin", "");
-		this.propMap.put("gold", 0);
-		this.propMap.put("medal", 0);
-		this.propMap.put("honor", 0);
-		this.propMap.put("x", 0);
-		this.propMap.put("y", 0);
-		this.propMap.put("z", 0);
-		this.propMap.put("rank", 0);
-		this.propMap.put("maxWareHouse", 0);
-		this.propMap.put("curWareHouse", 0);
-		this.propMap.put("equips", null);
-		this.propMap.put("pets", null);
-		this.propMap.put("dress", null);
-		this.propMap.put("friends", null);
+		this(50);
+	}
+	
+	/**
+	 * 由Map直接创建,不检验参数,比较危险,建议仅供Mongodb使用
+	 * @param map 
+	 */
+	public HTUser(Map<String, ?> map) {
+		super(map);
+	}
+
+	public HTUser(int maxProp) {
+		super(maxProp);
+		this.setProp("pwd", "");
+		this.setProp("imei", "");
+		this.setProp("ip", "");
+		this.setProp("nick", "");
+		this.setProp("sex", 0);
+		this.setProp("synId", "");
+		this.setProp("email", "");
+		this.setProp("icon", "");
+		this.setProp("hp", 0);
+		this.setProp("camp", "");
+		this.setProp("lastLogin", "");
+		this.setProp("gold", 0);
+		this.setProp("medal", 0);
+		this.setProp("honor", 0);
+		this.setProp("x", 0);
+		this.setProp("y", 0);
+		this.setProp("z", 0);
+		this.setProp("rank", 0);
+		this.setProp("maxWareHouse", 0);
+		this.setProp("curWareHouse", 0);
+		this.setProp("equips", null);
+		this.setProp("pets", null);
+		this.setProp("dress", null);
+		this.setProp("friends", null);
 		
 	}
-/*	
 
-	 * 密码
+	/**
+	 * @param pwd 密码
+	 * @param imei
+	 * @param ip
+	 * @param nick
+	 * @param sex
+	 * @param synId 同步id
+	 * @param email
+	 * @param icon 头像ID
+	 * @param hp 体力hp值
+	 * @param camp 阵营
+	 * @param lastLogin
+	 * @param gold 钱
+	 * @param medal 勋章
+	 * @param honor 荣誉值,cash 购买
+	 * @param x 位置x坐标
+	 * @param y
+	 * @param z
+	 * @param rank 军阶
+	 * @param maxWareHouse 最大仓库容量
+	 * @param curWareHouse
+	 * @param equips
+	 * @param pets
+	 * @param dress
+	 * @param friends
+	 */
+	public HTUser(String pwd, String imei, String ip, String nick, int sex,
+			String synId, String email, String icon, int hp, String camp,
+			String lastLogin, int gold, int medal, int honor, int x, int y,
+			int z, int rank, int maxWareHouse, int curWareHouse, Object equips,
+			Object pets, Object dress, Object friends) {
+		super();
+		this.setProp("pwd", pwd);
+		this.setProp("imei", imei);
+		this.setProp("ip", ip);
+		this.setProp("nick", nick);
+		this.setProp("sex", sex);
+		this.setProp("synId", synId);
+		this.setProp("email", email);
+		this.setProp("icon", icon);
+		this.setProp("hp", hp);
+		this.setProp("camp", camp);
+		this.setProp("lastLogin", lastLogin);
+		this.setProp("gold", gold);
+		this.setProp("medal", medal);
+		this.setProp("honor", honor);
+		this.setProp("x", x);
+		this.setProp("y", y);
+		this.setProp("z", z);
+		this.setProp("rank", rank);
+		this.setProp("maxWareHouse",maxWareHouse);
+		this.setProp("curWareHouse", curWareHouse);
+		this.setProp("equips", equips);
+		this.setProp("pets", pets);
+		this.setProp("dress", dress);
+		this.setProp("friends", friends);
+	}
 
-	private String upwd;
-	
 
-	 * imei设备号
-	
-	private String imei;
-	
-	private String ip;
-	
-	private String nick;
-	
-	private int sex;
-	
-	
-	 * 同步id
-	
-	private String synId;
-	
-	private String email;
-	
-	
-	 * 头像ID
-	
-	private String icon;
-	
-	
-	 * 体力hp值
-	
-	private int hp;
-	
-	
-	 * 阵营
-	
-	private String camp;
-	
-	private String lastLogin;
-	
-	
-	 * 钱
-	
-	private int gold;
-	
-	
-	 * 勋章
-	
-	private int medal;
-	
-	
-	 * 荣誉值,cash 购买
-	
-	private int honor;
-	
-	
-	 * 位置x坐标
-	
-	private int x;
-	
-	
-	 * 位置y坐标
-	
-	private int y;
-	
-	
-	 * 位置z坐标
-	
-	private int z;
-	
-	
-	 * 军阶
-	
-	private int rank;
-	
-	private int maxWareHouse;
-	
-	private int curWareHouse;
-	
-	private Object equips;
-	
-	private Object pets;
-	
-	private Object dress;
-	
-	private Object friends;
-*/
+
+//	/**
+//	 *  密码
+//	 */
+//	private String pwd;
+//	
+//
+//	/**
+//	 * imei设备号
+//	 */
+//	private String imei;
+//	
+//	private String ip;
+//	
+//	private String nick;
+//	
+//	private int sex;
+//	
+//	
+//	
+//	/**
+//	 * 同步id
+//	 */
+//	private String synId;
+//	
+//	private String email;
+//	
+//	
+//	
+//	/**
+//	 * 头像ID
+//	 */
+//	private String icon;
+//	
+//	
+//	
+//	/**
+//	 * 体力hp值
+//	 */
+//	private int hp;
+//	
+//	
+//	
+//	/**
+//	 *  阵营
+//	 */
+//	private String camp;
+//	
+//	private String lastLogin;
+//	
+//	
+//	
+//	
+//	/**
+//	 *  * 钱
+//	 */
+//	private int gold;
+//	
+//	
+//	
+//	
+//	/**
+//	 *  * 勋章
+//	 */
+//	private int medal;
+//	
+//	
+//	 
+//	
+//	/**
+//	 * * 荣誉值,cash 购买
+//	 */
+//	private int honor;
+//	
+//	
+//	
+//	
+//	/**
+//	 *  * 位置x坐标
+//	 */
+//	private int x;
+//	
+//	
+//	
+//	private int y;
+//	
+//
+//	
+//	private int z;
+//	
+//	
+//	/**
+//	 * 军阶
+//	 */
+//	private int rank;
+//	
+//	private int maxWareHouse;
+//	
+//	private int curWareHouse;
+//	
+//	private Object equips;
+//	
+//	private Object pets;
+//	
+//	private Object dress;
+//	
+//	private Object friends;
+
 	public final String getIcon() {
 		return getStringByName("icon");
 	}
 
 	public final void setIcon(String icon) {
-		this.propMap.put("icon", icon);
+		this.setProp("icon", icon);
 	}
 
 	public final int getSex() {
@@ -139,7 +233,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setSex(int sex) {
-		this.propMap.put("sex", sex);
+		this.setProp("sex", sex);
 	}
 
 	public final int getHp() {
@@ -147,7 +241,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setHp(int hp) {
-		this.propMap.put("hp", hp);
+		this.setProp("hp", hp);
 	}
 
 	public final int getHonor() {
@@ -155,7 +249,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setHonor(int honor) {
-		this.propMap.put("honor", honor);
+		this.setProp("honor", honor);
 	}
 
 	public final int getCurWareHouse() {
@@ -163,7 +257,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setCurWareHouse(int curWareHouse) {
-		this.propMap.put("curWareHouse", curWareHouse);
+		this.setProp("curWareHouse", curWareHouse);
 	}
 
 	public final String getImei() {
@@ -171,7 +265,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setImei(String imei) {
-		this.propMap.put("imei", imei);
+		this.setProp("imei", imei);
 	}
 
 	public final int getMaxWareHouse() {
@@ -179,7 +273,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setMaxWareHouse(int maxWareHouse) {
-		this.propMap.put("maxWareHouse", maxWareHouse);
+		this.setProp("maxWareHouse", maxWareHouse);
 	}
 
 	public final Object getEquips() {
@@ -187,7 +281,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setEquips(Object equips) {
-		this.propMap.put("equips", equips);
+		this.setProp("equips", equips);
 	}
 
 	public final String getSynId() {
@@ -195,7 +289,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setSynId(String synId) {
-		this.propMap.put("synId", synId);
+		this.setProp("synId", synId);
 	}
 
 	public final String getIp() {
@@ -203,7 +297,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setIp(String ip) {
-		this.propMap.put("ip", ip);
+		this.setProp("ip", ip);
 	}
 
 	public final int getRank() {
@@ -211,7 +305,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setRank(int rank) {
-		this.propMap.put("rank", rank);
+		this.setProp("rank", rank);
 	}
 
 	public final String getPwd() {
@@ -219,7 +313,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setPwd(String pwd) {
-		this.propMap.put("pwd", pwd);
+		this.setProp("pwd", pwd);
 	}
 
 	public final String getCamp() {
@@ -227,7 +321,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setCamp(String camp) {
-		this.propMap.put("camp", camp);
+		this.setProp("camp", camp);
 	}
 
 	public final String getLastLogin() {
@@ -235,7 +329,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setLastLogin(String lastLogin) {
-		this.propMap.put("lastLogin", lastLogin);
+		this.setProp("lastLogin", lastLogin);
 	}
 
 	public final Object getFriends() {
@@ -243,7 +337,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setFriends(Object friends) {
-		this.propMap.put("friends", friends);
+		this.setProp("friends", friends);
 	}
 
 	public final String getNick() {
@@ -251,7 +345,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setNick(String nick) {
-		this.propMap.put("nick", nick);
+		this.setProp("nick", nick);
 	}
 
 	public final String getEmail() {
@@ -259,7 +353,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setEmail(String email) {
-		this.propMap.put("email", email);
+		this.setProp("email", email);
 	}
 
 	public final Object getDress() {
@@ -267,7 +361,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setDress(Object dress) {
-		this.propMap.put("dress", dress);
+		this.setProp("dress", dress);
 	}
 
 	public final Object getPets() {
@@ -275,7 +369,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setPets(Object pets) {
-		this.propMap.put("pets", pets);
+		this.setProp("pets", pets);
 	}
 
 	public final int getGold() {
@@ -283,7 +377,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setGold(int gold) {
-		this.propMap.put("gold", gold);
+		this.setProp("gold", gold);
 	}
 
 	public final long getZ() {
@@ -291,7 +385,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setZ(long z) {
-		this.propMap.put("z", z);
+		this.setProp("z", z);
 	}
 
 	public final int getMedal() {
@@ -299,7 +393,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setMedal(int medal) {
-		this.propMap.put("medal", medal);
+		this.setProp("medal", medal);
 	}
 
 	public final int getY() {
@@ -307,7 +401,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setY(int y) {
-		this.propMap.put("y", y);
+		this.setProp("y", y);
 	}
 
 	public final int getX() {
@@ -315,7 +409,7 @@ public class HTUser extends KObject{
 	}
 
 	public final void setX(int x) {
-		this.propMap.put("x", x);
+		this.setProp("x", x);
 	}
 
 

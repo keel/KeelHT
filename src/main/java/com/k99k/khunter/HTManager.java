@@ -41,44 +41,65 @@ public final class HTManager {
 	private static String classPath;
 	
 	/**
+	 * 是否初始化
+	 */
+	private static boolean isInited = false;
+	
+	/**
 	 * 处理各Manager的初始化
 	 * @param iniFile 配置文件路径
 	 * @return
 	 */
 	public static boolean init(String iniFile){
 		boolean initOK = false;
-		log.info("================ [HTManager starting... ] ================");
-		try {
-			String iniJson = KIoc.readTxtInUTF8(iniFile);
-			Map<String,?> root = (Map<String,?>) jsonReader.read(iniJson);
-			if (root.containsKey("classPath") && root.containsKey("iniPath")) {
-				classPath = (String) root.get("classPath");
-				ini = (String) root.get("iniPath");
-				
-				
-				//初始化DataSourceManager
-				initOK = DataSourceManager.init(ini,classPath);
-				log.info("DataSourceManager inited OK? " + initOK);
-				
-				//初始化DaoManager
-				initOK = DaoManager.init(ini,classPath);
-				log.info("DaoManager inited OK? " + initOK);
-				
-				//初始化ActionManager
-				initOK = ActionManager.init(ini,classPath);
-				log.info("ActionManager inited OK? " + initOK);
-				
-				//FIXME 初始化IOManager
-				
+		if (!isInited) {
+			
+			log.info("================ [HTManager starting... ] ================");
+			try {
+				String iniJson = KIoc.readTxtInUTF8(iniFile);
+				Map<String,?> root = (Map<String,?>) jsonReader.read(iniJson);
+				if (root.containsKey("classPath") && root.containsKey("iniPath")) {
+					classPath = (String) root.get("classPath");
+					ini = (String) root.get("iniPath");
+					
+					
+					//初始化DataSourceManager
+					initOK = DataSourceManager.init(ini,classPath);
+					log.info("DataSourceManager inited OK? " + initOK);
+					
+					//初始化DaoManager
+					initOK = DaoManager.init(ini,classPath);
+					log.info("DaoManager inited OK? " + initOK);
+					
+					//初始化ActionManager
+					initOK = ActionManager.init(ini,classPath);
+					log.info("ActionManager inited OK? " + initOK);
+					
+					//TODO 初始化IOManager
+					
+				}
+			} catch (Exception e) {
+				log.error("HTManager init error!", e);
+				return false;
 			}
-		} catch (Exception e) {
-			log.error("HTManager init error!", e);
-			return false;
-		}
-		if (initOK) {
-			log.info("================ [HTManager init OK!] ================");
+			if (initOK) {
+				isInited = true;
+				log.info("================ [HTManager init OK!] ================");
+			}
+			
+		}else{
+			log.warn("================ [HTManager already inited] ================");
 		}
 		return initOK;
+	}
+	
+	public static final boolean reInit(String iniFile){
+		isInited = false;
+		return init(iniFile);
+	}
+	
+	public static final String getIniFilePath(){
+		return ini;
 	}
 	
 	/**
@@ -91,15 +112,16 @@ public final class HTManager {
 		
 		if (managerName.equals("actions")) {
 			return ActionManager.findAction(name);
+		}else if(managerName.equals("tasks")){
+			//return TaskManager.findDao(name);
 		}else if(managerName.equals("daos")){
 			return DaoManager.findDao(name);
 		}else if(managerName.equals("io")){
-			//FIXME 定位到指定的IOmanager
+			//TODO 定位到指定的IOmanager
 		}else if(managerName.equals("dataSources")){
 			return DataSourceManager.findDataSource(name);
 		}
 
-		
 		return null;
 	}
 	

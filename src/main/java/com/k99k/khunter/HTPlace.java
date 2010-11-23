@@ -3,6 +3,8 @@
  */
 package com.k99k.khunter;
 
+import java.util.Map;
+
 /**
  * 地点
  * @author keel
@@ -12,13 +14,21 @@ public class HTPlace extends KObject{
 
 	public HTPlace() {
 		super();
-		propMap.put("type", 0);
-		propMap.put("x", 0);
-		propMap.put("y", 0);
-		propMap.put("z", 0);
-		propMap.put("special", "");
-		propMap.put("building", "");
-		propMap.put("camp", "");
+		setProp("type", 0);
+		setProp("x", 0);
+		setProp("y", 0);
+		setProp("z", 0);
+		setProp("special", "");
+		setProp("building", "");
+		setProp("camp", "");
+	}
+	
+	/**
+	 * 由Map直接创建,不检验参数,比较危险,建议仅供Mongodb使用
+	 * @param map 
+	 */
+	public HTPlace(Map<String, ?> map) {
+		super(map);
 	}
 
 //	/**
@@ -61,7 +71,7 @@ public class HTPlace extends KObject{
 	}
 
 	public final void setCamp(String camp) {
-		this.propMap.put("camp", camp);
+		this.setProp("camp", camp);
 	}
 
 	public final String getBuilding() {
@@ -69,7 +79,7 @@ public class HTPlace extends KObject{
 	}
 
 	public final void setBuilding(String building) {
-		this.propMap.put("building", building);
+		this.setProp("building", building);
 	}
 
 	public final String getSpecial() {
@@ -77,7 +87,7 @@ public class HTPlace extends KObject{
 	}
 
 	public final void setSpecial(String special) {
-		this.propMap.put("special", special);
+		this.setProp("special", special);
 	}
 
 	public final int getType() {
@@ -85,7 +95,7 @@ public class HTPlace extends KObject{
 	}
 
 	public final void setType(int type) {
-		this.propMap.put("type", type);
+		this.setProp("type", type);
 	}
 
 	public final int getZ() {
@@ -93,7 +103,7 @@ public class HTPlace extends KObject{
 	}
 
 	public final void setZ(int z) {
-		this.propMap.put("z", z);
+		this.setProp("z", z);
 	}
 
 	public final int getY() {
@@ -101,7 +111,7 @@ public class HTPlace extends KObject{
 	}
 
 	public final void setY(int y) {
-		this.propMap.put("y", y);
+		this.setProp("y", y);
 	}
 
 	public final int getX() {
@@ -109,7 +119,7 @@ public class HTPlace extends KObject{
 	}
 
 	public final void setX(int x) {
-		this.propMap.put("x", x);
+		this.setProp("x", x);
 	}
 	
 }

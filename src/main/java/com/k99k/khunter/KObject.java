@@ -8,8 +8,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * 
- * 
+ * KObject:基础的可扩展对象,包含一个可扩展的属性列表,(带列表关系的参考KSObject).<br />
+ * 直接json方式的toString方法
  * @author keel
  *
  */
@@ -20,6 +20,17 @@ public class KObject {
 		this(50);
 	}
 
+	/**
+	 * 由Map直接创建,不检验参数,比较危险,建议仅供Mongodb使用
+	 * @param map 
+	 */
+	public KObject(Map<String, Object> map) {
+		this.propMap = map;
+	}
+	
+	/**
+	 * @param maxProp 初始化propMap大小
+	 */
 	public KObject(int maxProp) {
 		this.propMap = new HashMap<String,Object>(maxProp);
 		this.propMap.put("id", 0);
@@ -35,8 +46,52 @@ public class KObject {
 		
 	}
 	
+	/**
+	 * @param id
+	 * @param state
+	 * @param level
+	 * @param info
+	 * @param createTime
+	 * @param version
+	 * @param name
+	 * @param creatorName
+	 * @param creatorId
+	 * @param url
+	 * @param maxProp 初始化propMap大小
+	 */
+	public KObject(long id, int state, int level, String info,
+			String createTime, int version, String name, String creatorName,
+			long creatorId, String url,int maxProp) {
+		this.propMap = new HashMap<String,Object>(maxProp);
+		this.propMap.put("id", id);
+		this.propMap.put("state", state);
+		this.propMap.put("level", level);
+		this.propMap.put("info", info);
+		this.propMap.put("createTime", createTime);
+		this.propMap.put("version", version);
+		this.propMap.put("name", name);
+		this.propMap.put("creatorName", creatorName);
+		this.propMap.put("creatorId", creatorId);
+		this.propMap.put("url", url);
+	}
 	
-	
+	/**
+	 * @param id
+	 * @param state
+	 * @param level
+	 * @param info
+	 * @param createTime
+	 * @param version
+	 * @param name
+	 * @param creatorName
+	 * @param creatorId
+	 * @param url
+	 */
+	public KObject(long id, int state, int level, String info,
+			String createTime, int version, String name, String creatorName,
+			long creatorId, String url) {
+		this(id,state,level,info,createTime,version,name,creatorName,creatorId,url,50);
+	}
 	
 	/**
 	 * 唯一的属性Map
@@ -73,7 +128,7 @@ public class KObject {
 	@Override
 	public String toString() {
 		StringBuilder sb  = new StringBuilder("{");
-		//处理动态属性
+		//处理属性
 		for (Iterator<String> iterator = this.propMap.keySet().iterator(); iterator.hasNext();) {
 			String key = iterator.next();
 			Object o = this.propMap.get(key);
@@ -245,6 +300,13 @@ public class KObject {
 		this.propMap.put("url", url);
 	}
 	
+	/**
+	 * @param sb
+	 * @param type 类型，注意首字母要大写，如:String、Object
+	 * @param key map的key
+	 * @param isPrim 是否是基本类型，如long、int ,这时涉及一个大小写问题
+	 * @return
+	 */
 	private static final StringBuilder createPropGetterAndSetterHelp(StringBuilder sb,String type,String key,boolean isPrim){
 		sb.append("public final ")
 		.append((isPrim)?type.toLowerCase():type).append(" ");
@@ -264,10 +326,26 @@ public class KObject {
 		return sb;
 	}
 	
-	private static final String createPropGetterAndSetterString(Map propMap){
+	/**
+	 * 构建KObject子类所需要的getter和setter工具方法,以HTPlace举例:
+	 <pre>
+	 	Map propMap = new HashMap();
+		propMap.put("type", 0);
+		propMap.put("x", 0);
+		propMap.put("y", 0);
+		propMap.put("z", 0);
+		propMap.put("special", "");
+		propMap.put("building", "");
+		propMap.put("camp", "");
+		System.out.println(createPropGetterAndSetterString(propMap));
+	 </pre>
+	 * @param propMap
+	 * @return
+	 */
+	private static final String createPropGetterAndSetterString(Map<String, Object> propMap){
 		StringBuilder sb = new StringBuilder();
-		for (Iterator it = propMap.keySet().iterator(); it.hasNext();) {
-			String key = (String) it.next();
+		for (Iterator<String> it = propMap.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			Object value = propMap.get(key);
 			if (value instanceof String) {
 				createPropGetterAndSetterHelp(sb,"String",key,false);
@@ -290,61 +368,4 @@ public class KObject {
 		return sb.toString();
 	}
 	
-	public static void main(String[] args) {
-		
-		
-		
-		Map propMap = new HashMap();
-		propMap.put("type", 0);
-		propMap.put("x", 0);
-		propMap.put("y", 0);
-		propMap.put("z", 0);
-		propMap.put("special", "");
-		propMap.put("building", "");
-		propMap.put("camp", "");
-		
-		/*StringBuilder sb = new StringBuilder();
-		for (Iterator it = propMap.keySet().iterator(); it.hasNext();) {
-			String key = (String) it.next();
-			Object value = propMap.get(key);
-			if (value instanceof String) {
-				sb.append("public final String ");
-				sb.append(KIoc.getGetterMethodName(key));
-				sb.append("() {\n return getStringByName(\"")
-				.append(key).append("\");\n}\n\n");
-				
-				sb.append("public final void ");
-				sb.append(KIoc.getSetterMethodName(key));
-				sb.append("(String ")
-				.append(key).append(") {\n");
-				sb.append("propMap.put(\"")
-				.append(key).append("\", ")
-				.append(key).append(");\n}\n\n");
-				
-			}else if(value instanceof Integer) {
-				sb.append("public final int ");
-				sb.append(KIoc.getGetterMethodName(key));
-				sb.append("() {\n return getIntByName(\"")
-				.append(key).append("\");\n}\n\n");
-				
-				sb.append("public final void ");
-				sb.append(KIoc.getSetterMethodName(key));
-				sb.append("(int ")
-				.append(key).append(") {\n");
-				sb.append("propMap.put(\"")
-				.append(key).append("\", ")
-				.append(key).append(");\n}\n\n");
-				
-			}else if(value instanceof Long) {
-				
-			}else if(value == null){
-				
-			}else if(value instanceof Boolean) {
-				
-			}else{
-				System.out.println("-----未识别出此value类型:"+value+" prop:"+key);
-			}
-		}*/
-		System.out.println(createPropGetterAndSetterString(propMap));
-	}
 }

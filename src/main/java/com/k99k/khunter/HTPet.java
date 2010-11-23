@@ -3,6 +3,8 @@
  */
 package com.k99k.khunter;
 
+import java.util.Map;
+
 /**
  * 宠物
  * @author keel
@@ -12,16 +14,49 @@ public class HTPet extends KObject{
 
 	public HTPet() {
 		super();
-		propMap.put("type", 0);
-		propMap.put("age", 0);
-		propMap.put("ack", 0);
-		propMap.put("def", 0);
-		propMap.put("special", "");
-		propMap.put("hp", 0);
-		propMap.put("space", 0);
-		propMap.put("price", 0);
+		setProp("type", 0);
+		setProp("age", 0);
+		setProp("ack", 0);
+		setProp("def", 0);
+		setProp("special", "");
+		setProp("hp", 0);
+		setProp("space", 0);
+		setProp("price", 0);
 	
 	}
+	
+	/**
+	 * 由Map直接创建,不检验参数,比较危险,建议仅供Mongodb使用
+	 * @param map 
+	 */
+	public HTPet(Map<String, ?> map) {
+		super(map);
+	}
+
+	/**
+	 * @param type
+	 * @param age
+	 * @param ack
+	 * @param def
+	 * @param special
+	 * @param hp
+	 * @param price
+	 * @param space
+	 */
+	public HTPet(int type, int age, int ack, int def, String special, int hp,
+			int price, int space) {
+		super();
+		setProp("type",type);
+		setProp("age", age);
+		setProp("ack", ack);
+		setProp("def", def);
+		setProp("special", special);
+		setProp("hp", hp);
+		setProp("space", space);
+		setProp("price", price);
+	}
+
+
 
 //	/**
 //	 * 物品类型,可以是多个类型(质数)合成的复值,也可以是基本类型
@@ -69,7 +104,7 @@ public class HTPet extends KObject{
 	}
 
 	public final void setHp(int hp) {
-		this.propMap.put("hp", hp);
+		this.setProp("hp", hp);
 	}
 
 	public final int getPrice() {
@@ -77,7 +112,7 @@ public class HTPet extends KObject{
 	}
 
 	public final void setPrice(int price) {
-		this.propMap.put("price", price);
+		this.setProp("price", price);
 	}
 
 	public final int getDef() {
@@ -85,7 +120,7 @@ public class HTPet extends KObject{
 	}
 
 	public final void setDef(int def) {
-		this.propMap.put("def", def);
+		this.setProp("def", def);
 	}
 
 	public final int getAck() {
@@ -93,7 +128,7 @@ public class HTPet extends KObject{
 	}
 
 	public final void setAck(int ack) {
-		this.propMap.put("ack", ack);
+		this.setProp("ack", ack);
 	}
 
 	public final int getAge() {
@@ -101,7 +136,7 @@ public class HTPet extends KObject{
 	}
 
 	public final void setAge(int age) {
-		this.propMap.put("age", age);
+		this.setProp("age", age);
 	}
 
 	public final String getSpecial() {
@@ -109,7 +144,7 @@ public class HTPet extends KObject{
 	}
 
 	public final void setSpecial(String special) {
-		this.propMap.put("special", special);
+		this.setProp("special", special);
 	}
 
 	public final int getSpace() {
@@ -117,7 +152,7 @@ public class HTPet extends KObject{
 	}
 
 	public final void setSpace(int space) {
-		this.propMap.put("space", space);
+		this.setProp("space", space);
 	}
 
 	public final int getType() {
@@ -125,7 +160,7 @@ public class HTPet extends KObject{
 	}
 
 	public final void setType(int type) {
-		this.propMap.put("type", type);
+		this.setProp("type", type);
 	}
 	
 	

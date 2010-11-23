@@ -30,6 +30,31 @@
 		}
 	
 	},
+	"taskThreads":{
+		"a1":{
+			"level":1,
+			"sleep":100
+		},
+		"a2":{
+			"level":1,
+			"sleep":100
+		},
+		"b1":{
+			"level":2,
+			"sleep":5000
+		},
+		"c1":{
+			"level":3,
+			"sleep":300000
+		}			
+	},
+	"tasks":{
+		"syn":{
+			"_class":"com.k99k.khunter.Task",
+			"thread#taskThreads":"a1"
+		}
+
+	},
 	"actions":{
 		"login":{	
 			"_class":"com.k99k.khunter.HTLoginAction",

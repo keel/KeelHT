@@ -49,10 +49,13 @@ public class MongoConfig {
 		mdao.add(user);
 	}
 
-	public void testKObject(){
-		KObject k = new KObject();
-		k.setId(23);
-		System.out.println(k.getPropMap().get("id"));
+	public void testFind(){
+		String ini = "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/kconfig.json";
+		HTManager.init(ini);
+		MongoUserDao mdao = (MongoUserDao) DaoManager.findDao("mongoUserDao");
+		HTUser user =  mdao.findUser(3);
+		System.out.println(user);
+		System.out.println(user.getEmail());
 	}
 	
 	
@@ -61,7 +64,7 @@ public class MongoConfig {
 	 */
 	public static void main(String[] args) {
 		MongoConfig mc = new MongoConfig();
-		mc.testMongoDao();
+		mc.testFind();
 	}
 
 }
