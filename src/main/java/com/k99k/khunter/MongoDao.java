@@ -116,7 +116,7 @@ public class MongoDao implements DaoInterface{
 	 * @param id long
 	 * @return Map形式
 	 */
-	public Map<String, ?> findMap(long id){
+	public Map<String, Object> findMap(long id){
 		try {
 			DBCollection coll = this.dataSource.getColl(tableName);
 			BasicDBObject query = new BasicDBObject("_id",id);

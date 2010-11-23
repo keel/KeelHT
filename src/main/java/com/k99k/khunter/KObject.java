@@ -96,7 +96,7 @@ public class KObject {
 	/**
 	 * 唯一的属性Map
 	 */
-	final Map<String,Object> propMap;
+	private final Map<String,Object> propMap;
 	
 	public final boolean containsProp(String key){
 		return this.propMap.containsKey(key);

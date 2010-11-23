@@ -28,7 +28,7 @@ public class MongoUserDao extends MongoDao implements HTUserDaoInterface{
 	 * @return
 	 */
 	public HTUser findUser(long id){
-		Map<String, ?> m = this.findMap(id);
+		Map<String, Object> m = this.findMap(id);
 		if (m != null) {
 			return new HTUser(m);
 		}

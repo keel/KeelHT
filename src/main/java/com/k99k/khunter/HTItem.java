@@ -28,7 +28,7 @@ public class HTItem extends KObject{
 	 * 由Map直接创建,不检验参数,比较危险,建议仅供Mongodb使用
 	 * @param map 
 	 */
-	public HTItem(Map<String, ?> map) {
+	public HTItem(Map<String, Object> map) {
 		super(map);
 	}
 
