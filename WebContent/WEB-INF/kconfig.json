@@ -2,7 +2,8 @@
 	"version":1,
 	"updates":{
 		"2010-11-20":"始建此文件",
-		"2010-11-21":"可将datasource等分离成不同文件,由不同的类进行控制"
+		"2010-11-21":"可将datasource等分离成不同文件,由不同的类进行控制",
+		"2010-11-24":"再多个actionIni,taskIni,dataSourceIni,daoIni属性即可在HTManager分别控制其配置文件位置"
 	},
 	"info":"更改此文件的配置后，请对发生变化的Action执行reload操作",
 	"classPath": "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/classes/",
@@ -26,7 +27,7 @@
 			"dbType":"mongodb",
 			"type":"single",
 			"tableName":"testKHT",
-			"id":2433
+			"id":2
 		}
 	
 	},
@@ -41,7 +42,7 @@
 		},
 		"b1":{
 			"level":2,
-			"sleep":5000
+			"sleep":3000
 		},
 		"c1":{
 			"level":3,
@@ -49,15 +50,17 @@
 		}			
 	},
 	"tasks":{
-		"syn":{
-			"_class":"com.k99k.khunter.Task",
-			"thread#taskThreads":"a1"
+		
+		
+		"simple":{
+			"_class":"com.k99k.khunter.tasks.HTSimpleTask",
+			"thread#taskThreads":"a1,a2 --在ActionMsg中去控制,此配置可以无!!",
+			"id":1
 		}
-
 	},
 	"actions":{
 		"login":{	
-			"_class":"com.k99k.khunter.HTLoginAction",
+			"_class":"com.k99k.khunter.acts.HTLoginAction",
 			"type":"normal",
 			"id":152,
 			"userDao#daos":"mongoUserDao"

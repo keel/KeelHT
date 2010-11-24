@@ -26,10 +26,18 @@ public final class TaskManager {
 	
 	/**
 	 * 用于在json中定位
-	 * @return 返回"actions"
+	 * @return 返回"tasks"
 	 */
 	public static final String getName(){
-		return "actions";
+		return "tasks";
+	}
+	
+	/**
+	 * 在json中定位线程配置
+	 * @return 返回"taskThreads"
+	 */
+	public static final String getThreadName(){
+		return "taskThreads";
 	}
 	
 	private static boolean isInitOK = false;
@@ -37,9 +45,9 @@ public final class TaskManager {
 	private static final JSONReader jsonReader = new JSONValidatingReader(new ExceptionErrorListener());
 	
 	/**
-	 * 存储Task的Map,初始化大小为100
+	 * 存储Task的Map,初始化大小为50
 	 */
-	private static final Map<String, Task> actionMap = new HashMap<String, Task>(100);
+	private static final Map<String, Task> taskMap = new HashMap<String, Task>(50);
 	
 	private static String iniFilePath;
 	
@@ -121,6 +129,12 @@ public final class TaskManager {
 	public static final boolean isInitOK(){
 		return isInitOK;
 	}
+	
+	//FIXME 由一个ActionMsg创建一个新任务，并将其放到处理线程的队列中
+	
+	//创建TaskThread线程集，并管理其状态
+	
+	//TODO 告警机制：可采用在另一服务器用robot监控游戏各个环节，与服务端分离
 
 	/**
 	 * 获取一个Task
@@ -128,7 +142,7 @@ public final class TaskManager {
 	 * @return Task,未找到返回null
 	 */
 	public static final Task findTask(String actName){
-		return actionMap.get(actName);
+		return taskMap.get(actName);
 	}
 	
 	
@@ -141,10 +155,10 @@ public final class TaskManager {
 		if (act == null) {
 			return false;
 		}
-		if (actionMap.containsKey(act.getName())) {
+		if (taskMap.containsKey(act.getName())) {
 			return false;
 		}
-		actionMap.put(act.getName(), act);
+		taskMap.put(act.getName(), act);
 		log.info("Task added: "+act.getName());
 		return true;
 	}
@@ -158,7 +172,7 @@ public final class TaskManager {
 		if (action == null) {
 			return;
 		}
-		actionMap.put(actName, action);
+		taskMap.put(actName, action);
 		log.info("Task changed: "+action.getName());
 	}
 	
@@ -186,7 +200,7 @@ public final class TaskManager {
 			}
 			Task action = (Task)o;
 			HTManager.fetchProps(action, m);
-			actionMap.put(act, action);
+			taskMap.put(act, action);
 			
 		} catch (Exception e) {
 			log.error("TaskManager reLoadTask Error:"+act, e);

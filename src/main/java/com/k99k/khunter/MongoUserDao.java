@@ -5,6 +5,8 @@ package com.k99k.khunter;
 
 import java.util.Map;
 
+import com.mongodb.DBCollection;
+
 /**
  * FIXME Mongodb下的UserDao
  * @author keel
@@ -27,8 +29,8 @@ public class MongoUserDao extends MongoDao implements HTUserDaoInterface{
 	 * @param id
 	 * @return
 	 */
-	public HTUser findUser(long id){
-		Map<String, Object> m = this.findMap(id);
+	public HTUser findUser(long id,DBCollection coll){
+		Map<String, Object> m = this.findMap(id,coll);
 		if (m != null) {
 			return new HTUser(m);
 		}

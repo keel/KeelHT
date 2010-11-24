@@ -1,7 +1,13 @@
 /**
  * 
  */
-package com.k99k.khunter;
+package com.k99k.khunter.acts;
+
+import com.k99k.khunter.Action;
+import com.k99k.khunter.ActionMsg;
+import com.k99k.khunter.DaoInterface;
+import com.k99k.khunter.HTUser;
+import com.k99k.khunter.MongoUserDao;
 
 /**
  * 登录Action
@@ -17,7 +23,7 @@ public class HTLoginAction extends Action {
 		super(name);
 	}
 	
-	private DaoInterface userDao;
+	private MongoUserDao userDao;
 
 	/**
 	 * FIXME 执行登录操作,若为新用户则自动注册
@@ -35,8 +41,9 @@ public class HTLoginAction extends Action {
 		msg.addData("something", "nothing");
 		msg.addData("dao", this.userDao.getName());
 		msg.addData("dataSource", this.userDao.getDataSource().getName());
-		
-		msg.addData("print", msg.toJson());
+		//FIXME coll传递问题
+		HTUser user =  this.userDao.findUser(3,null);
+		msg.addData("print",user.toString());
 		msg.setNextAction(null);
 		
 		return super.act(msg);
@@ -45,14 +52,14 @@ public class HTLoginAction extends Action {
 	/**
 	 * @return the userDao
 	 */
-	public final DaoInterface getUserDao() {
+	public final MongoUserDao getUserDao() {
 		return userDao;
 	}
 
 	/**
 	 * @param userDao the userDao to set
 	 */
-	public final void setUserDao(DaoInterface userDao) {
+	public final void setUserDao(MongoUserDao userDao) {
 		this.userDao = userDao;
 	}
 	

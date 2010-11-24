@@ -113,7 +113,7 @@ public final class HTManager {
 		if (managerName.equals("actions")) {
 			return ActionManager.findAction(name);
 		}else if(managerName.equals("tasks")){
-			//return TaskManager.findDao(name);
+			return TaskManager.findTask(name);
 		}else if(managerName.equals("daos")){
 			return DaoManager.findDao(name);
 		}else if(managerName.equals("io")){

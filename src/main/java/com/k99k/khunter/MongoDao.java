@@ -1,5 +1,6 @@
 package com.k99k.khunter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -89,20 +90,45 @@ public class MongoDao implements DaoInterface{
 	}
 
 	/**
-	 * 查找对象,同时加入_id字段
+	 * 查找对象
 	 * @param id long
-	 * @return 
+	 * @return 未找到返回null
 	 */
-	public KObject find(long id){
+	public KObject findOne(long id,DBCollection coll){
 		try {
-			DBCollection coll = this.dataSource.getColl(tableName);
-			BasicDBObject query = new BasicDBObject("_id",id);
-			DBCursor cur = coll.find(query);
+			coll = checkColl(coll);
+			//DBCollection coll = this.dataSource.getColl(tableName);
+			KObject o = new  KObject((Map)coll.findOne(id));
+	        return o;
+		} catch (MongoException e) {
+			log.error("find error!", e);
+			return null;
+		}
+	}
+	
+	
+	/**
+	 * 查找单个对象
+	 * @param id long
+	 * @return 未找到返回null
+	 */
+	public Map<String,Object> findOne(BasicDBObject query,DBCollection coll){
+		return this.findOne(query, null,coll);
+	}
+	
+	/**
+	 * 查找单个对象
+	 * @param query
+	 * @param fields
+	 * @return
+	 */
+	public Map<String,Object> findOne(BasicDBObject query,BasicDBObject fields,DBCollection coll){
+		try {
+			coll = checkColl(coll);
+			//DBCollection coll = this.dataSource.getColl(tableName);
+			DBCursor cur = coll.find(query,fields,0, 1);
 	        if(cur.hasNext()) {
-	        	//直接cast成Map
-	        	KObject o =  new  KObject((Map) cur.next());
-	        	o.setId(Integer.parseInt(o.getProp("_id").toString()));
-	        	return o;
+	        	return (Map) cur.next();
 	        }
 	        return null;
 		} catch (MongoException e) {
@@ -112,23 +138,54 @@ public class MongoDao implements DaoInterface{
 	}
 	
 	/**
-	 * 查找Map形式对象,同时加入_id字段
-	 * @param id long
-	 * @return Map形式
+	 * 通用的查找过程
+	 * @param query 必须有
+	 * @param fields 全部则为null
+	 * @param sortBy 无则为null
+	 * @param skip 无则为0
+	 * @param len 无则为0
+	 * @param hint 无则为null
+	 * @return
 	 */
-	public Map<String, Object> findMap(long id){
+	public List<Map<String,Object>> findByProps(BasicDBObject query,BasicDBObject fields,BasicDBObject sortBy,int skip,int len,BasicDBObject hint,DBCollection coll){
+		int initSize = 20;
+		if (len > 0) {
+			initSize = len;
+		}
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>(initSize);
 		try {
-			DBCollection coll = this.dataSource.getColl(tableName);
-			BasicDBObject query = new BasicDBObject("_id",id);
-			DBCursor cur = coll.find(query);
-	        if(cur.hasNext()) {
+			coll = checkColl(coll);
+			//DBCollection coll = this.dataSource.getColl(tableName);
+			DBCursor cur = null;
+			if (sortBy != null) {
+				cur = coll.find(query, fields, skip, len).sort(sortBy).hint(hint);
+			} else {
+				cur = coll.find(query, fields, skip, len).hint(hint);
+			}
+	        while(cur.hasNext()) {
 	        	Map<String, Object> m = (Map<String, Object>) cur.next();
-	        	m.put("id", m.get("_id"));
-	        	return m;
+	        	list.add(m);
 	        }
-	        return null;
+	        return list;
 		} catch (MongoException e) {
-			log.error("find error!", e);
+			log.error("findByProps error!", e);
+			return null;
+		}
+		
+	}
+	
+	/**
+	 * 查找Map形式对象
+	 * @param id long
+	 * @return Map形式,未找到返回null
+	 */
+	public Map<String, Object> findMap(long id,DBCollection coll){
+		try {
+			coll = checkColl(coll);
+			//DBCollection coll = this.dataSource.getColl(tableName);
+			return (Map)coll.findOne(id);
+		} catch (MongoException e) {
+			log.error("findMap error!", e);
 			return null;
 		}
 	}
@@ -136,11 +193,12 @@ public class MongoDao implements DaoInterface{
 	/**
 	 * 创建新对象,自动生成新ID
 	 * @param kObj KObject
-	 * @return
+	 * @return 
 	 */
-	public boolean add(KObject kObj){
+	public boolean add(KObject kObj,DBCollection coll){
 		try {
-			DBCollection coll = this.dataSource.getColl(tableName);
+			coll = checkColl(coll);
+			//DBCollection coll = this.dataSource.getColl(tableName);
 			kObj.setId(idm.nextId());
 			MongoWrapper w = new MongoWrapper(kObj);
 			coll.insert(w);
@@ -156,9 +214,10 @@ public class MongoDao implements DaoInterface{
 	 * @param kObj KObject
 	 * @return
 	 */
-	public boolean save(KObject kObj){
+	public boolean save(KObject kObj,DBCollection coll){
 		try {
-			DBCollection coll = this.dataSource.getColl(tableName);
+			coll = checkColl(coll);
+			//DBCollection coll = this.dataSource.getColl(tableName);
 			coll.save(new MongoWrapper(kObj));
 		} catch (MongoException e) {
 			log.error("save error!", e);
@@ -174,9 +233,10 @@ public class MongoDao implements DaoInterface{
 	 * @param newObj KObject
 	 * @return
 	 */
-	public boolean update(long id,KObject newObj) {
+	public boolean update(long id,KObject newObj,DBCollection coll) {
 		try {
-			DBCollection coll = this.dataSource.getColl(tableName);
+			coll = checkColl(coll);
+			//DBCollection coll = this.dataSource.getColl(tableName);
 			coll.update(new BasicDBObject("_id",id),new MongoWrapper(newObj));
 		} catch (MongoException e) {
 			log.error("update error!", e);
@@ -190,9 +250,10 @@ public class MongoDao implements DaoInterface{
 	 * @param id
 	 * @return
 	 */
-	public boolean delete(long id){
+	public boolean delete(long id,DBCollection coll){
 		try {
-			DBCollection coll = this.dataSource.getColl(tableName);
+			coll = checkColl(coll);
+			//DBCollection coll = this.dataSource.getColl(tableName);
 			coll.update(new BasicDBObject("_id",id),new BasicDBObject("$set",new BasicDBObject("state",-1)));
 		} catch (MongoException e) {
 			log.error("delete error!", e);
@@ -206,9 +267,10 @@ public class MongoDao implements DaoInterface{
 	 * @param id
 	 * @return
 	 */
-	public boolean deleteForever(long id){
+	public boolean deleteForever(long id,DBCollection coll){
 		try {
-			DBCollection coll = this.dataSource.getColl(tableName);
+			coll = checkColl(coll);
+			//DBCollection coll = this.dataSource.getColl(tableName);
 			coll.remove(new BasicDBObject("_id",id));
 		} catch (MongoException e) {
 			log.error("deleteForever error!", e);
@@ -233,6 +295,14 @@ public class MongoDao implements DaoInterface{
 		}
 	}
 	
+	
+	private final DBCollection checkColl(DBCollection coll){
+		if (coll == null || (!coll.getName().equals(tableName))) {
+			return this.dataSource.getColl(tableName);
+		}else{
+			return coll;
+		}
+	}
 	
 
 	 /**

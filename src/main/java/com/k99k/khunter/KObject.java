@@ -47,6 +47,7 @@ public class KObject {
 	}
 	
 	/**
+	 * 采用此构造方法性能最佳
 	 * @param id
 	 * @param state
 	 * @param level
