@@ -46,14 +46,14 @@ public class MongoConfig {
 		user.setCreatorName("admin");
 		user.setHp(100);
 		user.setGold(20);
-		mdao.add(user,null);
+		mdao.add(user);
 	}
 
 	public void testFind(){
 		String ini = "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/kconfig.json";
 		HTManager.init(ini);
 		MongoUserDao mdao = (MongoUserDao) DaoManager.findDao("mongoUserDao");
-		HTUser user =  mdao.findUser(3,null);
+		HTUser user =  mdao.findUser(3);
 		System.out.println(user);
 		System.out.println(user.getEmail());
 	}

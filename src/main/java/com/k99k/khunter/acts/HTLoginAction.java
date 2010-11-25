@@ -31,6 +31,9 @@ public class HTLoginAction extends Action {
 	 */
 	@Override
 	public ActionMsg act(ActionMsg msg) {
+		
+		//FIXME 实现login操作
+		
 		//从数据源获取用户信息
 		
 		//如果数据源无此用户数据,则进行注册操作
@@ -41,8 +44,8 @@ public class HTLoginAction extends Action {
 		msg.addData("something", "nothing");
 		msg.addData("dao", this.userDao.getName());
 		msg.addData("dataSource", this.userDao.getDataSource().getName());
-		//FIXME coll传递问题
-		HTUser user =  this.userDao.findUser(3,null);
+		//TODO coll传递问题不在mongodb中
+		HTUser user =  this.userDao.findUser(3);
 		msg.addData("print",user.toString());
 		msg.setNextAction(null);
 		
