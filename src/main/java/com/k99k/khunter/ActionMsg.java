@@ -9,7 +9,7 @@ import org.stringtree.json.JSONWriter;
 
 /**
  * Action请求传递的消息,包括了请求和返回的数据集
- * TODO 如果ActionMsg创建消耗太大，可使用Pool来提高性能
+ * 
  * @author keel
  *
  */
@@ -50,7 +50,7 @@ public class ActionMsg {
 	/**
 	 * 数据集,通常为下一个Action所需要的数据
 	 */
-	Map<String, Object> data;
+	private final Map<String, Object> data;
 
 	
 	/**
@@ -74,10 +74,15 @@ public class ActionMsg {
 		}else{
 			sb.append("\"").append(this.nextAction.getName()).append("\",");
 		}
-		sb.append("\"data\":").append(jsonWriter.write(data)).append(",");
+		sb.append("\"data\":").append(jsonWriter.write(data));
 		sb = this.addToJson(sb);
 		sb.append("}");
 		return sb.toString();
+	}
+	
+	@Override
+	public String toString() {
+		return this.toJson();
 	}
 	
 	/**

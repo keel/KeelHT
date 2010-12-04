@@ -10,63 +10,53 @@ import java.util.Date;
  * @author keel
  *
  */
-public class Task {
+public class Task implements Runnable{
 
 	
-	public Task() {
+	/**
+	 * @param actionMsg ActionMsg
+	 */
+	public Task(ActionMsg actionMsg) {
+		this.actionMsg = actionMsg;
 	}
 	
+
 	/**
 	 * @param name
+	 * @param actionMsg ActionMsg
 	 */
-	public Task(String name) {
+	public Task(String name,ActionMsg actionMsg) {
 		super();
 		this.name = name;
+		this.actionMsg = actionMsg;
 	}
 
-	/**
-	 * @param id
-	 * @param name
-	 */
-	public Task(int id, String name) {
-		super();
-		this.id = id;
-		this.name = name;
-	}
-
+	private ActionMsg actionMsg;
 	
-	/**
-	 * Task处理Action
-	 * @param msg ActionMsg
-	 * @return 执行后的ActionMsg
-	 */
-	public ActionMsg exe(ActionMsg msg){
+	private boolean canCanceled = false;
+	
+//	/**
+//	 * Task处理Action
+//	 * @return 执行后的ActionMsg
+//	 */
+//	public ActionMsg exe(){
+//		//执行Action
+//		this.actionMsg = ActionManager.findAction(this.actionMsg.getActitonName()).act(actionMsg);
+//		//加入本Task处理的完成时间
+//		actionMsg.addData("task_"+this.name, new Date());
+//		return actionMsg;
+//	}
+
+	@Override
+	public void run() {
+		//执行Action
+		this.actionMsg = ActionManager.findAction(this.actionMsg.getActitonName()).act(actionMsg);
 		//加入本Task处理的完成时间
-		msg.addData("task_"+this.name, new Date());
-		//如果有下一个Action,则立即执行
-		if (msg.getNextAction() != null) {
-			msg.getNextAction().act(msg);
-		}
-		return msg;
+		actionMsg.addData("task_"+this.name, new Date().toString());
 	}
 
-	private int id;
 	
 	private String name;
-
-	/**
-	 * @return the id
-	 */
-	public final int getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public final void setId(int id) {
-		this.id = id;
-	}
 
 	/**
 	 * @return the name
@@ -83,5 +73,34 @@ public class Task {
 	}
 	
 	
+	
+
+
+
+	/**
+	 * @return the canCanceled
+	 */
+	public final boolean isCanCanceled() {
+		return canCanceled;
+	}
+
+
+	/**
+	 * @param canCanceled the canCanceled to set
+	 */
+	public final void setCanCanceled(boolean canCanceled) {
+		this.canCanceled = canCanceled;
+	}
+
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{\"task\":").append(this.name) //.append(",\"id\":").append(this.id)
+		.append(",\"msg\":").append(this.actionMsg.toJson()).append("}");
+		return sb.toString();
+	}
+
+
 
 }

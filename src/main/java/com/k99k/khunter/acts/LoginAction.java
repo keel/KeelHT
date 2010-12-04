@@ -14,12 +14,12 @@ import com.k99k.khunter.MongoUserDao;
  * @author keel
  *
  */
-public class HTLoginAction extends Action {
+public class LoginAction extends Action {
 
 	/**
 	 * @param name
 	 */
-	public HTLoginAction(String name) {
+	public LoginAction(String name) {
 		super(name);
 	}
 	

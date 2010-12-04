@@ -34,9 +34,11 @@ public class Action {
 	 * @return 执行后的ActionMsg
 	 */
 	public ActionMsg act(ActionMsg msg){
+		//此处加入进行的操作
+		
 		
 		//加入本Action处理的完成时间
-		msg.addData("action_"+this.name, new Date());
+		msg.addData("action_"+this.name, new Date().toString());
 		//如果有下一个Action,则立即执行
 		if (msg.getNextAction() != null) {
 			msg.getNextAction().act(msg);

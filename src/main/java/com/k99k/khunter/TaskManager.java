@@ -31,15 +31,7 @@ public final class TaskManager {
 	public static final String getName(){
 		return "tasks";
 	}
-	
-	/**
-	 * 在json中定位线程配置
-	 * @return 返回"taskThreads"
-	 */
-	public static final String getThreadName(){
-		return "taskThreads";
-	}
-	
+
 	private static boolean isInitOK = false;
 	
 	private static final JSONReader jsonReader = new JSONValidatingReader(new ExceptionErrorListener());
@@ -91,7 +83,7 @@ public final class TaskManager {
 						HTManager.fetchProps(action, m);
 						//加入Task
 						if(!addTask(action)){
-							log.error("Task name alread exist! failed load this Task:"+action.getName()+" id:"+action.getId());
+							log.error("Task name alread exist! failed load this Task:"+action.getName());
 						}
 						
 					}else{
@@ -132,7 +124,20 @@ public final class TaskManager {
 	
 	//FIXME 由一个ActionMsg创建一个新任务，并将其放到处理线程的队列中
 	
+	/*
 	//创建TaskThread线程集，并管理其状态
+	 * 
+	 * 分为两类Task：
+	 * 一类为立即执行类，由一个立即执行的线程池执行；
+	 * 一类为定时Task，这类Task加进来时将进入一个排序线程，此线程对所有的定时Task按时间顺序排序
+	 * 形成一个有序队列，由一个线程监控此队列，取最近的时间一个任务判断是否可执行，
+	 * 如果可执行则放到执行线程池中进行处理并立即取下一个时间任务
+	 * 
+	 * 
+	 * 
+	*/
+	
+	
 	
 	//TODO 告警机制：可采用在另一服务器用robot监控游戏各个环节，与服务端分离
 
@@ -216,7 +221,7 @@ public final class TaskManager {
 		String classPath = webRoot+"classes/";
 		TaskManager.init(jsonFilePath, classPath);
 		Task a = TaskManager.findTask("login");
-		System.out.println(a.getName()+ " id:"+a.getId());
+		System.out.println(a.getName());
 		try {
 			Thread.sleep(10000);
 		} catch (InterruptedException e) {
@@ -224,7 +229,7 @@ public final class TaskManager {
 		}
 		TaskManager.reLoadTask("login");
 		a = TaskManager.findTask("login");
-		System.out.println(a.getName()+ " id:"+a.getId());
+		System.out.println(a.getName());
 	}
 	
 }

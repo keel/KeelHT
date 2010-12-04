@@ -31,39 +31,26 @@
 		}
 	
 	},
-	"taskThreads":{
-		"a1":{
-			"level":1,
-			"sleep":100
-		},
-		"a2":{
-			"level":1,
-			"sleep":100
-		},
-		"b1":{
-			"level":2,
-			"sleep":3000
-		},
-		"c1":{
-			"level":3,
-			"sleep":300000
-		}			
-	},
 	"tasks":{
-		
-		
-		"simple":{
-			"_class":"com.k99k.khunter.tasks.HTSimpleTask",
-			"thread#taskThreads":"a1,a2 --在ActionMsg中去控制,此配置可以无!!",
-			"id":1
-		}
+		"taskMapInitSize":50000,
+		"exePool":{
+			"corePoolSize":10,
+			"maximumPoolSize":200,
+			"keepAliveTime":30000,
+			"queueSize":150
+		},
+		"ratePoolSize":5,
+		"scheduledPoolSize":10
 	},
 	"actions":{
 		"login":{	
-			"_class":"com.k99k.khunter.acts.HTLoginAction",
+			"_class":"com.k99k.khunter.acts.LoginAction",
 			"type":"normal",
 			"id":152,
 			"userDao#daos":"mongoUserDao"
+		},
+		"log":{	
+			"_class":"com.k99k.khunter.acts.LogAction"
 		}
 	
 	},
