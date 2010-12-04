@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.k99k.khunter.tasks;
+package com.k99k.khunter;
 
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -9,7 +9,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.log4j.Logger;
 
 /**
- * 拒绝任务处理方法
+ * 拒绝任务处理方法,目前是记录任务日志然后抛弃任务
  * @author keel
  *
  */
@@ -25,7 +25,7 @@ public class RejectedTaskHandler implements RejectedExecutionHandler {
 	 */
 	@Override
 	public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-		// 进行日志记录，然后取消任务执行
+		// 进行日志记录，然后抛弃任务执行
 		log.error("TASK Aborted! task:"+r.toString());
 	}
 

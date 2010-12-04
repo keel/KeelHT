@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 
 import com.k99k.khunter.ActionManager;
 import com.k99k.khunter.ActionMsg;
+import com.k99k.khunter.RejectedTaskHandler;
 import com.k99k.khunter.Task;
 import com.k99k.khunter.TaskManager;
 
@@ -160,7 +161,7 @@ public class FastTask {
 	 */
 	public void addScheduledTask(Task task,long delay,TimeUnit unit){
 		if (delay <= 0) {
-			log.warn("ScheduledTask with no delay! task:"+task);
+			log.warn("ScheduledTask with no delay! Excuting now. task:"+task);
 		}
 		ScheduledFuture<?> sf = scheduledPool.schedule(task, delay, unit);
 		if (!task.isCanCanceled()) {
@@ -178,7 +179,7 @@ public class FastTask {
 	 */
 	public void addRateTask(Task task,long initDelay,long delay,TimeUnit unit){
 		if (delay <= 0) {
-			log.error("RateTask with no delay! canceled!! task:"+task);
+			log.error("RateTask with no delay! Task canceled!! task:"+task);
 			return;
 		}
 		ScheduledFuture<?> sf = ratePool.scheduleAtFixedRate(task, initDelay, delay, unit);
@@ -278,7 +279,6 @@ public class FastTask {
 	}
 	
 	void test3(){
-		System.out.println("test3");
 		String webRoot = "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/";
 		String jsonFilePath = webRoot+"kconfig.json";
 		String classPath = webRoot+"classes/";

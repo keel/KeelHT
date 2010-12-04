@@ -63,13 +63,13 @@ public final class DaoManager {
 				String ini = KIoc.readTxtInUTF8(iniFile);
 				Map<String,?> root = (Map<String,?>) jsonReader.read(ini);
 				//先定位到json的actions属性
-				Map<String, ?> daoMap = (Map<String, ?>) root.get(DaoManager.getName());
+				Map<String, ?> dm = (Map<String, ?>) root.get(DaoManager.getName());
 
 				//循环加入Dao
 				int i = 0;
-				for (Iterator<String> iter = daoMap.keySet().iterator(); iter.hasNext();) {
+				for (Iterator<String> iter = dm.keySet().iterator(); iter.hasNext();) {
 					String daoName = iter.next();
-					Map<String, ?> m = (Map<String, ?>) daoMap.get(daoName);
+					Map<String, ?> m = (Map<String, ?>) dm.get(daoName);
 					
 					//读取必要的属性，如果少则报错并继续下一个
 					if (m.containsKey("_class") &&  m.containsKey("_dataSource")) {
@@ -94,9 +94,8 @@ public final class DaoManager {
 						HTManager.fetchProps(dao, m);
 						//加入Dao
 						if (dao.init()) {
-							if(!addDao(dao)){
-								log.error("Dao name alread exist! failed load this Dao:"+dao.getName()+" id:"+dao.getId());
-							}
+							daoMap.put(dao.getName(), dao);
+							log.info("Dao added: "+dao.getName());
 						}else{
 							log.error("Dao init failed:"+dao.getName()+" id:"+dao.getId());
 						}
@@ -119,6 +118,7 @@ public final class DaoManager {
 			//更新配置文件位置
 			iniFilePath = iniFile;
 			classFilePath = classPath;
+			log.info("DaoManager init OK!");
 		}
 		return true;
 	}

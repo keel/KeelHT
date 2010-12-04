@@ -88,10 +88,9 @@ public final class ActionManager {
 						Action action = (Action)o;
 						
 						HTManager.fetchProps(action, m);
-						//加入Action
-						if(!addAction(action)){
-							log.error("Action name alread exist! failed load this Action:"+action.getName()+" id:"+action.getId());
-						}
+						//加入Action,无论是否已存在
+						actionMap.put(action.getName(), action);
+						log.info("Action added: "+action.getName());
 						
 					}else{
 						log.error("Action init Error! miss one or more key props. Position:"+i);
@@ -110,7 +109,9 @@ public final class ActionManager {
 			isInitOK = true;
 			iniFilePath = iniFile;
 			classFilePath = classPath;
+			log.info("ActionManager init OK!");
 		}
+		
 		return true;
 	}
 	

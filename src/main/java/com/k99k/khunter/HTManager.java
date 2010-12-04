@@ -75,6 +75,10 @@ public final class HTManager {
 					initOK = ActionManager.init(ini,classPath);
 					log.info("ActionManager inited OK? " + initOK);
 					
+					//初始化ActionManager
+					initOK = TaskManager.init(ini,classPath);
+					log.info("TaskManager inited OK? " + initOK);
+					
 					//TODO 初始化IOManager
 					
 				}
@@ -112,8 +116,6 @@ public final class HTManager {
 		
 		if (managerName.equals("actions")) {
 			return ActionManager.findAction(name);
-		}else if(managerName.equals("tasks")){
-			return TaskManager.findTask(name);
 		}else if(managerName.equals("daos")){
 			return DaoManager.findDao(name);
 		}else if(managerName.equals("io")){

@@ -113,9 +113,8 @@ public final class DataSourceManager {
 						HTManager.fetchProps(ds, m);
 						//初始化ds并加入DataSourceInterface
 						if (ds.init()) {
-							if(!addDataSource(ds)){
-								log.error("DataSourceInterface name alread exist! failed load this DataSourceInterface:"+ds.getName());
-							}
+							dataSourceMap.put(ds.getName(), ds);
+							log.info("DataSourceInterface added: "+ds.getName());
 						}else{
 							log.error("DataSource init failed:"+ds.getName());
 						}
@@ -138,6 +137,7 @@ public final class DataSourceManager {
 			isInitOK = true;
 			iniFilePath = iniFile;
 			classFilePath = classPath;
+			log.info("DataSourceManager init OK!");
 		}
 		return true;
 	}
