@@ -7,6 +7,17 @@ import java.util.Date;
 
 /**
  * 同步操作,与Task异步操作相区别,多个Action之间可相互调用
+ * <p>
+ * Action的第一个用法:串连
+<pre>
+msg.setNextAction(ActionManager.findAction("log"));
+</pre>
+ * Action的第二个用法:直接调用其act方法
+<pre>
+Action a = ActionManager.findAction("log");
+a.act(msg);
+</pre>
+ * </p>
  * @author keel
  *
  */
@@ -83,6 +94,11 @@ public class Action {
 		this.type = type;
 	}
 
-	
+	/**
+	 * 处理退出时的操作,一般在ActionManager关闭时处理
+	 */
+	public void exit(){
+		//处理退出时的操作
+	}
 	
 }

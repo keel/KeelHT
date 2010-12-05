@@ -75,11 +75,13 @@ public final class HTManager {
 					initOK = ActionManager.init(ini,classPath);
 					log.info("ActionManager inited OK? " + initOK);
 					
-					//初始化ActionManager
+					//初始化TaskManager
 					initOK = TaskManager.init(ini,classPath);
 					log.info("TaskManager inited OK? " + initOK);
 					
-					//TODO 初始化IOManager
+					//初始化IOManager
+					initOK = IOManager.init(ini,classPath);
+					log.info("IOManager inited OK? " + initOK);
 					
 				}
 			} catch (Exception e) {
@@ -119,7 +121,7 @@ public final class HTManager {
 		}else if(managerName.equals("daos")){
 			return DaoManager.findDao(name);
 		}else if(managerName.equals("io")){
-			//TODO 定位到指定的IOmanager
+			return IOManager.findIO(name);
 		}else if(managerName.equals("dataSources")){
 			return DataSourceManager.findDataSource(name);
 		}
@@ -174,7 +176,12 @@ public final class HTManager {
 	 * 退出操作
 	 */
 	public static void exit(){
-		log.info("================ [HTManager exit] ================");
+		log.info("================ [HTManager exiting] ================");
+		ActionManager.exit();
+		TaskManager.exit();
+		IOManager.exit();
+		DataSourceManager.exit();
+		log.info("================ [HTManager exited] ================");
 	}
 	
 //	static final Map<String,Object> managerMap = createManagerMap();

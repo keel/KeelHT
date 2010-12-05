@@ -156,6 +156,14 @@ public final class DataSourceManager {
 	public static final boolean isInitOK(){
 		return isInitOK;
 	}
+	
+	public static final void exit(){
+		for (Iterator<String> it = dataSourceMap.keySet().iterator(); it.hasNext();) {
+			DataSourceInterface ds = dataSourceMap.get(it.next());
+			ds.exit();
+		}
+		log.info("DataSourceManager exited.");
+	}
 
 	/**
 	 * 获取一个DataSourceInterface

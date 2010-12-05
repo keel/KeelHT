@@ -103,6 +103,10 @@ public final class ActionServlet extends HttpServlet {
 			//是否发向JSP
 			else if (msg.getData("jsp") != null) {
 				String to = (String) msg.getData("jsp");
+				Object o = msg.getData("jspAttr");
+				if (o != null) {
+					req.setAttribute("jspAttr", o);
+				}
 				RequestDispatcher rd = req.getRequestDispatcher(to);
 				rd.forward(req, resp);
 				return;
@@ -117,6 +121,8 @@ public final class ActionServlet extends HttpServlet {
 			}
 		} catch (Exception e) {
 			log.error("Action servlet error!", e);
+			resp.getWriter().print("500 - System error! please contact administrator.");
+			return;
 		}
 
 	}

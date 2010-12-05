@@ -44,7 +44,7 @@ public class HttpActionMsg extends ActionMsg {
 	 */
 	@Override
 	StringBuilder addToJson(StringBuilder sb) {
-		sb.append("\"ip\":\"").append(this.ip).append("\",");
+		sb.append(",\"ip\":\"").append(this.ip).append("\",");
 		sb.append("\"url\":\"").append(this.url).append("\",");
 		sb.append("\"paraMap\":").append(jsonWriter.write(this.httpReq.getParameterMap()));
 		return sb;

@@ -30,10 +30,26 @@ public class Task implements Runnable{
 		this.name = name;
 		this.actionMsg = actionMsg;
 	}
+	
+	
+
+	/**
+	 * @param name
+	 * @param actionMsg
+	 * @param canCanceled
+	 */
+	public Task(String name,ActionMsg actionMsg, boolean canCanceled ) {
+		super();
+		this.name = name;
+		this.actionMsg = actionMsg;
+		this.canCanceled = canCanceled;
+	}
+
+
 
 	private ActionMsg actionMsg;
 	
-	private boolean canCanceled = false;
+	private boolean canCanceled = true;
 	
 //	/**
 //	 * Task处理Action

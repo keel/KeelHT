@@ -4,10 +4,12 @@
 package com.k99k.khunter.acts;
 
 import com.k99k.khunter.Action;
+import com.k99k.khunter.ActionManager;
 import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.DaoInterface;
 import com.k99k.khunter.HTUser;
 import com.k99k.khunter.MongoUserDao;
+import com.k99k.khunter.TaskManager;
 
 /**
  * 登录Action
@@ -46,8 +48,42 @@ public class LoginAction extends Action {
 		msg.addData("dataSource", this.userDao.getDataSource().getName());
 		//TODO coll传递问题不在mongodb中
 		HTUser user =  this.userDao.findUser(3);
-		msg.addData("print",user.toString());
-		msg.setNextAction(null);
+
+		
+		//创建Task方式:直接新建ActionMsg,一般推荐此用法,以免后面的action改变msg的相关值
+		ActionMsg logMsg = new ActionMsg("log");
+		//logMsg.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
+		
+		logMsg.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_SCHEDULE_POOL);
+		logMsg.addData(TaskManager.TASK_DELAY, 5000);
+		logMsg.addData(TaskManager.TASK_CANCEL, false);
+		logMsg.addData("user", user.toString());
+		boolean taskBuilt =TaskManager.makeNewTask("logMsg#1", logMsg);
+		msg.addData("taskBuilt#log", taskBuilt);
+		
+		//错误的创建Task方式:更改现有msg的ActionName,后面的操作中会改变msg的相关值,可能引发错误!
+//		msg.setActitonName("log");
+//		msg.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
+//		TaskManager.makeNewTask("logMsg#2", msg);
+
+		
+		//Action的第一个用法:串连
+		//msg.setNextAction(ActionManager.findAction("log"));
+		
+		//Action的第二个用法:直接调用其act方法
+		//Action a = ActionManager.findAction("log");
+		//a.act(msg);
+		
+		//--------------
+		//输出
+		//--------------
+		//直接print
+		msg.addData("print",msg.toString());
+		
+		//jsp方式输出
+//		msg.addData("jsp", "/WEB-INF/test.jsp");
+//		msg.addData("jspAttr", user);
+		
 		
 		return super.act(msg);
 	}

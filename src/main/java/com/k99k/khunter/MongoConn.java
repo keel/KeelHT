@@ -261,6 +261,11 @@ public final class MongoConn implements DataSourceInterface{
 	public final void setName(String name) {
 		this.name = name;
 	}
+
+	@Override
+	public void exit() {
+		this.mongo.close();
+	}
 	
 	
 	

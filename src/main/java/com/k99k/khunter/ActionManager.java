@@ -52,6 +52,14 @@ public final class ActionManager {
 	
 	private static String classFilePath;
 	
+	public static final void exit(){
+		for (Iterator<String> it = actionMap.keySet().iterator(); it.hasNext();) {
+			Action act = actionMap.get(it.next());
+			act.exit();
+		}
+		log.info("ActionManager exited.");
+	}
+	
 	/**
 	 * 初始化ActionManager
 	 * @param iniFile 配置文件路径

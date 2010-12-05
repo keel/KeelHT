@@ -14,4 +14,6 @@ public interface DataSourceInterface {
 	public boolean init();
 	
 	public boolean reset();
+	
+	public void exit();
 }

@@ -25,7 +25,7 @@ public class LogAction extends Action {
 	
 	@Override
 	public ActionMsg act(ActionMsg msg) {
-		log.info(msg);
+		log.info("[LogAction]:"+msg);
 		msg.setNextAction(null);
 		return super.act(msg);
 	}

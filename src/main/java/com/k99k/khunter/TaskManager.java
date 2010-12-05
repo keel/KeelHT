@@ -4,7 +4,6 @@
 package com.k99k.khunter;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -20,7 +19,7 @@ import org.stringtree.json.JSONValidatingReader;
 
 
 /**
- * FIXME Task管理器，负责载入和刷新Task，以及添加新的Task等
+ * Task管理器，负责载入和刷新Task，以及添加新的Task等
  * @author keel
  *
  */
@@ -101,8 +100,18 @@ public final class TaskManager {
 	public static final String TASK_TYPE = "taskType";
 	public static final String TASK_DELAY = "taskDelay";
 	public static final String TASK_INIT_DELAY = "taskInitDelay";
+	public static final String TASK_CANCEL = "taskCanCancel";
 	
-	
+	/**
+	 * 退出前关闭所有任务
+	 */
+	public static final void exit(){
+		exePool.shutdownNow();
+		singleExePool.shutdownNow();
+		ratePool.shutdownNow();
+		scheduledPool.shutdownNow();
+		log.info("TaskManager exited");
+	}
 	
 	/**
 	 * 添加一个立即执行的任务到立即处理的多线程线程池
@@ -123,7 +132,7 @@ public final class TaskManager {
 			log.warn("ScheduledTask with no delay! Excuting now. task:"+task);
 		}
 		ScheduledFuture<?> sf = scheduledPool.schedule(task, delay, unit);
-		if (!task.isCanCanceled()) {
+		if (task.isCanCanceled()) {
 			taskMap.put(task.getName(), sf);
 		}
 	}
@@ -142,7 +151,7 @@ public final class TaskManager {
 			return;
 		}
 		ScheduledFuture<?> sf = ratePool.scheduleAtFixedRate(task, initDelay, delay, unit);
-		if (!task.isCanCanceled()) {
+		if (task.isCanCanceled()) {
 			taskMap.put(task.getName(), sf);
 		}
 	}
@@ -178,18 +187,20 @@ public final class TaskManager {
 		}
 		Object o = msg.getData(TASK_TYPE);
 		int type = (o != null && o.toString().matches("[1234]")) ? Integer.parseInt(o.toString()):0;
+		Object oCancel = msg.getData(TASK_CANCEL);
+		boolean canCancel = (oCancel != null && oCancel instanceof Boolean)?(Boolean)oCancel:true;
 		switch (type) {
 		case TASK_TYPE_EXE_POOL:
-			addExeTask(new Task(taskName,msg));
+			addExeTask(new Task(taskName,msg,canCancel));
 			break;
 		case TASK_TYPE_EXE_SINGLE:
-			addSingleTask(new Task(taskName,msg));
+			addSingleTask(new Task(taskName,msg,canCancel));
 			break;
 		case TASK_TYPE_SCHEDULE_POOL:
 			Object o1 = msg.getData(TASK_DELAY);
 			//如果没有delay字段则立即表示执行,delay为0
 			long delay = (o1 != null && o1.toString().matches("\\d+")) ? Long.parseLong(o1.toString()):0;
-			addScheduledTask(new Task(taskName,msg), delay, TimeUnit.MILLISECONDS);
+			addScheduledTask(new Task(taskName,msg,canCancel), delay, TimeUnit.MILLISECONDS);
 			break;
 		case TASK_TYPE_SCHEDULE_RATE:
 			Object o2 = msg.getData(TASK_INIT_DELAY);
@@ -198,7 +209,7 @@ public final class TaskManager {
 			Object o3 = msg.getData(TASK_DELAY);
 			//如果没有delay字段则立即表示执行,delay为0
 			long delay2 = (o3 != null && o3.toString().matches("\\d+")) ? Long.parseLong(o3.toString()):0;
-			addRateTask(new Task(taskName,msg), initDelay, delay2, TimeUnit.MILLISECONDS);
+			addRateTask(new Task(taskName,msg,canCancel), initDelay, delay2, TimeUnit.MILLISECONDS);
 			break;
 		default:
 			log.error("Task type error:"+type);
