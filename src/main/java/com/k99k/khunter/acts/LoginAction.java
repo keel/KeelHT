@@ -42,7 +42,15 @@ public class LoginAction extends Action {
 		
 		//有此用户数据则进行验证
 		
+		//同步用户数据,根据时间计算用户当前状态
+		//体力值,由时间计算存储值和当前值
+		//判断是否有消息(战斗，采集)
+		//状态和位置是否更新
+		//宠物的状态及信息
+		
 		//结果为成功和失败两种,成功则直接返回,失败也可直接返回或转到处理失败的Action
+		
+		
 		msg.addData("something", "nothing");
 		msg.addData("dao", this.userDao.getName());
 		msg.addData("dataSource", this.userDao.getDataSource().getName());
@@ -51,7 +59,7 @@ public class LoginAction extends Action {
 
 		
 		//创建Task方式:直接新建ActionMsg,一般推荐此用法,以免后面的action改变msg的相关值
-		ActionMsg logMsg = new ActionMsg("log");
+		ActionMsg logMsg = new ActionMsg("log",8);
 		//logMsg.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
 		
 		logMsg.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_SCHEDULE_POOL);

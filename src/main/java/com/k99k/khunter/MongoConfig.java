@@ -6,8 +6,11 @@ package com.k99k.khunter;
 import java.util.Date;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.DBRef;
 
 /**
  * TODO Mongodb配置及设置
@@ -32,6 +35,20 @@ public class MongoConfig {
 		ob.append("id", 12);
 		coll.save(ob);
 		
+		//----
+//		DBRef addressRef = new DBRef(db, "foo.bar", "202.102.40.43");
+//		DBObject address = addressRef.fetch();
+//		
+//		DBObject person = BasicDBObjectBuilder.start()
+//	    .add("name", "Fred")
+//	    .add("address", addressRef)
+//	    .get();
+//		
+//		coll.save(person);
+//
+//		DBObject fred = coll.findOne();
+//		DBRef addressObj = (DBRef)fred.get("address");
+//		addressObj.fetch();
 	}
 	
 	public void testMongoDao(){

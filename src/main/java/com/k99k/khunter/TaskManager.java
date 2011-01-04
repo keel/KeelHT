@@ -4,6 +4,7 @@
 package com.k99k.khunter;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -52,6 +53,10 @@ public final class TaskManager {
 	private static int scheduledPoolSize = 10;
 	
 	private static int taskMapInitSize = 50000;
+	
+	/**
+	 * 非即时任务的引用集合,以任务名为key,ScheduledFuture为value实现对任务的调度
+	 */
 	private static HashMap<String,ScheduledFuture<?>> taskMap = new HashMap<String, ScheduledFuture<?>>(taskMapInitSize);
 	
 	/**
@@ -101,6 +106,21 @@ public final class TaskManager {
 	public static final String TASK_DELAY = "taskDelay";
 	public static final String TASK_INIT_DELAY = "taskInitDelay";
 	public static final String TASK_CANCEL = "taskCanCancel";
+	
+	
+	/**
+	 * 清理taskMap,移除已经完成的过期task
+	 * TODO 可通过配置Action来实现定期或达到一定大小时自动清理
+	 */
+	public static final void clearTaskMap(){
+		for (Iterator<String> it = taskMap.keySet().iterator(); it.hasNext();) {
+			String taskKey = it.next();
+			ScheduledFuture<?> sf = taskMap.get(taskKey);
+			if (sf.isDone()) {
+				taskMap.remove(taskKey);
+			}
+		}
+	}
 	
 	/**
 	 * 退出前关闭所有任务

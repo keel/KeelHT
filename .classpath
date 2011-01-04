@@ -18,9 +18,5 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="lib" path="F:/tools/junit-4.8.2.jar"/>
 	<classpathentry kind="lib" path="F:/tools/hamcrest-all-1.2.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-1.2.13.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mongo-2.1.jar" sourcepath="F:/tools/mongodb-mongo-java-driver/src/main"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/stringtree-json-2.0.9.jar" sourcepath="F:/tools/json_stringtree/stringtree-2.0.9-src.zip"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-pool-1.5.5.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Console</title>
+<meta name="keywords" content=" " />
+<meta name="description" content=" " />
+<meta name="author" content="keel" />
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+<link rel="stylesheet" type="text/css" href="css/jquery.snippet.min.css" />
+<script src="js/jquery.js" type="text/javascript"></script>
+<script type="text/javascript" src="js/jquery.snippet.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+$(function(){
+$("pre.json").snippet("javascript",{style:"bipolar",transparent:true,showNum:false});
+});
+</script>
+</head>
+
+<body>
+
+<a href="#" target="_blank">default输入</a>
+
+<pre class="json">
+{
+	"version":1,
+	"updates":{
+		"2010-11-20":"始建此文件",
+		"2010-11-21":"可将datasource等分离成不同文件,由不同的类进行控制",
+		"2010-11-24":"再多个actionIni,taskIni,dataSourceIni,daoIni属性即可在HTManager分别控制其配置文件位置"
+	},
+	"info":"更改此文件的配置后，请对发生变化的Action执行reload操作",
+	"classPath": "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/classes/",
+	"iniPath": "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/kconfig.json",
+	"dataSources":{
+		"mongodb_local":{
+			"_dbType":"mongodb",
+			"ip":"127.0.0.1",
+			"port":27017,
+			"dbName":"kht",
+			"user":"sike_ht",
+			"pwd":"jsinfo2901_A",
+			"maxWaitTime":5000,
+			"connectionsPerHost":50
+		}
+	},
+	"daos":{
+		"mongoUserDao":{
+			"_class":"com.k99k.khunter.MongoUserDao",
+			"_dataSource":"mongodb_local",
+			"dbType":"mongodb",
+			"type":"single",
+			"tableName":"testKHT",
+			"id":2
+		}
+	},
+	"tasks":{
+		"taskMapInitSize":50000,
+		"exePool":{
+			"corePoolSize":10,
+			"maximumPoolSize":200,
+			"keepAliveTime":30000,
+			"queueSize":150
+		},
+		"ratePoolSize":5,
+		"scheduledPoolSize":10
+	},
+	"actions":{
+		"login":{	
+			"_class":"com.k99k.khunter.acts.LoginAction",
+			"type":"normal",
+			"id":152,
+			"userDao#daos":"mongoUserDao"
+		},
+		"log":{	
+			"_class":"com.k99k.khunter.acts.LogAction"
+		}
+	},
+	"io":{
+		"email":{
+		}	
+	}
+}
+</pre>
+</body>
+</html>

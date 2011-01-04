@@ -50,6 +50,7 @@ public final class HTManager {
 	 * @param iniFile 配置文件路径
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static boolean init(String iniFile){
 		boolean initOK = false;
 		if (!isInited) {
