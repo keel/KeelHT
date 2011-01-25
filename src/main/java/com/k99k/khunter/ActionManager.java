@@ -8,9 +8,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.stringtree.json.ExceptionErrorListener;
-import org.stringtree.json.JSONReader;
-import org.stringtree.json.JSONValidatingReader;
+import com.k99k.tools.JSONTool;
 
 /**
  * Action管理器，负责载入和刷新Action，以及添加新的Action等
@@ -41,7 +39,6 @@ public final class ActionManager {
 	
 	private static boolean isInitOK = false;
 	
-	private static final JSONReader jsonReader = new JSONValidatingReader(new ExceptionErrorListener());
 	
 	/**
 	 * 存储Action的Map,初始化大小为100
@@ -66,12 +63,13 @@ public final class ActionManager {
 	 * @param classPath class文件所在的路径
 	 * @return 是否初始化成功
 	 */
+	@SuppressWarnings("unchecked")
 	public static boolean init(String iniFile,String classPath){
 		if (!isInitOK) {
 			//读取配置文件刷新注入的Action数据
 			try {
 				String ini = KIoc.readTxtInUTF8(iniFile);
-				Map<String,?> root = (Map<String,?>) jsonReader.read(ini);
+				Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
 				//先定位到json的actions属性
 				Map<String, ?> actionsMap = (Map<String, ?>) root.get(ActionManager.getName());
 				//循环加入Action
@@ -99,7 +97,13 @@ public final class ActionManager {
 						//加入Action,无论是否已存在
 						actionMap.put(action.getName(), action);
 						log.info("Action added: "+action.getName());
-						
+						try {
+							//Action初始化
+							action.init();
+						} catch (Exception e) {
+							log.error("Action init Error:"+action.getName(), e);
+							continue;
+						}
 					}else{
 						log.error("Action init Error! miss one or more key props. Position:"+i);
 						continue;
@@ -182,10 +186,11 @@ public final class ActionManager {
 	 * 刷新(重载)一个Action
 	 * @param act actionName
 	 */
+	@SuppressWarnings("unchecked")
 	public static final boolean reLoadAction(String act){
 		try {
 			String ini = KIoc.readTxtInUTF8(iniFilePath);
-			Map<String,?> root = (Map<String,?>) jsonReader.read(ini);
+			Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
 			//先定位到json的actions属性
 			Map<String, ?> actionsMap = (Map<String, ?>) root.get(ActionManager.getName());
 			Map<String, ?> m = (Map<String, ?>) actionsMap.get(act);
@@ -203,7 +208,7 @@ public final class ActionManager {
 			Action action = (Action)o;
 			HTManager.fetchProps(action, m);
 			actionMap.put(act, action);
-			
+			action.init();
 		} catch (Exception e) {
 			log.error("ActionManager reLoadAction Error:"+act, e);
 			return false;

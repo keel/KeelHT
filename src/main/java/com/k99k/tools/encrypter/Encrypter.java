@@ -17,9 +17,9 @@ import javax.crypto.Cipher;
  */
 
 public class Encrypter {
-	Cipher ecipher;
+	private final Cipher ecipher;
 
-	Cipher dcipher;
+	private final Cipher dcipher;
 	
 	/**
 	 * TODO 暂时固定的用于加解密的key

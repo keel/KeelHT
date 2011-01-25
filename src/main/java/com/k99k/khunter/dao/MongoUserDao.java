@@ -1,11 +1,15 @@
 /**
  * 
  */
-package com.k99k.khunter;
+package com.k99k.khunter.dao;
 
 import java.util.List;
 import java.util.Map;
 
+import com.k99k.khunter.DataSourceInterface;
+import com.k99k.khunter.HTUser;
+import com.k99k.khunter.HTUserDaoInterface;
+import com.k99k.khunter.MongoDao;
 import com.mongodb.BasicDBObject;
 
 /**

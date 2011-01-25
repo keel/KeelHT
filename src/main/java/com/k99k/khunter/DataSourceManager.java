@@ -8,9 +8,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.stringtree.json.ExceptionErrorListener;
-import org.stringtree.json.JSONReader;
-import org.stringtree.json.JSONValidatingReader;
+
+import com.k99k.tools.JSONTool;
 
 /**
  * DataSource管理器,注意它仅支持newDataSource方法中的数据源,不从配置文件中生成新对象
@@ -41,8 +40,6 @@ public final class DataSourceManager {
 	
 	private static boolean isInitOK = false;
 	
-	private static final JSONReader jsonReader = new JSONValidatingReader(new ExceptionErrorListener());
-	
 	/**
 	 * 存储DataSourceInterface的Map,初始化大小为20
 	 */
@@ -50,7 +47,7 @@ public final class DataSourceManager {
 	
 	private static String iniFilePath;
 	
-	private static String classFilePath;
+//	private static String classFilePath;
 	
 	/**
 	 * 根据dbType创建DataSource
@@ -88,12 +85,13 @@ public final class DataSourceManager {
 	 * @param classPath class文件所在的路径
 	 * @return 是否初始化成功
 	 */
+	@SuppressWarnings("unchecked")
 	public static boolean init(String iniFile,String classPath){
 		if (!isInitOK) {
 			//读取配置文件刷新注入的DataSourceInterface数据
 			try {
 				String ini = KIoc.readTxtInUTF8(iniFile);
-				Map<String,?> root = (Map<String,?>) jsonReader.read(ini);
+				Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
 				//先定位到json的dataSources属性
 				Map<String, ?> dsMap = (Map<String, ?>) root.get(DataSourceManager.getName());
 				//循环加入DataSourceInterface
@@ -136,7 +134,7 @@ public final class DataSourceManager {
 			}
 			isInitOK = true;
 			iniFilePath = iniFile;
-			classFilePath = classPath;
+//			classFilePath = classPath;
 			log.info("DataSourceManager init OK!");
 		}
 		return true;
@@ -209,10 +207,11 @@ public final class DataSourceManager {
 	 * 刷新(重载)一个DataSourceInterface
 	 * @param dsName DataSource的name
 	 */
+	@SuppressWarnings("unchecked")
 	public static final boolean reLoadDataSource(String dsName){
 		try {
 			String ini = KIoc.readTxtInUTF8(iniFilePath);
-			Map<String,?> root = (Map<String,?>) jsonReader.read(ini);
+			Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
 			//先定位到json的dataSources属性
 			Map<String, ?> dsMap = (Map<String, ?>) root.get(DataSourceManager.getName());
 			Map<String, ?> m = (Map<String, ?>) dsMap.get(dsName);

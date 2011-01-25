@@ -9,7 +9,7 @@
 <%
 Object o = request.getAttribute("jspAttr");
 if(o != null ){
-	HTUser user = (HTUser)request.getAttribute("jspAttr");
+	HTUser user = (HTUser)o;
 	out.print(user.getName() + " , " + user.getImei() + " , " + user.getEmail());
 }else{
 	out.print("attr is null.");

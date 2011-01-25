@@ -5,7 +5,11 @@ package com.k99k.tools;
  * @author keel
  *
  */
-public class StringUtil {
+public final class StringUtil {
+	
+	private StringUtil(){
+		
+	}
 	/**
 	 * 判断一个字符串是不是数字组成
 	 * @param s 字符。

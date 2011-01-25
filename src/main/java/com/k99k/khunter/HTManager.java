@@ -6,9 +6,8 @@ package com.k99k.khunter;
 import java.util.Iterator;
 import java.util.Map;
 import org.apache.log4j.Logger;
-import org.stringtree.json.ExceptionErrorListener;
-import org.stringtree.json.JSONReader;
-import org.stringtree.json.JSONValidatingReader;
+
+import com.k99k.tools.JSONTool;
 
 /**
  * KHunter系统管理者,协调管理中心
@@ -23,11 +22,6 @@ public final class HTManager {
 	static final Logger log = Logger.getLogger(HTManager.class);
 	
 	//private static final HTManager me = new HTManager();
-	
-	/**
-	 * jsonReader
-	 */
-	static final JSONReader jsonReader = new JSONValidatingReader(new ExceptionErrorListener());
 	
 	
 	/**
@@ -46,11 +40,18 @@ public final class HTManager {
 	private static boolean isInited = false;
 	
 	/**
+	 * 类加载路径(绝对路径)
+	 * @return
+	 */
+	public static final String getClassPath(){
+		return classPath;
+	}
+	
+	/**
 	 * 处理各Manager的初始化
 	 * @param iniFile 配置文件路径
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static boolean init(String iniFile){
 		boolean initOK = false;
 		if (!isInited) {
@@ -58,7 +59,7 @@ public final class HTManager {
 			log.info("================ [HTManager starting... ] ================");
 			try {
 				String iniJson = KIoc.readTxtInUTF8(iniFile);
-				Map<String,?> root = (Map<String,?>) jsonReader.read(iniJson);
+				Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(iniJson);
 				if (root.containsKey("classPath") && root.containsKey("iniPath")) {
 					classPath = (String) root.get("classPath");
 					ini = (String) root.get("iniPath");
@@ -72,10 +73,6 @@ public final class HTManager {
 					initOK = DaoManager.init(ini,classPath);
 					log.info("DaoManager inited OK? " + initOK);
 					
-					//初始化ActionManager
-					initOK = ActionManager.init(ini,classPath);
-					log.info("ActionManager inited OK? " + initOK);
-					
 					//初始化TaskManager
 					initOK = TaskManager.init(ini,classPath);
 					log.info("TaskManager inited OK? " + initOK);
@@ -83,6 +80,10 @@ public final class HTManager {
 					//初始化IOManager
 					initOK = IOManager.init(ini,classPath);
 					log.info("IOManager inited OK? " + initOK);
+					
+					//最后初始化ActionManager
+					initOK = ActionManager.init(ini,classPath);
+					log.info("ActionManager inited OK? " + initOK);
 					
 				}
 			} catch (Exception e) {
@@ -132,12 +133,12 @@ public final class HTManager {
 	
 	
 	/**
-	 * 供各个Manager从配置文件的Map中设置对象属性用
+	 * 供各个Manager从配置文件的Map中设置对象属性用,注意属性除了String,ini外也支持HashMap,ArrayList等stringtree读取的对象
 	 * @param obj 待设置对象
 	 * @param m 由json配置文件对应节点读取出的对象属性Map
 	 * @return 设置属性后的对象
 	 */
-	static final Object fetchProps(Object obj,Map<String,?> m){
+	public static final Object fetchProps(Object obj,Map<String,?> m){
 		//加入属性值
 		for (Iterator<String> it = m.keySet().iterator(); it.hasNext();) {
 			String prop = it.next();
@@ -146,7 +147,7 @@ public final class HTManager {
 				if (prop.indexOf("#") == -1) {
 					Object value = m.get(prop);
 					//处理Long形式的整数属性值,因为stringtree对数字读取为Long, BigInteger, Double or BigDecimal
-					//TODO 对浮点数未处理 
+					//TODO 对浮点数未处理 ,对真正的Long未处理,实际上支持HashMap,ArrayList等stringtree读取的对象
 					if (value instanceof Long) {
 						int iv = ((Long)value).intValue();
 						KIoc.setProp(obj, prop, iv);

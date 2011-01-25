@@ -3,10 +3,9 @@
  */
 package com.k99k.khunter;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -14,9 +13,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.stringtree.json.ExceptionErrorListener;
-import org.stringtree.json.JSONReader;
-import org.stringtree.json.JSONValidatingReader;
+
+import com.k99k.tools.JSONTool;
 
 
 /**
@@ -41,8 +39,6 @@ public final class TaskManager {
 
 	private static boolean isInitOK = false;
 	
-	private static final JSONReader jsonReader = new JSONValidatingReader(new ExceptionErrorListener());
-	
 	private static String iniFilePath;
 	
 	private static String classFilePath;
@@ -57,7 +53,7 @@ public final class TaskManager {
 	/**
 	 * 非即时任务的引用集合,以任务名为key,ScheduledFuture为value实现对任务的调度
 	 */
-	private static HashMap<String,ScheduledFuture<?>> taskMap = new HashMap<String, ScheduledFuture<?>>(taskMapInitSize);
+	private static ConcurrentHashMap<String,ScheduledFuture<?>> taskMap = new ConcurrentHashMap<String, ScheduledFuture<?>>(taskMapInitSize);
 	
 	/**
 	 * 定时任务执行的线程池
@@ -108,18 +104,26 @@ public final class TaskManager {
 	public static final String TASK_CANCEL = "taskCanCancel";
 	
 	
+//	/**
+//	 * 清理taskMap,移除已经完成的过期task --由Task运行结束时自动调用清理
+//	 * TODO 可通过配置Action来实现定期或达到一定大小时自动清理taskMap
+//	 */
+//	public static final void clearTaskMap(){
+//		for (Iterator<String> it = taskMap.keySet().iterator(); it.hasNext();) {
+//			String taskKey = it.next();
+//			ScheduledFuture<?> sf = taskMap.get(taskKey);
+//			if (sf.isDone()) {
+//				taskMap.remove(taskKey);
+//			}
+//		}
+//	}
+	
 	/**
-	 * 清理taskMap,移除已经完成的过期task
-	 * TODO 可通过配置Action来实现定期或达到一定大小时自动清理
+	 * 从taskMap中移除task
+	 * 
 	 */
-	public static final void clearTaskMap(){
-		for (Iterator<String> it = taskMap.keySet().iterator(); it.hasNext();) {
-			String taskKey = it.next();
-			ScheduledFuture<?> sf = taskMap.get(taskKey);
-			if (sf.isDone()) {
-				taskMap.remove(taskKey);
-			}
-		}
+	public static final void removeFromTaskMap(String taskKey){
+		taskMap.remove(taskKey);
 	}
 	
 	/**
@@ -245,12 +249,13 @@ public final class TaskManager {
 	 * @param classPath class文件所在的路径
 	 * @return 是否初始化成功
 	 */
+	@SuppressWarnings("unchecked")
 	public static boolean init(String iniFile,String classPath){
 		if (!isInitOK) {
 			//读取配置文件刷新注入的Task数据
 			try {
 				String ini = KIoc.readTxtInUTF8(iniFile);
-				Map<String,?> root = (Map<String,?>) jsonReader.read(ini);
+				Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
 				//先定位到json的tasks属性
 				Map<String, ?> m = (Map<String, ?>) root.get(TaskManager.getName());
 				Object o = m.get("taskMapInitSize");
@@ -258,7 +263,7 @@ public final class TaskManager {
 					int val = Integer.parseInt(o.toString());
 					if (val != taskMapInitSize) {
 						taskMapInitSize = val;
-						HashMap<String, ScheduledFuture<?>> tm = new HashMap<String, ScheduledFuture<?>>(taskMapInitSize);
+						ConcurrentHashMap<String, ScheduledFuture<?>> tm = new ConcurrentHashMap<String, ScheduledFuture<?>>(taskMapInitSize);
 						synchronized (taskMap) {
 							tm.putAll(taskMap);
 							taskMap = tm;
@@ -318,6 +323,7 @@ public final class TaskManager {
 						if (val != queueSize) {
 							queueSize = val;
 							ArrayBlockingQueue<Runnable> aq = new ArrayBlockingQueue<Runnable>(queueSize);
+							arrBlockQueue = aq;
 							exePool.shutdown();
 							exePool = new ThreadPoolExecutor(
 									corePoolSize,
@@ -365,10 +371,11 @@ public final class TaskManager {
 	 * 刷新(重载)一个Task
 	 * @param act actionName
 	 */
+	@SuppressWarnings("unchecked")
 	public static final boolean reLoadTask(String act){
 		try {
 			String ini = KIoc.readTxtInUTF8(iniFilePath);
-			Map<String,?> root = (Map<String,?>) jsonReader.read(ini);
+			Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
 			//先定位到json的actions属性
 			Map<String, ?> tasksMap = (Map<String, ?>) root.get(TaskManager.getName());
 			Map<String, ?> m = (Map<String, ?>) tasksMap.get(act);

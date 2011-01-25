@@ -69,6 +69,9 @@ public final class ActionServlet extends HttpServlet {
 		//全程使用utf-8
 		//setCharset("utf-8",req,resp);
 		
+		
+		
+		
 		//TODO get方式测试用
 		this.doPost(req, resp);
 	}

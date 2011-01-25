@@ -8,8 +8,8 @@ import com.k99k.khunter.ActionManager;
 import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.DaoInterface;
 import com.k99k.khunter.HTUser;
-import com.k99k.khunter.MongoUserDao;
 import com.k99k.khunter.TaskManager;
+import com.k99k.khunter.dao.MongoUserDao;
 
 /**
  * 登录Action
@@ -55,7 +55,7 @@ public class LoginAction extends Action {
 		msg.addData("dao", this.userDao.getName());
 		msg.addData("dataSource", this.userDao.getDataSource().getName());
 		//TODO coll传递问题不在mongodb中
-		HTUser user =  this.userDao.findUser(3);
+		HTUser user =  this.userDao.findUser(2);
 
 		
 		//创建Task方式:直接新建ActionMsg,一般推荐此用法,以免后面的action改变msg的相关值

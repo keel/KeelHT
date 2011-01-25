@@ -22,7 +22,7 @@
 	},
 	"daos":{
 		"mongoUserDao":{
-			"_class":"com.k99k.khunter.MongoUserDao",
+			"_class":"com.k99k.khunter.dao.MongoUserDao",
 			"_dataSource":"mongodb_local",
 			"dbType":"mongodb",
 			"type":"single",
@@ -51,6 +51,13 @@
 		},
 		"log":{	
 			"_class":"com.k99k.khunter.acts.LogAction"
+		},
+		"console":{	
+			"_class":"com.k99k.khunter.acts.ConsoleAction",
+			"admin":[
+				{"name":"keel","pwd":"6667441","level":1,"state":1,"info":"202.102.113.*"},
+				{"name":"sike","pwd":"123456","level":2,"state":1,"info":"202.102.40.*"}
+			]
 		}
 	
 	},

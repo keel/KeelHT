@@ -14,7 +14,6 @@ public class HTPlace extends KObject{
 
 	public HTPlace() {
 		super();
-		setProp("type", 0);
 		setProp("x", 0);
 		setProp("y", 0);
 		setProp("z", 0);
@@ -88,14 +87,6 @@ public class HTPlace extends KObject{
 
 	public final void setSpecial(String special) {
 		this.setProp("special", special);
-	}
-
-	public final int getType() {
-		return getIntByName("type");
-	}
-
-	public final void setType(int type) {
-		this.setProp("type", type);
 	}
 
 	public final int getZ() {

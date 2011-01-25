@@ -1,0 +1,8 @@
+{
+	"actions":{
+		"state":{	
+			"_class":"com.k99k.khunter.acts.ConsoleStateAction"
+		}
+
+	}
+}

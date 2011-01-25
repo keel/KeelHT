@@ -5,6 +5,7 @@ package com.k99k.khunter;
 
 import java.util.Date;
 
+import com.k99k.khunter.dao.MongoUserDao;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
@@ -81,7 +82,7 @@ public class MongoConfig {
 	 */
 	public static void main(String[] args) {
 		MongoConfig mc = new MongoConfig();
-		mc.testFind();
+		mc.testMongoDao();
 	}
 
 }

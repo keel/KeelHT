@@ -14,7 +14,6 @@ public class HTItem extends KObject{
 
 	public HTItem() {
 		super();
-		this.setProp("type", 0);
 		this.setProp("function", "");
 		this.setProp("ack", 0);
 		this.setProp("def", 0);
@@ -120,13 +119,6 @@ public class HTItem extends KObject{
 		this.setProp("space", space);
 	}
 
-	public final int getType() {
-		return getIntByName("type");
-	}
-
-	public final void setType(int type) {
-		this.setProp("type", type);
-	}
 
 	public final String getFunction() {
 		return getStringByName("function");

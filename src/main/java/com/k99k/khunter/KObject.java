@@ -43,6 +43,7 @@ public class KObject {
 		this.propMap.put("creatorName", "");
 		this.propMap.put("creatorId", 0);
 		this.propMap.put("url", "");
+		this.propMap.put("type", "");
 		
 	}
 	
@@ -58,11 +59,12 @@ public class KObject {
 	 * @param creatorName
 	 * @param creatorId
 	 * @param url
+	 * @param type
 	 * @param maxProp 初始化propMap大小
 	 */
 	public KObject(long id, int state, int level, String info,
 			String createTime, int version, String name, String creatorName,
-			long creatorId, String url,int maxProp) {
+			long creatorId, String url,String type,int maxProp) {
 		this.propMap = new HashMap<String,Object>(maxProp);
 		this.propMap.put("id", id);
 		this.propMap.put("state", state);
@@ -74,6 +76,8 @@ public class KObject {
 		this.propMap.put("creatorName", creatorName);
 		this.propMap.put("creatorId", creatorId);
 		this.propMap.put("url", url);
+		this.propMap.put("type", type);
+		
 	}
 	
 	/**
@@ -90,8 +94,8 @@ public class KObject {
 	 */
 	public KObject(long id, int state, int level, String info,
 			String createTime, int version, String name, String creatorName,
-			long creatorId, String url) {
-		this(id,state,level,info,createTime,version,name,creatorName,creatorId,url,50);
+			long creatorId, String url,String type) {
+		this(id,state,level,info,createTime,version,name,creatorName,creatorId,url,type,50);
 	}
 	
 	/**
@@ -207,6 +211,20 @@ public class KObject {
 	 */
 	public final String getInfo() {
 		return getStringByName("level");
+	}
+
+	/**
+	 * @param type the type to set
+	 */
+	public final void setType(String type) {
+		this.propMap.put("type", type);
+	}
+	
+	/**
+	 * @return the type
+	 */
+	public final String getType() {
+		return getStringByName("type");
 	}
 
 	/**

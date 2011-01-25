@@ -14,7 +14,6 @@ public class HTPet extends KObject{
 
 	public HTPet() {
 		super();
-		setProp("type", 0);
 		setProp("age", 0);
 		setProp("ack", 0);
 		setProp("def", 0);
@@ -34,7 +33,6 @@ public class HTPet extends KObject{
 	}
 
 	/**
-	 * @param type
 	 * @param age
 	 * @param ack
 	 * @param def
@@ -43,10 +41,9 @@ public class HTPet extends KObject{
 	 * @param price
 	 * @param space
 	 */
-	public HTPet(int type, int age, int ack, int def, String special, int hp,
+	public HTPet(int age, int ack, int def, String special, int hp,
 			int price, int space) {
 		super();
-		setProp("type",type);
 		setProp("age", age);
 		setProp("ack", ack);
 		setProp("def", def);
@@ -155,13 +152,5 @@ public class HTPet extends KObject{
 		this.setProp("space", space);
 	}
 
-	public final int getType() {
-		return getIntByName("type");
-	}
-
-	public final void setType(int type) {
-		this.setProp("type", type);
-	}
-	
 	
 }

@@ -120,6 +120,7 @@ public final class KIoc {
 					return true;
 				}
 			}
+			
 			log.error("setProp ERROR! Method can't be found:"+propName);
 			return false;
 			

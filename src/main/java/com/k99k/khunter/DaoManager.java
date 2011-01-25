@@ -8,9 +8,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.stringtree.json.ExceptionErrorListener;
-import org.stringtree.json.JSONReader;
-import org.stringtree.json.JSONValidatingReader;
+
+import com.k99k.tools.JSONTool;
 
 /**
  * DAO管理器
@@ -34,8 +33,6 @@ public final class DaoManager {
 		return "daos";
 	}
 	
-	private static final JSONReader jsonReader = new JSONValidatingReader(new ExceptionErrorListener());
-	
 	/**
 	 * 存储Action的Map,初始化大小为50
 	 */
@@ -55,13 +52,14 @@ public final class DaoManager {
 	 * @param classPath class文件所在的路径
 	 * @return 是否初始化成功
 	 */
+	@SuppressWarnings("unchecked")
 	public static boolean init(String iniFile,String classPath){
 		if (!isInitOK) {
 			//读取配置文件刷新注入的Dao数据
 			try {
 				
 				String ini = KIoc.readTxtInUTF8(iniFile);
-				Map<String,?> root = (Map<String,?>) jsonReader.read(ini);
+				Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
 				//先定位到json的actions属性
 				Map<String, ?> dm = (Map<String, ?>) root.get(DaoManager.getName());
 
@@ -178,10 +176,11 @@ public final class DaoManager {
 	 * 刷新(重载)一个Dao
 	 * @param name dao名
 	 */
+	@SuppressWarnings("unchecked")
 	public static final boolean reLoadDao(String name){
 		try {
 			String ini = KIoc.readTxtInUTF8(iniFilePath);
-			Map<String,?> root = (Map<String,?>) jsonReader.read(ini);
+			Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
 			//先定位到json的daos属性
 			Map<String, ?> daosMap = (Map<String, ?>) root.get(DaoManager.getName());
 			Map<String, ?> m = (Map<String, ?>) daosMap.get(name);
@@ -219,7 +218,7 @@ public final class DaoManager {
 		
 		String webRoot = "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/";
 		String jsonFilePath = webRoot+"kconfig.json";
-		String classPath = webRoot+"classes/";
+//		String classPath = webRoot+"classes/";
 		//需要先初始化HTManager
 		HTManager.init(jsonFilePath);
 		//DaoManager.init(jsonFilePath, classPath);
