@@ -10,6 +10,18 @@ public final class StringUtil {
 	private StringUtil(){
 		
 	}
+	
+	
+	/**
+	 * Object转为String,如果是null则转为""
+	 * @param obj
+	 * @return String (not null)
+	 */
+	public static final String objToStrNotNull(Object obj){
+		String s = (obj == null)?"":obj.toString();
+		return s;
+	}
+	
 	/**
 	 * 判断一个字符串是不是数字组成
 	 * @param s 字符。

@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,com.k99k.tools.*" %>
 <%
 Object o = request.getAttribute("jspAttr");
 HttpActionMsg data = null;
@@ -11,13 +11,11 @@ if(o != null ){
 %>
 <p>config:</p>
 <% 
-String subact = (data.getData("subact")==null)?"":data.getData("subact").toString();
-String save = (data.getData("save")==null)?"":data.getData("save").toString();
+String subact = StringUtil.objToStrNotNull(data.getData("subact"));
+String save = StringUtil.objToStrNotNull(data.getData("save"));
 if(subact.equals("save")){ 
 	out.print(save);
-%>
-
-<%} else{ %>
+} else{ %>
 <form id="commenForm" action="act?act=console&amp;right=editIni&amp;subact=save" method="post">
 <textarea name="json" id="json" rows="15" cols="120" /><%=data.getData("json") %></textarea>
 <p><input class="submit" type="submit" value=" Save " /></p>
