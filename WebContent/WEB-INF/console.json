@@ -2,6 +2,9 @@
 	"actions":{
 		"state":{	
 			"_class":"com.k99k.khunter.acts.ConsoleStateAction"
+		},
+		"editIni":{	
+			"_class":"com.k99k.khunter.acts.ConsoleEditIni"
 		}
 
 	}

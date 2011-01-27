@@ -207,6 +207,8 @@ public final class ActionManager {
 			}
 			Action action = (Action)o;
 			HTManager.fetchProps(action, m);
+			Action old = (Action)actionMap.get(act);
+			old = action;
 			actionMap.put(act, action);
 			action.init();
 		} catch (Exception e) {

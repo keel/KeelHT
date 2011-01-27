@@ -107,4 +107,12 @@ public class Action {
 	public void init(){
 		//处理初化化操作
 	}
+	
+	/**
+	 * 返回此Action所用到的配置文件路径
+	 * @return
+	 */
+	public String getIniPath(){
+		return null;
+	}
 }

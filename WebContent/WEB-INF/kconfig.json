@@ -7,7 +7,7 @@
 	},
 	"info":"更改此文件的配置后，请对发生变化的Action执行reload操作",
 	"classPath": "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/classes/",
-	"iniPath": "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/kconfig.json",
+	"iniPath": "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/",
 	"dataSources":{
 		"mongodb_local":{
 			"_dbType":"mongodb",
@@ -62,8 +62,8 @@
 	
 	},
 	"io":{
-		"email":{
-			
+		"emails":{
+			"server":"202.102.111.1111"
 		}
 		
 			

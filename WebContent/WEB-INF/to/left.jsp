@@ -6,6 +6,7 @@
 <li><a href="act?act=console&amp;right=changePwd" >changPwd</a></li>
 <li><a href="act?act=console&amp;right=restart" >restart</a></li>
 <li><a href="act?act=console&amp;right=reloadActions" >reloadActions</a></li>
+<li><a href="act?act=console&amp;right=editIni" >editIni</a></li>
 </ul>
 <div>Manage</div>
 <ul>

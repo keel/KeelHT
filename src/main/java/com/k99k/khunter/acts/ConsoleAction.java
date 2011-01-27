@@ -112,7 +112,7 @@ public class ConsoleAction extends Action {
 	@Override
 	public void init() {
 		try {
-			String ini = KIoc.readTxtInUTF8(HTManager.getClassPath()+"../console.json");
+			String ini = KIoc.readTxtInUTF8(HTManager.getIniPath()+getIniPath());
 			Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
 			//先定位到json的actions属性
 			Map<String, ?> actionsMap = (Map<String, ?>) root.get(ActionManager.getName());
@@ -164,6 +164,14 @@ public class ConsoleAction extends Action {
 			Map<String, Object> admin =  it.next();
 			adminMap.put(admin.get("name").toString(), admin);
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see com.k99k.khunter.Action#getIniPath()
+	 */
+	@Override
+	public String getIniPath() {
+		return "console.json";
 	}
 
 }

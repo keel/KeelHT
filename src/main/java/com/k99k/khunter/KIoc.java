@@ -4,9 +4,12 @@
 package com.k99k.khunter;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -281,11 +284,30 @@ public final class KIoc {
 			}
 		} catch (UnsupportedEncodingException e) {
 			log.error("readTxt encoding ERROR:"+filePath, e);
+			return null;
 		} catch (IOException e) {
 			log.error("readTxt io ERROR:"+filePath, e);
+			return null;
 		}
 
 		return sb.toString();
+	}
+	/**
+	 * 写入文件,utf-8方式
+	 * @param file 本地文件名
+	 * @param input 需要写入的字符串
+	 */
+	public static final boolean writeTxtInUTF8(String file, String input) {
+		try {
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream(file), "UTF8"));
+			out.write(input);
+			out.close();
+		} catch (IOException e) {
+			log.error("writeTxtInUTF8 io ERROR:"+file, e);
+			return false;
+		}
+		return true;
 	}
 	
 	public static void main(String[] args) {

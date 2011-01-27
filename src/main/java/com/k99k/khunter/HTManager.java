@@ -24,15 +24,22 @@ public final class HTManager {
 	//private static final HTManager me = new HTManager();
 	
 	
-	/**
-	 * 配置文件路径,注意这里需要配置成绝对路径
-	 */
-	private static String ini;
+
 	
 	/**
 	 * 类加载路径,注意这里需要配置成绝对路径
 	 */
 	private static String classPath;
+	
+	/**
+	 * 配置文件根路径,注意这里需要配置成绝对路径
+	 */
+	private static String iniPath;
+	
+	/**
+	 * 配置文件路径
+	 */
+	private static String ini;
 	
 	/**
 	 * 是否初始化
@@ -47,6 +54,18 @@ public final class HTManager {
 		return classPath;
 	}
 	
+	
+	/**
+	 * 配置文件放置路径
+	 * @return the iniPath
+	 */
+	public static final String getIniPath() {
+		return iniPath;
+	}
+
+
+
+
 	/**
 	 * 处理各Manager的初始化
 	 * @param iniFile 配置文件路径
@@ -62,8 +81,9 @@ public final class HTManager {
 				Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(iniJson);
 				if (root.containsKey("classPath") && root.containsKey("iniPath")) {
 					classPath = (String) root.get("classPath");
-					ini = (String) root.get("iniPath");
-					
+					//ini = (String) root.get("iniPath");
+					iniPath = (String) root.get("iniPath");
+					ini = iniPath + "kconfig.json";
 					
 					//初始化DataSourceManager
 					initOK = DataSourceManager.init(ini,classPath);
