@@ -9,6 +9,7 @@ import org.stringtree.json.JSONErrorListener;
 import org.stringtree.json.JSONReader;
 import org.stringtree.json.JSONValidatingReader;
 import org.stringtree.json.JSONValidator;
+import org.stringtree.json.JSONWriter;
 
 /**
  * @author keel
@@ -23,7 +24,7 @@ public final class JSONTool {
 	}
 	
 	/**
-	 * 使用JSONReader读取json的String
+	 * 使用JSONValidatingReader读取json的String
 	 * @param in String
 	 * @return HashMap
 	 */
@@ -31,6 +32,16 @@ public final class JSONTool {
 	public static final HashMap<String,Object> readJsonString(String in){
 		JSONReader jsonReader = new JSONValidatingReader();
 		return (HashMap<String,Object>)jsonReader.read(in);
+	}
+	
+	/**
+	 * 使用JSONWriter将HashMap转成String形式的json
+	 * @param map
+	 * @return json String
+	 */
+	public static final String writeJsonString(HashMap<String,Object> map){
+		JSONWriter jsonWriter = new JSONWriter();
+		return jsonWriter.write(map);
 	}
 	
 	/**
@@ -57,6 +68,14 @@ public final class JSONTool {
 			}
 		});
 		return vali.validate(in);
+	}
+	
+	public static void main(String[] args) {
+		HashMap m = new HashMap();
+		m.put("str", "sfsf");
+		m.put("int", 2233);
+		m.put("boolean", true);
+		System.out.println(writeJsonString(m));
 	}
 
 }

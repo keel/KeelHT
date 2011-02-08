@@ -5,6 +5,9 @@
 		},
 		"editIni":{	
 			"_class":"com.k99k.khunter.acts.ConsoleEditIni"
+		},
+		"kobj":{	
+			"_class":"com.k99k.khunter.acts.KObjAction"
 		}
 
 	}

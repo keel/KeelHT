@@ -1,0 +1,8 @@
+{
+	"kobjs":{
+		"kuser":[	
+			{"column":"imei","def":"","type":"string","intro":"","len":""},
+			{"column":"pwd","def":"","type":"string","intro":"","len":""}
+		]
+	}
+}

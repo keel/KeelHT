@@ -14,6 +14,7 @@ if(o != null ){
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>KHT console</title>
+<link rel="stylesheet" type="text/css" href="css/style.css" />
 </head>
 <body>
 
@@ -33,9 +34,10 @@ if(o != null ){
 			%>
 			<jsp:include page="<%=r %>" flush="true" />
 		<%} %>
+		<div class="clear"></div>
 		</div>
 	</div>
-
+		<div class="clear"></div>
 	<div id="footer">
 		<div id="copyright">
 			Copyright:&copy;2010-2012 KEEL.SIKE All rights reserved. 

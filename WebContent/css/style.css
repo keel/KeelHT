@@ -1,3 +1,46 @@
-﻿body {background: #223}
-a:link {color: #80ff00}
-a:visited {color: #ff00ff}
+﻿/*------- reset ---------*/
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, code, del, em, font, img, ins, q, s, samp, small, strong, sub, sup, tt, var, b, u, i, center,fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {margin: 0;padding: 0;border: 0 none; outline: 0;font-size: 100%;vertical-align: baseline;}
+body {line-height: 1.5; }
+table {border-collapse: separate;}
+blockquote, q {quotes: none; }
+blockquote:before, blockquote:after, q:before, q:after { content: ''; content: none; }
+
+.clear{clear: both;}
+
+/* font */
+html{font:14px/1.6  Helvetica,Verdana, Arial, sans-serif;color:#BEBEBE;}
+/* bgcolor */
+body{background-color:#101010;}
+
+/* link */
+a { color:#FFF; text-decoration:none; }
+	a:hover { color:#FFCC66;text-decoration:underline; }
+	a:focus, input:focus {outline-style:none; outline-width:medium; }
+	
+/* box */
+.outBorder {border: 1px solid #333;}
+.inBorder {background-color: #E0E0E0;border: 1px solid #F9F9F9;padding: 15px 25px;}
+
+/*layout*/
+/*#wrapper{margin:0 auto;width:960px;}*/
+/* #header{background:url("../imgs/homepage01.jpg") no-repeat scroll left top transparent;height:145px;width:778px;}*/
+#header{ color:#FFF; height:100px;background-color: #13161E;}
+#header h1{ color:#FFF; padding:25px;font-size: 220%;font-weight:normal;}
+
+#sideNav{width:180px;float:left;padding:10px;color:#BEBEBE;background-color: #272D3B;}
+#mainContent{padding:0 0 0 220px;background-color: #101010;}
+#mainContent p{padding:10px;background-color: #272D3B;}
+
+#consoleLogin{width:400px;padding:20px;background-color: #272D3B;}
+#consoleLogin p{padding:5px;}
+.form_input{background-color: #FFF;color:#000;border: 1px solid #003333;width:380px;}
+.bt_submit{padding:8px 15px;background-color: #13161E;color:#E1F6B2;}
+.bt_center{text-align:center;}
+
+#centerMain{padding:20px;margin:0 auto;width:600px;}
+
+#footer{background-color: #1A1A1A; height:76px;}
+#copyright{text-align:center;color:#E8E8E8;padding:20px}
+
+
+
