@@ -141,7 +141,13 @@ public class ConsoleAction extends Action {
 					//加入Action,无论是否已存在
 					consoleActMap.put(action.getName(), action);
 					log.info("- ConsoleAction added: "+action.getName());
-					//这里没必要进行action的init()操作
+					try {
+						//Action初始化
+						action.init();
+					} catch (Exception e) {
+						log.error("Action init Error:"+action.getName(), e);
+						continue;
+					}
 				}else{
 					log.error("ConsoleAction init Error! miss one or more key props. Position:"+i);
 					continue;

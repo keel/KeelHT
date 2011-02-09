@@ -11,7 +11,7 @@
 <div>Manage</div>
 <ul>
 <li><a href="act?act=console&amp;right=DataSources" >DataSources</a></li>
-<li><a href="act?act=console&amp;right=KObject" >KObjcet</a></li>
+<li><a href="act?act=console&amp;right=kobj" >KObject</a></li>
 <li><a href="act?act=console&amp;right=Actions" >Actions</a></li>
 <li><a href="act?act=console&amp;right=DAOs" >DAOs</a></li>
 <li><a href="act?act=console&amp;right=Tasks" >Tasks</a></li>
@@ -20,11 +20,11 @@
 <div>Config</div>
 <ul>
 <li><a href="act?act=console&amp;right=config" >config paras</a></li>
-<li><a href="" >classPath</a></li>
-<li><a href="" >iniPath</a></li>
-<li><a href="" >updates</a></li>
-<li><a href="" >version</a></li>
-<li><a href="" >info</a></li>
+<li><a href="#" >classPath</a></li>
+<li><a href="#" >iniPath</a></li>
+<li><a href="#" >updates</a></li>
+<li><a href="#" >version</a></li>
+<li><a href="#" >info</a></li>
 </ul>
 <div>User</div>
 <ul>

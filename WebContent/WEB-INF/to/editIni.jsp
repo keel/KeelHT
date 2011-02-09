@@ -17,7 +17,7 @@ if(subact.equals("save")){
 	out.print(save);
 } else{ %>
 <form id="commenForm" action="act?act=console&amp;right=editIni&amp;subact=save" method="post">
-<textarea name="json" id="json" rows="15" cols="120" /><%=data.getData("json") %></textarea>
-<p><input class="submit" type="submit" value=" Save " /></p>
+<textarea name="json" id="json" rows="25" cols="120" /><%=data.getData("json") %></textarea>
+<p><input class="bt_submit" type="submit" value=" Save " /></p>
 </form>
 <% } %>

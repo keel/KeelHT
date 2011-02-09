@@ -30,7 +30,7 @@ public final class JSONTool {
 	 */
 	@SuppressWarnings("unchecked")
 	public static final HashMap<String,Object> readJsonString(String in){
-		JSONReader jsonReader = new JSONValidatingReader();
+		JSONReader jsonReader = new JSONReader();
 		return (HashMap<String,Object>)jsonReader.read(in);
 	}
 	
@@ -70,12 +70,4 @@ public final class JSONTool {
 		return vali.validate(in);
 	}
 	
-	public static void main(String[] args) {
-		HashMap m = new HashMap();
-		m.put("str", "sfsf");
-		m.put("int", 2233);
-		m.put("boolean", true);
-		System.out.println(writeJsonString(m));
-	}
-
 }

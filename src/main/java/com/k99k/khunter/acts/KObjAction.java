@@ -38,25 +38,25 @@ public class KObjAction extends Action{
 	/**
 	 * 存储Action的Map,初始化大小为100
 	 */
-	private static Map<String, Object> kobjMap;// = new HashMap<String, Object>(50);
+	private static Map<String, Object> kobjMap = new HashMap<String, Object>(50);
 
 	public boolean createKObj(String name,KObject kobj){
 		
 		return true;
 	}
 	
-	/**
-	 * 获取所有KObj对象的列表
-	 * @return ArrayList<ArrayList<?>>
-	 */
-	public ArrayList<ArrayList<?>> getKObjList(){
-		ArrayList<ArrayList<?>> list = new ArrayList<ArrayList<?>>();
-		for (Iterator<String> it = kobjMap.keySet().iterator(); it.hasNext();) {
-			String kobj =  it.next();
-			list.add((ArrayList<?>) kobjMap.get(kobj));
-		}
-		return list;
-	}
+//	/**
+//	 * 获取所有KObj对象的列表
+//	 * @return ArrayList<ArrayList<?>>
+//	 */
+//	public ArrayList<ArrayList<?>> getKObjList(){
+//		ArrayList<ArrayList<?>> list = new ArrayList<ArrayList<?>>();
+//		for (Iterator<String> it = kobjMap.keySet().iterator(); it.hasNext();) {
+//			String kobj =  it.next();
+//			list.add((ArrayList<?>) kobjMap.get(kobj));
+//		}
+//		return list;
+//	}
 	
 	public Map<String, Object> getKObjMap(){
 		return kobjMap;
@@ -67,15 +67,15 @@ public class KObjAction extends Action{
 	 * @param key 查找key
 	 * @return ArrayList<String>
 	 */
-	public ArrayList<String> searchKObj(String key){
-		ArrayList<String> list = new ArrayList<String>();
+	public HashMap<String, Object> searchKObj(String key){
+		HashMap<String, Object> reMap = new HashMap<String, Object>(50);
 		for (Iterator<String> it = kobjMap.keySet().iterator(); it.hasNext();) {
 			String kobj =  it.next();
 			if (kobj.indexOf(key.trim()) > -1) {
-				list.add(kobj);
+				reMap.put(kobj,kobjMap.get(kobj));
 			}
 		}
-		return list;
+		return reMap;
 	}
 	
 	/**
@@ -198,6 +198,7 @@ public class KObjAction extends Action{
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#act(com.k99k.khunter.ActionMsg)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public ActionMsg act(ActionMsg msg) {
 		HttpActionMsg httpmsg = (HttpActionMsg)msg;
@@ -228,7 +229,10 @@ public class KObjAction extends Action{
 		else if(subact.equals("search")){
 			String key  = httpmsg.getHttpReq().getParameter("key");
 			if (key != null) {
-				ArrayList<String> re = this.searchKObj(key);
+				HashMap<String, Object> re = this.searchKObj(key);
+				msg.addData("list", re);
+			}else{
+				msg.addData("list", kobjMap);
 			}
 		}
 
@@ -247,8 +251,9 @@ public class KObjAction extends Action{
 			Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
 			Object mapobj =  root.get("kobjs");
 			if (mapobj != null) {
-				kobjMap = (Map<String, Object>)mapobj;
-				log.info("KObjAction init OK!");
+				Map<String, Object> m = (Map<String, Object>)mapobj;
+				kobjMap.putAll(m);
+				log.info("KObjAction init OK! size:"+kobjMap.size());
 			}else{
 				log.error("kobjs node not exist! KObjAction init failed.");
 				return;

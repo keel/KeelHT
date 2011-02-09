@@ -24,8 +24,8 @@ if(o != null ){
 	</div>
 	
 	<div id="mainBody">
-		<div id="left"><jsp:include page="left.jsp" flush="false" /></div>
-		<div id="right">
+		<div id="sideNav"><jsp:include page="left.jsp" flush="false" /></div>
+		<div id="mainContent">
 		<%if(data.getData("right")==null ){ %>
 			<p>empty right.</p>
 		<%}else{

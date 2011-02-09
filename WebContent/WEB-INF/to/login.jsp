@@ -16,10 +16,10 @@
 	<div id="mainBody">
 <form action="act?act=console&amp;right=login" method="post" id="consoleLogin">
 	<p><label for="form_name">Admin:</label><br />
-	<input type="text" class="text" name="form_name" id="form_name" value="" /></p>
+	<input type="text" class="form_input" name="form_name" id="form_name" value="" /></p>
 	<p><label for="form_pwd">Password:</label><br />
-	<input type="password" class="text" name="form_pwd" id="form_pwd" value="" /></p>
-	<p><input class="submit" type="submit" value=" Login " /></p>
+	<input type="password" class="form_input" name="form_pwd" id="form_pwd" value="" /></p>
+	<p><input class="bt_submit" type="submit" value=" Login " /></p>
 </form>
 	</div>
 

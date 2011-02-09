@@ -1,8 +1,25 @@
 {
 	"kobjs":{
-		"kuser":[	
-			{"column":"imei","def":"","type":"string","intro":"","len":""},
-			{"column":"pwd","def":"","type":"string","intro":"","len":""}
-		]
+		"kuser":{
+			"intro":"用户",
+			"columns":[	
+				{"col":"imei","def":"","type":"string","intro":"the imei of handset","len":"30"},
+				{"col":"pwd","def":"qwertnm","type":"string","intro":"password","len":"20"}
+			],
+			"indexs":[
+			
+			]
+		},
+		"HTItem":{
+			"intro":"物品",
+			"columns":[	
+				{"col":"ack","def":"0","type":"int","intro":"attack","len":""},
+				{"col":"def","def":"0","type":"int","intro":"defence","len":""}
+			],
+			"indexs":[
+			
+			]	
+		}
+		
 	}
 }
