@@ -19,7 +19,7 @@ if(subact.equals("save")){
 <form id="commenForm" action="act?act=console&amp;right=editIni" method="post">
 <input type="hidden" id="subact" name="subact" value="save" />
 <input type="hidden" id="ini" name="ini" value="kconfig" />
-<textarea name="json" id="json" rows="25" cols="120" /><%=data.getData("json") %></textarea>
-<p><input class="bt_submit" type="submit" value=" Save " /> [ <a href="act?act=console&amp;right=<%=data.getData("ini")%>">Back</a> ]</p>
+<textarea name="json" id="json" /><%=data.getData("json") %></textarea>
+<p><input type="submit" value=" Save " /> [ <a href="act?act=console&amp;right=<%=data.getData("ini")%>">Back</a> ]</p>
 </form>
 <% } %>

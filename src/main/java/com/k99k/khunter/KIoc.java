@@ -56,11 +56,11 @@ public final class KIoc {
 	}
 	
 	/**
-	 * 装载一个class文件并生成Object,要求此类有一个不带参数的构造方法
+	 * 装载一个class文件并生成Object
 	 * @param classURL class文件所在的路径(不含包路径),本地文件以file:/开头
 	 * @param className 类的全名，含包名在内
-	 * @param args Object[]形式的参数,
-	 * <br /><strong>[注意:]</strong>仅根据构造方法参数的数量来创建新对象,不按实际参数类型查找具体的构造方法,
+	 * @param args 构造方法中的参数,Object[]形式
+	 * <strong>[注意:]</strong>仅根据构造方法参数的数量来创建新对象,不按实际参数类型查找具体的构造方法,
 	 * 避免参数是extends和implement的对象时出现NoSuchMethodException
 	 * @return class生成的Instance,失败则返回null
 	 */

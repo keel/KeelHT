@@ -20,7 +20,7 @@ if(o != null ){
 <label for="update_key">key:</label><br />
 <input type="text" id="update_key" name="update_key" /><br />
 <label for="update_json">json:</label><br />
-<textarea id="update_json" name="update_json" rows="20" cols="100"></textarea><br />
+<textarea id="update_json" name="update_json" ></textarea><br />
 <input type="submit" value="Add/Update" />
 </form>
 <% 

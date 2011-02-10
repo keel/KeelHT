@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.k99k.tools.JSONTool;
+import com.k99k.tools.StringUtil;
 
 /**
  * DAO管理器
@@ -44,6 +45,27 @@ public final class DaoManager {
 	private static String classFilePath;
 	public static final boolean isInitOK(){
 		return isInitOK;
+	}
+	
+	/**
+	 * 用于保存所有的class字符串
+	 */
+	private static final HashMap<String,String> daoClasses = new HashMap<String,String>(50);
+	
+	/**
+	 * 获取所有的class字符串，用于创建新的DAO
+	 * @return String[]
+	 */
+	public static final String[] getDaoClasses(){
+		int len = daoClasses.size();
+		String[] arr = new String[len];
+		int i = 0;
+		for (Iterator<String> it = daoClasses.keySet().iterator(); it.hasNext();) {
+			String clazz = it.next();
+			arr[i] = clazz;
+			i++;
+		}
+		return arr;
 	}
 	
 	/**
@@ -90,13 +112,25 @@ public final class DaoManager {
 						DaoInterface dao = (DaoInterface)o;
 						
 						HTManager.fetchProps(dao, m);
+						String tableName = StringUtil.objToStrNotNull( m.get("tableName")).trim();
 						//加入Dao
-						if (dao.init()) {
+						if (tableName.equals("") || tableName.equals("*")) {
 							daoMap.put(dao.getName(), dao);
-							log.info("Dao added: "+dao.getName());
+							daoClasses.put(_class, daoName);
+							log.info("Common Dao added: "+dao.getName());
 						}else{
-							log.error("Dao init failed:"+dao.getName()+" id:"+dao.getId());
+							//初始化并加入
+							if (dao.init()) {
+								daoMap.put(dao.getName(), dao);
+								daoClasses.put(_class, daoName);
+								log.info("Dao added: "+dao.getName());
+							}else{
+								log.error("Dao init failed:"+dao.getName()+" id:"+dao.getId());
+							}
 						}
+						
+						
+						
 						
 					}else{
 						log.error("Dao init Error! miss one or more key props. Position:"+i);

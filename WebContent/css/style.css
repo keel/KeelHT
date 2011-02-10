@@ -8,9 +8,9 @@ blockquote:before, blockquote:after, q:before, q:after { content: ''; content: n
 .clear{clear: both;}
 
 /* font */
-html{font:14px/1.6  Helvetica,Verdana, Arial, sans-serif;color:#BEBEBE;}
+html{font:0.9em Helvetica,Verdana, Arial, sans-serif;color:#BEBEBE;}
 /* bgcolor */
-body{background-color:#101010;}
+body{background-color: #e4e4e4;color:#000;}
 
 /* link */
 a { color:#0000ff; text-decoration:none; }
@@ -26,26 +26,26 @@ a { color:#0000ff; text-decoration:none; }
 .inBorder {background-color: #E0E0E0;border: 1px solid #F9F9F9;padding: 15px 25px;}
 
 input{padding:5px 8px;background-color: #272D3B;color:#E1F6B2;}
-
+input[type="text"],input[type="password"]{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px;}
+textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:700px;height:400px;padding:5px;}
 /*layout*/
 /*#wrapper{margin:0 auto;width:960px;}*/
 /* #header{background:url("../imgs/homepage01.jpg") no-repeat scroll left top transparent;height:145px;width:778px;}*/
-#header{ color:#FFF; height:100px;background-color: #101010;}
+#header{ color:#FFF; height:100px;background-color: #272D3B;}
 #header h1{ color:#FFF; padding:25px;font-size: 220%;font-weight:normal;}
 
-#mainBody{background-color: #e4e4e4;color:#000;}
-#sideNav{width:180px;float:left;padding:10px;color:#BEBEBE;background-color: #272D3B;}
+
+#sideNav{width:180px;float:left;padding:10px;color:#BEBEBE;background-color: #101010;}
 #mainContent{padding:10px 20px 0 220px;}
 #mainContent p{padding:10px;}
 
 #consoleLogin{width:400px;padding:20px;background-color: #272D3B;}
 #consoleLogin p{padding:5px;}
-.form_input{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px;}
-.bt_submit{padding:8px 15px;}
-.bt_center{text-align:center;}
+#consoleLogin label{color:#e4e4e4;}
+.tx_center{text-align:center;}
 
 #rightTop{padding:5px;}
-#f_search{display:inline}
+#f_search{display:inline;}
 #list_search{width:250px;}
 .tb_list{background-color: #ccc;border-bottom: 1px solid #e4e4e4;}
 .weight{font-weight: bold;}

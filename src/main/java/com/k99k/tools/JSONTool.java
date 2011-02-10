@@ -45,6 +45,19 @@ public final class JSONTool {
 	}
 	
 	/**
+	 * 使用JSONWriter将HashMap转成String形式的json,并进行format
+	 * @param map
+	 * @return json String
+	 */
+	public static final String writeFormatedJsonString(HashMap<String,Object> map){
+		JSONWriter jsonWriter = new JSONWriter();
+		StringBuilder sb = new StringBuilder(jsonWriter.write(map));
+		//FIXME 格式化
+		return sb.toString();
+	}
+	
+	
+	/**
 	 * 验证json
 	 * @param in String
 	 * @return boolean 是否通过验证

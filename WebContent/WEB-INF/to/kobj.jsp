@@ -36,7 +36,7 @@ try{
 			sb.append("<p class='tb_list' ><a href='#' class='weight'>");
 			sb.append(kobjName).append("</a> ");
 			sb.append(table.get("intro"));
-			sb.append(" - [ <a href='#'>show</a> | <a href='#'>modify</a> ]</p>\r\n");
+			sb.append(" - [ <a href='#'>show</a> | <a href='#'>modify</a>  | <a href='#'>add</a>  | <a href='#'>find</a> ]</p>\r\n");
 		}
 		out.print(sb.toString());
 	}

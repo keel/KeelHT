@@ -28,6 +28,14 @@
 			"type":"single",
 			"tableName":"testKHT",
 			"id":2
+		},
+		"mongoDao":{
+			"_class":"com.k99k.khunter.MongoDao",
+			"_dataSource":"mongodb_local",
+			"dbType":"mongodb",
+			"type":"common",
+			"tableName":"*",
+			"id":1
 		}
 	
 	},

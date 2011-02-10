@@ -35,9 +35,9 @@ public class KObjAction extends Action{
 	static final Logger log = Logger.getLogger(ActionManager.class);
 	
 	/**
-	 * 存储Action的Map,初始化大小为100
+	 * 存储Action的Map,初始化大小为50
 	 */
-	private static Map<String, Object> kobjMap = new HashMap<String, Object>(50);
+	private static final HashMap<String, Object> kobjMap = new HashMap<String, Object>(50);
 
 	public boolean createKObj(String name,KObject kobj){
 		
@@ -67,10 +67,14 @@ public class KObjAction extends Action{
 	 * @return ArrayList<String>
 	 */
 	public HashMap<String, Object> searchKObj(String key){
+		key = StringUtil.objToStrNotNull(key).trim();
+		if (key.equals("")) {
+			return kobjMap;
+		}
 		HashMap<String, Object> reMap = new HashMap<String, Object>(50);
 		for (Iterator<String> it = kobjMap.keySet().iterator(); it.hasNext();) {
 			String kobj =  it.next();
-			if (kobj.toLowerCase().indexOf(key.trim().toLowerCase()) > -1) {
+			if (kobj.toLowerCase().indexOf(key.toLowerCase()) > -1) {
 				reMap.put(kobj,kobjMap.get(kobj));
 			}
 		}
