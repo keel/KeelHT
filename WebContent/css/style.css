@@ -44,6 +44,8 @@ input{padding:5px 8px;background-color: #272D3B;color:#E1F6B2;}
 .bt_submit{padding:8px 15px;}
 .bt_center{text-align:center;}
 
+#rightTop{padding:5px;}
+#f_search{display:inline}
 #list_search{width:250px;}
 .tb_list{background-color: #ccc;border-bottom: 1px solid #e4e4e4;}
 .weight{font-weight: bold;}

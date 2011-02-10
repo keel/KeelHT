@@ -5,7 +5,6 @@ package com.k99k.khunter.acts;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -63,7 +62,7 @@ public class KObjAction extends Action{
 	}
 	
 	/**
-	 * 查找所有包含key字符串的的KObj的名称List
+	 * 查找所有包含key字符串的的KObj的名称List,不区分大小写
 	 * @param key 查找key
 	 * @return ArrayList<String>
 	 */
@@ -71,7 +70,7 @@ public class KObjAction extends Action{
 		HashMap<String, Object> reMap = new HashMap<String, Object>(50);
 		for (Iterator<String> it = kobjMap.keySet().iterator(); it.hasNext();) {
 			String kobj =  it.next();
-			if (kobj.indexOf(key.trim()) > -1) {
+			if (kobj.toLowerCase().indexOf(key.trim().toLowerCase()) > -1) {
 				reMap.put(kobj,kobjMap.get(kobj));
 			}
 		}
@@ -81,16 +80,16 @@ public class KObjAction extends Action{
 	/**
 	 * 查看某一具体的KObj结构
 	 * @param key KObj的key
-	 * @return ArrayList<Map<String,?>>
+	 * @return Map<String,?>
 	 */
 	@SuppressWarnings("unchecked")
-	public ArrayList<Map<String,?>>  findKObj(String key){
+	public Map<String,?>  findKObj(String key){
 		Object o = kobjMap.get(key);
 		if (o == null) {
 			return null;
 		}
-		ArrayList<Map<String,?>> list = (ArrayList<Map<String,?>>)o;
-		return list;
+		Map<String,?> m = (Map<String,?>)o;
+		return m;
 	}
 	
 	
@@ -160,16 +159,17 @@ public class KObjAction extends Action{
 	 * @param newKObj
 	 * @return
 	 */
-	public boolean updateKObjTable(String key,ArrayList<Map<String,?>> newKObj){
-		Object o = kobjMap.get(key);
-		if (o != null) {
-			
-			//FIXME 根据情况决定是否处理数据表更新
-			kobjMap.put(key, newKObj);
-			return this.save();
-		}
+	public boolean updateKObjTable(String key,Map<String,?> newKObj){
+		//Object o = kobjMap.get(key);
+		
+		
+		//FIXME 根据情况决定是否处理数据表更新
+		
+		//如果是新表则直接添加，老表则更新
+		kobjMap.put(key, newKObj);
+		return this.save();
 		/*
-		ArrayList<Map<String,?>> kobj = (ArrayList<Map<String,?>>)o;
+		Map<String,?> kobj = (Map<String,?>)o;
 		
 		for (Iterator<Map<String, ?>> it = newKObj.iterator(); it.hasNext();) {
 			Map<String, ?> map = it.next();
@@ -179,7 +179,6 @@ public class KObjAction extends Action{
 		}
 		*/
 		
-		return false;
 	}
 	
 	
@@ -212,22 +211,22 @@ public class KObjAction extends Action{
 		}
 		//find
 		else if(subact.equals("find")){
-			String key  = httpmsg.getHttpReq().getParameter("key");
-			ArrayList<Map<String,?>> l = this.findKObj(key);
-			msg.addData("find", l);
+			String key  = httpmsg.getHttpReq().getParameter("find_key");
+			Map<String,?> m = this.findKObj(key);
+			msg.addData("find", m);
 		}
-		//更新
+		//更新或新增
 		else if(subact.equals("update")){
-			String key  = httpmsg.getHttpReq().getParameter("key");
-			String val = httpmsg.getHttpReq().getParameter("json");
+			String key  = httpmsg.getHttpReq().getParameter("update_key");
+			String val = httpmsg.getHttpReq().getParameter("update_json");
 			HashMap<String,Object> newOBJ = JSONTool.readJsonString(val);
-			ArrayList<Map<String,?>> newKObj = (ArrayList<Map<String, ?>>) newOBJ.get("val");
+			Map<String,?> newKObj = (Map<String, ?>) newOBJ.get("val");
 			boolean re = this.updateKObjTable(key, newKObj);
 			msg.addData("update", re);
 		}
 		//查询
 		else if(subact.equals("search")){
-			String key  = httpmsg.getHttpReq().getParameter("key");
+			String key  = httpmsg.getHttpReq().getParameter("search_key");
 			if (key != null) {
 				HashMap<String, Object> re = this.searchKObj(key);
 				msg.addData("list", re);
@@ -235,7 +234,11 @@ public class KObjAction extends Action{
 				msg.addData("list", kobjMap);
 			}
 		}
-
+		//其他未知subact
+		else{
+			msg.addData("subact", "list");
+			msg.addData("list", kobjMap);
+		}
 		return super.act(msg);
 	}
 

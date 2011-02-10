@@ -9,15 +9,17 @@ if(o != null ){
 	return;
 }
 %>
-<p>config:</p>
+<div id="rightTop" class="weight">Edit config:</div>
 <% 
 String subact = StringUtil.objToStrNotNull(data.getData("subact"));
 String save = StringUtil.objToStrNotNull(data.getData("save"));
 if(subact.equals("save")){ 
 	out.print(save);
 } else{ %>
-<form id="commenForm" action="act?act=console&amp;right=editIni&amp;subact=save" method="post">
+<form id="commenForm" action="act?act=console&amp;right=editIni" method="post">
+<input type="hidden" id="subact" name="subact" value="save" />
+<input type="hidden" id="ini" name="ini" value="kconfig" />
 <textarea name="json" id="json" rows="25" cols="120" /><%=data.getData("json") %></textarea>
-<p><input class="bt_submit" type="submit" value=" Save " /></p>
+<p><input class="bt_submit" type="submit" value=" Save " /> [ <a href="act?act=console&amp;right=<%=data.getData("ini")%>">Back</a> ]</p>
 </form>
 <% } %>

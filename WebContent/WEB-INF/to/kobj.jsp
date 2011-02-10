@@ -9,7 +9,12 @@ if(o != null ){
 	return;
 }
 %>
-<p><span class="weight">KObj config: </span> [ <a href="act?act=console&amp;right=editIni&amp;target=kobj">edit json</a> ] [ <a href="#">add new</a> ] <input type="text" id="list_search" /><input type="button" value="search" /></p>
+<div id="rightTop">
+<span class="weight">KObj config: </span> [ <a href="act?act=console&amp;right=editIni&amp;ini=kobj">edit json</a> ] [ <a href="act?act=console&amp;right=addkobj">add new</a> ]
+<form id="f_search" action="act?act=console&amp;right=kobj" method="post">
+<input type="text" id="search_key" name="search_key" /><input type="hidden" id="subact" name="subact" value="search" /><input type="submit" value="search" />
+</form>
+</div>
 <% 
 String subact = StringUtil.objToStrNotNull(data.getData("subact"));
 //String save = StringUtil.objToStrNotNull(data.getData("save"));
@@ -31,7 +36,7 @@ try{
 			sb.append("<p class='tb_list' ><a href='#' class='weight'>");
 			sb.append(kobjName).append("</a> ");
 			sb.append(table.get("intro"));
-			sb.append(" - [ <a href='#'>show</a> | <a href='#'>modify</a> ]</p>");
+			sb.append(" - [ <a href='#'>show</a> | <a href='#'>modify</a> ]</p>\r\n");
 		}
 		out.print(sb.toString());
 	}

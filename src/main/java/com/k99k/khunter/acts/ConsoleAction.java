@@ -94,9 +94,11 @@ public class ConsoleAction extends Action {
 				Action a = consoleActMap.get(right);
 				if (a !=null) {
 					a.act(httpmsg);
-				}else{
-					log.error("Can't find in consoleActMap:"+right);
 				}
+				//没有action则作为调用其他right部分的jsp用
+//				else{
+//					log.error("Can't find in consoleActMap:"+right);
+//				}
 				msg.addData("jspAttr", msg);
 				msg.setNextAction(null);
 			}

@@ -39,32 +39,41 @@ public class ConsoleEditIni extends Action {
 		//载入
 		String iniFile = HTManager.getIniFilePath();
 		if (subact.equals("load")) {
-			String ini = KIoc.readTxtInUTF8(iniFile);
-			if (ini != null) {
-				msg.addData("json", ini);
+			String iniFileName = httpmsg.getHttpReq().getParameter("ini");
+			String ini = "";
+			if (iniFileName == null || iniFileName.trim().length()<2) {
+				iniFileName = "editIni";
+				ini = KIoc.readTxtInUTF8(iniFile);
 			}else{
-				msg.addData("json", "");
+				ini = KIoc.readTxtInUTF8(HTManager.getIniPath()+iniFileName+".json");
 			}
-			
+			msg.addData("json", ini);
+			msg.addData("ini", iniFileName);
 		}
 		//保存
 		else if(subact.equals("save")){
-			String json = httpmsg.getHttpReq().getParameter("json");
-			if (json == null || json.length() < 10) {
-				msg.addData("save", "no para");
-			}else {
-				//验证json格式
-				if (JSONTool.validateJsonString(json)) {
-					//保存
-					if(KIoc.writeTxtInUTF8(iniFile, json)){
-						msg.addData("save", "ok");
+			String iniFileName = httpmsg.getHttpReq().getParameter("ini");
+			if (iniFileName == null || iniFileName.trim().length()<2) {
+				msg.addData("save", "ini not found.");
+			}else{
+				String json = httpmsg.getHttpReq().getParameter("json");
+				if (json == null || json.length() < 10) {
+					msg.addData("save", "no para");
+				}else {
+					//验证json格式
+					if (JSONTool.validateJsonString(json)) {
+						//保存
+						if(KIoc.writeTxtInUTF8(HTManager.getIniPath()+iniFileName+".json", json)){
+							msg.addData("save", "ok");
+						}else{
+							msg.addData("save", "save fail");
+						}
 					}else{
-						msg.addData("save", "save fail");
+						msg.addData("save", "validate fail");
 					}
-				}else{
-					msg.addData("save", "validate fail");
 				}
 			}
+			
 		}
 		return super.act(msg);
 	}
