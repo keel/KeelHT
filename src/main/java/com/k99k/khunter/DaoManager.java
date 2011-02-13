@@ -69,6 +69,23 @@ public final class DaoManager {
 	}
 	
 	/**
+	 * 返回一个指定key的Dao clone
+	 * @param daoKey
+	 * @return 找不到时或clone失败时返回null
+	 */
+	public static final DaoInterface cloneDao(String daoKey){
+		DaoInterface dao = daoMap.get(daoKey);
+		if (dao == null) {
+			return null;
+		}
+		Object o = dao.clone();
+		if (o == null) {
+			return null;
+		}
+		return (DaoInterface)o;
+	}
+	
+	/**
 	 * 初始化DaoManager
 	 * @param iniFile 配置文件路径
 	 * @param classPath class文件所在的路径
@@ -115,6 +132,7 @@ public final class DaoManager {
 						String tableName = StringUtil.objToStrNotNull( m.get("tableName")).trim();
 						//加入Dao
 						if (tableName.equals("") || tableName.equals("*")) {
+							dao.setTableName("*");
 							daoMap.put(dao.getName(), dao);
 							daoClasses.put(_class, daoName);
 							log.info("Common Dao added: "+dao.getName());
@@ -167,12 +185,23 @@ public final class DaoManager {
 	}
 
 	/**
-	 * 获取一个Dao
+	 * 获取一个Dao,如果该Dao的tableName为*,则返回一个clone对象
 	 * @param name Dao的name
-	 * @return Dao,未找到返回null
+	 * @return DaoInterface,未找到返回null
 	 */
 	public static final DaoInterface findDao(String name){
-		return daoMap.get(name);
+		DaoInterface dao = daoMap.get(name);
+		if (dao == null) {
+			return null;
+		}
+		if (dao.getTableName() == null || dao.getTableName().equals("*")) {
+			Object o = dao.clone();
+			if (o == null) {
+				return null;
+			}
+			dao = (DaoInterface)o;
+		}
+		return dao;
 	}
 	
 	

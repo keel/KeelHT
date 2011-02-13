@@ -15,10 +15,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-
 import org.apache.log4j.Logger;
+import com.k99k.tools.JSONTool;
 
 /**
  * 注入解析器,支持热加载类文件
@@ -33,6 +35,8 @@ public final class KIoc {
 	public KIoc() {
 		
 	}
+	
+	public static final int ERR_CODE1 = 9;
 	
 	static final Logger log = Logger.getLogger(KIoc.class);
 	
@@ -50,7 +54,7 @@ public final class KIoc {
 			Object object = c.newInstance();
 			return object;
 		} catch (Exception e) {
-			log.error("loadClassInstance ERROR!", e);
+			ErrorCode.logError(log, KIoc.ERR_CODE1, 15, e, className);
 			return null;
 		}
 	}
@@ -97,7 +101,7 @@ public final class KIoc {
 			Constructor<?> cons = c.getConstructor(argsClass);
 			return cons.newInstance(args);
 		} catch (Exception e) {
-			log.error("loadClassInstance ERROR!", e);
+			ErrorCode.logError(log, KIoc.ERR_CODE1, 15, e, className);
 			return null;
 		}
 	}
@@ -123,8 +127,8 @@ public final class KIoc {
 					return true;
 				}
 			}
-			
-			log.error("setProp ERROR! Method can't be found:"+propName);
+			ErrorCode.logError(log, KIoc.ERR_CODE1, 16,propName);
+			//log.error("setProp ERROR! Method can't be found:"+propName);
 			return false;
 			
 			/*
@@ -142,7 +146,7 @@ public final class KIoc {
 			
 			*/
 		} catch (Exception e) {
-			log.error("setProp ERROR:"+propName, e);
+			ErrorCode.logError(log, KIoc.ERR_CODE1, 17,e,propName);
 			return false;
 		}
 	}
@@ -225,22 +229,43 @@ public final class KIoc {
 				}
 				if (!setOk) {
 					setAllOk = false;
-					log.error("setProps ERROR! one of the props can't be found,para position:"+currentProp);
+					ErrorCode.logError(log, KIoc.ERR_CODE1, 18 , currentProp+"");
+					//log.error("setProps ERROR! one of the props can't be found,para position:"+currentProp);
 				}
 			}
 			
 			return setAllOk;
 		} catch (Exception e) {
-			log.error("setProps ERROR!para position:"+currentProp, e);
+			ErrorCode.logError(log, KIoc.ERR_CODE1, 19 , e,currentProp+"");
 			return false;
 		}
 		
 	}
 	
 	/**
+	 * 使用setter注入对象属性,注意属性名必须以英文字母开头,setter方法格式为"set+首字母大写的propName",不支持isAbc的注入
+	 * @param obj 被注入对象
+	 * @param props Map<String(属性名),Object(属性值)>
+	 * @return 注入是否全部成功
+	 */
+	public final static boolean setProps(Object obj,Map<String,Object> props){
+		int len = props.size();
+		String[] keys = new String[len];
+		Object[] values = new Object[len];
+		int i = 0;
+		for (Iterator<String> it = props.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
+			keys[i] = key;
+			values[i] = props.get(key);
+			i++;
+		}
+		return setProps(obj,keys,values);
+	}
+	
+	/**
 	 * Maps wrapper <code>Class</code>es to their corresponding primitive types.
 	 */
-	private static final Map<Class<?>, Class<?>> wrapperPrimitiveMap = createWrapperPrimitiveMap();
+	static final Map<Class<?>, Class<?>> wrapperPrimitiveMap = createWrapperPrimitiveMap();
 
 	private static final Map<Class<?>, Class<?>> createWrapperPrimitiveMap() {
 		Map<Class<?>, Class<?>> map = new HashMap<Class<?>, Class<?>>();
@@ -283,10 +308,12 @@ public final class KIoc {
 				sb.append(s).append("\n");
 			}
 		} catch (UnsupportedEncodingException e) {
-			log.error("readTxt encoding ERROR:"+filePath, e);
+			ErrorCode.logError(log, KIoc.ERR_CODE1, 20 , e,filePath);
+//			log.error("readTxt encoding ERROR:"+filePath, e);
 			return null;
 		} catch (IOException e) {
-			log.error("readTxt io ERROR:"+filePath, e);
+			ErrorCode.logError(log, KIoc.ERR_CODE1, 21 , e,filePath);
+//			log.error("readTxt io ERROR:"+filePath, e);
 			return null;
 		}
 
@@ -304,7 +331,113 @@ public final class KIoc {
 			out.write(input);
 			out.close();
 		} catch (IOException e) {
-			log.error("writeTxtInUTF8 io ERROR:"+file, e);
+			ErrorCode.logError(log, KIoc.ERR_CODE1, 22 , e,file);
+			//log.error("writeTxtInUTF8 io ERROR:"+file, e);
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * 保存json形式的配置文件
+	 * @param iniFileName 配置文件名
+	 * @param json 数据内容
+	 * @return 0表示成功,其他为错误码
+	 */
+	public static final int saveJsonIni(String iniFileName,String json){
+		if (iniFileName == null || iniFileName.trim().length()<2) {
+			return 11;
+			//msg.addData("save", "ini not found.");
+		}else{
+			if (json == null || json.length() < 10) {
+				//msg.addData("save", "no para");
+				return 12;
+			}else {
+				//验证json格式
+				if (JSONTool.validateJsonString(json)) {
+					//保存
+					if(KIoc.writeTxtInUTF8(HTManager.getIniPath()+iniFileName+".json", json)){
+						return 0;
+						//msg.addData("save", "ok");
+					}else{
+						//msg.addData("save", "save fail");
+						return 13;
+					}
+				}else{
+					return 14;
+					//msg.addData("save", "validate fail");
+				}
+			}
+		}
+	}
+	
+
+	/**
+	 * 更新json配置文件的某一个节点,这里的目标数据是一个键值对
+	 * @param iniFilePath 配置文件全路径
+	 * @param jsonPath json路径 ,String[]
+	 * @param opType 操作方式:2为删除,其他值为更新或新增
+	 * @param iniKey 需要更新的键
+	 * @param iniValue 更新的值
+	 * @return 是否更新成功
+	 */
+	@SuppressWarnings("unchecked")
+	public static final boolean updateIniFileNode(String iniFilePath,String[] jsonPath,int opType,String iniKey,Object iniValue){
+		try {
+			String ini = KIoc.readTxtInUTF8(iniFilePath);
+			HashMap<String,Object> root = (HashMap<String,Object>) JSONTool.readJsonString(ini);
+			HashMap<String,Object> target = root;
+			//定位到需要更新的节点
+			for (int i = 0; i < jsonPath.length; i++) {
+				target = (HashMap<String,Object>)(target.get(jsonPath[i]));
+			}
+			if (opType == 2) {
+				target.remove(iniKey);
+			}else{
+				target.put(iniKey, iniValue);
+			}
+			
+			KIoc.writeTxtInUTF8(iniFilePath, JSONTool.writeFormatedJsonString(root));
+		} catch (Exception e) {
+			ErrorCode.logError(log, KIoc.ERR_CODE1, 23,e, iniFilePath+" | "+jsonPath+" | "+iniValue);
+			return false;
+		}
+		return true;
+	}
+	
+	
+	/**
+	 * 更新json配置文件的某一个数组节点,加入目标值(iniValue)
+	 * @param iniFilePath 配置文件全路径
+	 * @param jsonPath json路径 ,String[]，最后一个为ArrayList的键
+	 * @param opType 操作方式:0或其他值为新增,1为更新,2为删除
+	 * @param position 操作位置,即ArrayList中的index
+	 * @param iniValue 新增节点的值
+	 * @return 是否更新成功
+	 */
+	@SuppressWarnings("unchecked")
+	public static final boolean updateIniFileNode(String iniFilePath,String[] jsonPath,int opType,int position,Object iniValue){
+		try {
+			String ini = KIoc.readTxtInUTF8(iniFilePath);
+			HashMap<String,Object> root = (HashMap<String,Object>) JSONTool.readJsonString(ini);
+			HashMap<String,Object> target = root;
+			//定位到需要更新的节点
+			for (int i = 0; i < jsonPath.length-1; i++) {
+				target = (HashMap<String,Object>)(target.get(jsonPath[i]));
+			}
+			ArrayList<Object> listTarget = (ArrayList<Object>)target.get(jsonPath[jsonPath.length-1]);
+			if (opType == 0) {
+				listTarget.add(iniValue);
+			}else if(opType == 1){
+				listTarget.set(position, iniValue);
+			}else if(opType == 2){
+				listTarget.remove(position);
+			}else{
+				listTarget.add(iniValue);
+			}
+			KIoc.writeTxtInUTF8(iniFilePath, JSONTool.writeFormatedJsonString(root));
+		} catch (Exception e) {
+			ErrorCode.logError(log, KIoc.ERR_CODE1,24,e, iniFilePath+" | "+jsonPath+" | "+iniValue);
 			return false;
 		}
 		return true;

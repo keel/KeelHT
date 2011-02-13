@@ -5,6 +5,7 @@ package com.k99k.khunter.acts;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -14,10 +15,12 @@ import org.apache.log4j.Logger;
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionManager;
 import com.k99k.khunter.ActionMsg;
+import com.k99k.khunter.DaoInterface;
+import com.k99k.khunter.DaoManager;
+import com.k99k.khunter.ErrorCode;
 import com.k99k.khunter.HTManager;
 import com.k99k.khunter.HttpActionMsg;
 import com.k99k.khunter.KIoc;
-import com.k99k.khunter.KObject;
 import com.k99k.tools.IO;
 import com.k99k.tools.JSONTool;
 import com.k99k.tools.StringUtil;
@@ -34,15 +37,12 @@ public class KObjAction extends Action{
 	
 	static final Logger log = Logger.getLogger(ActionManager.class);
 	
+	public static final int ERR_CODE1 = 15;
 	/**
 	 * 存储Action的Map,初始化大小为50
 	 */
 	private static final HashMap<String, Object> kobjMap = new HashMap<String, Object>(50);
 
-	public boolean createKObj(String name,KObject kobj){
-		
-		return true;
-	}
 	
 //	/**
 //	 * 获取所有KObj对象的列表
@@ -108,8 +108,7 @@ public class KObjAction extends Action{
 		try {
 			IO.copy(new File(configFile), new File(bak));
 		} catch (IOException e) {
-			e.printStackTrace();
-			log.error("save failed - save bak file failed:"+bak, e);
+			ErrorCode.logError(log, KObjAction.ERR_CODE1, 2, e,bak);
 		}
 		HashMap<String,Object> map = new HashMap<String,Object>();
 		map.put("kobjs", kobjMap);
@@ -117,79 +116,171 @@ public class KObjAction extends Action{
 		return re;
 	}
 	
-//	/**
-//	 * 添加一个KObj对象
-//	 * @param key
-//	 * @param kobj
-//	 * @return 是否操作成功
-//	 */
-//	public boolean addKObj(String key,HashMap<String,Object> kobj){
-//		
-//		
-//		return true;
-//	}
-//	
-//	/**
-//	 * 更新一个KObj对象
-//	 * @param key
-//	 * @param kobj
-//	 * @return 是否操作成功
-//	 */
-//	public boolean updateKObj(String key,HashMap<String,Object> kobj){
-//		
-//		
-//		return true;
-//	}
-//	
-//	
-//	/**
-//	 * 删除一个KObj对象(从数据库中永久删除)
-//	 * @param key
-//	 * @param kobj
-//	 * @return 是否操作成功
-//	 */
-//	public boolean delKObj(String key,HashMap<String,Object> kobj){
-//		
-//		
-//		return true;
-//	}
-	
-	
-	
+	/**
+	 * FIXME 添加一个新的KObj对象,更新配置文件，同时创建出新的DAO加入，并更新kconfig.json主文件
+	 * @param json String 
+	 * @return 是否操作成功
+	 */
+	@SuppressWarnings("unchecked")
+	public int createKObjTable(String json){
+		//先检验json
+		HashMap<String,Object> kobj = this.checkKObjJson(json);
+		if (kobj == null) {
+			return 6;
+		}
+		//必须有key
+		String key = kobj.keySet().iterator().next();
+		HashMap<String,Object> root = (HashMap<String,Object>)kobj.get(key);
+		//根据DAO配置获取dao,并验证是否存在
+		HashMap<String,Object> daoMap = (HashMap<String,Object>)root.get("dao");
+		String daoKey = daoMap.get("daoName").toString();
+		DaoInterface dao = DaoManager.findDao(daoKey);
+		if (dao == null) {
+			//ErrorCode.logError(log, KObjAction.ERR_CODE1, 5, JSONTool.writeJsonString(kobj));
+			return 5;
+		}
+		
+		//更新kobj.json
+		if(!KIoc.updateIniFileNode(HTManager.getIniPath()+getIniPath(), new String[]{"kobjs"},0, key, root)){
+			//ErrorCode.logError(log, KObjAction.ERR_CODE1, 7, JSONTool.writeJsonString(kobj));
+			return 7;
+		}
+		
+		
+		
+		//创建新Dao---------------------
+		if (dao.getTableName().equals("*")) {
+			KIoc.setProp(dao, "tableName", daoMap.get("tableName").toString());
+			if (kobj.containsKey("props")) {
+				KIoc.setProps(dao,(Map<String,Object>)daoMap.get("props"));
+			}
+			
+			
+			//先更新kobj.json
+			
+		}
+		//直接引用dao-------------------
+		else{
+			
+			//先更新kobj.json
+			
+			
+		}
+		
+		return 0;
+	}
 	
 	/**
-	 * 更新KObj表结构
+	 * FIXME 更新KObj表结构,同时更新DAO和kconfig.json,根据情况确定是否更新已有数据
+	 * 
 	 * @param key
 	 * @param newKObj
 	 * @return
 	 */
-	public boolean updateKObjTable(String key,Map<String,?> newKObj){
-		//Object o = kobjMap.get(key);
-		
-		
-		//FIXME 根据情况决定是否处理数据表更新
-		
-		//如果是新表则直接添加，老表则更新
+	public boolean updateKObjTable(String key, Map<String, ?> newKObj) {
+		// Object o = kobjMap.get(key);
+
+		// FIXME 根据情况决定是否处理数据表更新
+
+		// 如果是新表则直接添加，老表则更新
 		kobjMap.put(key, newKObj);
 		return this.save();
 		/*
-		Map<String,?> kobj = (Map<String,?>)o;
-		
-		for (Iterator<Map<String, ?>> it = newKObj.iterator(); it.hasNext();) {
-			Map<String, ?> map = it.next();
-			if (kobj.contains(map.get("column"))) {
-				//判断是否已有
-			}
+		 * Map<String,?> kobj = (Map<String,?>)o;
+		 * 
+		 * for (Iterator<Map<String, ?>> it = newKObj.iterator(); it.hasNext();)
+		 * { Map<String, ?> map = it.next(); if
+		 * (kobj.contains(map.get("column"))) { //判断是否已有 } }
+		 */
+
+	}
+
+
+	
+	/**
+	 * 检查Kobj的json String
+	 * @param json String 样例如下:
+	 * <pre>
+"kuser":{
+	"intro":"用户",
+	"dao":{
+		"daoName":"mongoDao",
+		"create":"new",
+		"tableName":"HTItem",
+		"props":{
+			"id":"11",
+			"type":"single"
 		}
-		*/
+	},
+	"columns":[	
+		{"col":"imei","def":"","type":"string","intro":"the imei of handset","len":"30"},
+		{"col":"pwd","def":"qwertnm","type":"string","intro":"password","len":"20"}
+	],
+	"indexs":[
+		{"col":"imei","order":"1","intro":"IMEI"}
+	]
+}
+		</pre>
+	 * 
+	 * @return 不合格则返回null
+	 */
+	@SuppressWarnings("unchecked")
+	private final HashMap<String,Object> checkKObjJson(String json){
+		HashMap<String,Object> map = null;
+		try {
+			map = JSONTool.readJsonString(json);
+			if (map == null) {
+				return null;
+			}
+			Iterator<String> iter = map.keySet().iterator();
+			if (!iter.hasNext()) {
+				return null;
+			}
+			String strKey = iter.next();
+			HashMap<String,Object> m = (HashMap<String, Object>) map.get(strKey);
+			//检查key
+			if(!JSONTool.checkMapKeys(m,new String[]{"intro","dao","column","indexes"})){
+				return null;
+			}
+			
+			//intro就不检查了
+			//HashMap<String,Object> m1 = (HashMap<String, Object>) map.get("intro");
+			
+			HashMap<String,Object> m2 = (HashMap<String, Object>) map.get("dao");
+			if(!JSONTool.checkMapKeys(m2,new String[]{"daoName","create"})){
+				return null;
+			}
+			//如果create为new,则必须有tableName字段
+			if (m2.get("create").equals("new") && (!m2.containsKey("tableName"))) {
+				return null;
+			}
+			ArrayList<HashMap<String,Object>> m3 = (ArrayList<HashMap<String,Object>>) map.get("column");
+			for (Iterator<HashMap<String,Object>> it = m3.iterator(); it.hasNext();) {
+				HashMap<String, Object> _map = it.next();
+				//{"col":"pwd","def":"qwertnm","type":"string","intro":"password here","len":"20"}
+				if(!JSONTool.checkMapKeys(_map,new String[]{"col","def","type","intro","len"})){
+					return null;
+				}
+			}
+			
+			ArrayList<HashMap<String,Object>> m4 = (ArrayList<HashMap<String,Object>>) map.get("indexes");
+			for (Iterator<HashMap<String,Object>> it = m4.iterator(); it.hasNext();) {
+				HashMap<String, Object> _map = it.next();
+				//{"col":"imei","order":"1","intro":"IMEI"}
+				if(!JSONTool.checkMapKeys(_map,new String[]{"col","order","intro"})){
+					return null;
+				}
+			}
+		} catch (Exception e) {
+			ErrorCode.logError(log, KObjAction.ERR_CODE1, 1, e,"");
+			return null;
+		}
 		
+		return map;
 	}
 	
 	
-	
-	
-	
-	//创建KObj,由json配置文件载入
+//创建KObj,由json配置文件载入
 	
 	/*
 	 * 管理KObj表，由配置文件配置表受到管理，可读取表结构(取出某一条记录)，索引，
@@ -206,7 +297,7 @@ public class KObjAction extends Action{
 	public ActionMsg act(ActionMsg msg) {
 		HttpActionMsg httpmsg = (HttpActionMsg)msg;
 		String subact = httpmsg.getHttpReq().getParameter("subact");
-		if (subact == null || subact.trim().length() <=3) {
+		if (subact == null || subact.trim().length() <3) {
 			subact = "list";
 		}
 		msg.addData("subact", subact);
@@ -238,6 +329,17 @@ public class KObjAction extends Action{
 				msg.addData("list", kobjMap);
 			}
 		}
+		//创建新的KObj
+		else if(subact.equals("createnew")){
+			//String key  = httpmsg.getHttpReq().getParameter("kobj_key");
+			String json  = httpmsg.getHttpReq().getParameter("kobj_json");
+			int err = this.createKObjTable(json);
+			msg.addData("createnew", ErrorCode.getErrorInfo(KObjAction.ERR_CODE1, err));
+		}
+		//更新KObj
+		else if(subact.equals("updatekobj")){
+			
+		}
 		//其他未知subact
 		else{
 			msg.addData("subact", "list");
@@ -262,13 +364,14 @@ public class KObjAction extends Action{
 				kobjMap.putAll(m);
 				log.info("KObjAction init OK! size:"+kobjMap.size());
 			}else{
-				log.error("kobjs node not exist! KObjAction init failed.");
+				ErrorCode.logError(log, KObjAction.ERR_CODE1, 3, "");
 				return;
 			}
 		} catch (Exception e) {
-			log.error("ConsoleAction init Error!", e);
+			ErrorCode.logError(log, KObjAction.ERR_CODE1, 4,e, "");
 		}
 	}
+	
 
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#getIniPath()

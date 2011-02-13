@@ -4,10 +4,10 @@
 package com.k99k.tools;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.stringtree.json.JSONErrorListener;
 import org.stringtree.json.JSONReader;
-import org.stringtree.json.JSONValidatingReader;
 import org.stringtree.json.JSONValidator;
 import org.stringtree.json.JSONWriter;
 
@@ -82,5 +82,27 @@ public final class JSONTool {
 		});
 		return vali.validate(in);
 	}
+	
+	
+	/**
+	 * 检查Map是否存在指定的多个String key
+	 * @param m Map
+	 * @param keys String[]
+	 * @return 少任意一个key则返回false
+	 */
+	@SuppressWarnings("unchecked")
+	public static final boolean checkMapKeys(Map m,String[] keys){
+		if (m == null) {
+			return false;
+		}
+		for (int i = 0; i < keys.length; i++) {
+			if (!m.containsKey(keys[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	//TODO 验证json格式,与指定的样例比较
 	
 }

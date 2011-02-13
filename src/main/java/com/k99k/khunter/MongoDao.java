@@ -76,6 +76,23 @@ public class MongoDao implements DaoInterface{
 		this.dataSource = (MongoConn) dataSource;
 	}
 	
+	
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#clone()
+	 */
+	@Override
+	public Object clone(){
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			log.error("clone failed.",e);
+			return null;
+		}
+	}
+
+
+
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.DaoInterface#init()
 	 */

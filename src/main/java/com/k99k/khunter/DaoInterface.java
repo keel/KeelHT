@@ -5,7 +5,7 @@ package com.k99k.khunter;
  * @author keel
  *
  */
-public interface DaoInterface {
+public interface DaoInterface extends Cloneable{
 	
 	public DataSourceInterface getDataSource();
 	
@@ -16,6 +16,10 @@ public interface DaoInterface {
 	public boolean init();
 	
 	public int getId();
+	
+	public String getTableName();
+	
+	public void setTableName(String tableName);
 	
 	/**
 	 * 数据库类型,如mongodb
@@ -38,5 +42,12 @@ public interface DaoInterface {
 	 * 设置DAO的获取方式,如单例为single
 	 */
 	public void setType(String type);
+	
+	/**
+	 * 支持clone
+	 * @see java.lang.Object#clone()
+	 * @return 
+	 */
+	public Object clone();
 
 }

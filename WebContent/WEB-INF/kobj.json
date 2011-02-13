@@ -2,23 +2,36 @@
 	"kobjs":{
 		"kuser":{
 			"intro":"用户",
+			"dao":{
+				"daoName":"mongoUserDao",
+				"create":"get"
+			},
 			"columns":[	
 				{"col":"imei","def":"","type":"string","intro":"the imei of handset","len":"30"},
 				{"col":"pwd","def":"qwertnm","type":"string","intro":"password","len":"20"}
 			],
 			"indexs":[
-			
+				{"col":"imei","order":"1","intro":"IMEI"}
 			]
 		},
 		"HTItem":{
 			"intro":"物品",
+			"dao":{
+				"daoName":"mongoDao",
+				"create":"new",
+				"tableName":"HTItem",
+				"props":{
+					"id":11,
+					"type":"single"
+				}
+			},
 			"columns":[	
 				{"col":"ack","def":"0","type":"int","intro":"attack","len":""},
 				{"col":"def","def":"0","type":"int","intro":"defence","len":""}
 			],
 			"indexs":[
-			
-			]	
+				{"col":"imei","order":"1","intro":"IMEI"}
+			]
 		}
 		
 	}
