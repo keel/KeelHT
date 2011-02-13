@@ -1,5 +1,7 @@
 package com.k99k.khunter;
 
+import java.util.HashMap;
+
 /**
  * DAO接口
  * @author keel
@@ -20,6 +22,19 @@ public interface DaoInterface extends Cloneable{
 	public String getTableName();
 	
 	public void setTableName(String tableName);
+	
+	/**
+	 * 生成此dao的配置,用于更新配置文件,如：<pre>
+"_class":"com.k99k.khunter.dao.MongoUserDao",
+"_dataSource":"mongodb_local",
+"dbType":"mongodb",
+"type":"single",
+"tableName":"testKHT",
+"id":2
+	 * </pre>
+	 * @return HashMap<String,Object>
+	 */
+	public HashMap<String,Object> toJsonConfig();
 	
 	/**
 	 * 数据库类型,如mongodb

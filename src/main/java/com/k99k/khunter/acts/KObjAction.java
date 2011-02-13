@@ -117,7 +117,7 @@ public class KObjAction extends Action{
 	}
 	
 	/**
-	 * FIXME 添加一个新的KObj对象,更新配置文件，同时创建出新的DAO加入，并更新kconfig.json主文件
+	 * FIXME 添加一个新的KObj对象,更新配置文件，同时创建出新的DAO加入，并更新dao配置
 	 * @param json String 
 	 * @return 是否操作成功
 	 */
@@ -128,7 +128,7 @@ public class KObjAction extends Action{
 		if (kobj == null) {
 			return 6;
 		}
-		//必须有key
+		//kobj的key
 		String key = kobj.keySet().iterator().next();
 		HashMap<String,Object> root = (HashMap<String,Object>)kobj.get(key);
 		//根据DAO配置获取dao,并验证是否存在
@@ -150,34 +150,37 @@ public class KObjAction extends Action{
 		
 		//创建新Dao---------------------
 		if (dao.getTableName().equals("*")) {
+			//设置dao属性
 			KIoc.setProp(dao, "tableName", daoMap.get("tableName").toString());
 			if (kobj.containsKey("props")) {
-				KIoc.setProps(dao,(Map<String,Object>)daoMap.get("props"));
+				if(!KIoc.setProps(dao,(Map<String,Object>)daoMap.get("props"))){
+					return 8;
+				}
 			}
-			
-			
-			//先更新kobj.json
+			if(!DaoManager.addDao(dao)){
+				return 9;
+			}
+			if(!DaoManager.storeDao(dao)){
+				return 10;
+			}
 			
 		}
 		//直接引用dao-------------------
 		else{
-			
-			//先更新kobj.json
-			
-			
 		}
 		
 		return 0;
 	}
 	
 	/**
-	 * FIXME 更新KObj表结构,同时更新DAO和kconfig.json,根据情况确定是否更新已有数据
+	 * FIXME 更新KObj表结构,同时更新DAO和dao的配置,根据情况确定是否更新已有数据
 	 * 
 	 * @param key
+	 * @param jsonPath 需要更新的路径
 	 * @param newKObj
 	 * @return
 	 */
-	public boolean updateKObjTable(String key, Map<String, ?> newKObj) {
+	public boolean updateKObjTable(String key,String jsonPath, Map<String, ?> newKObj) {
 		// Object o = kobjMap.get(key);
 
 		// FIXME 根据情况决定是否处理数据表更新
@@ -314,9 +317,10 @@ public class KObjAction extends Action{
 		else if(subact.equals("update")){
 			String key  = httpmsg.getHttpReq().getParameter("update_key");
 			String val = httpmsg.getHttpReq().getParameter("update_json");
+			String jsonPath = httpmsg.getHttpReq().getParameter("update_path");
 			HashMap<String,Object> newOBJ = JSONTool.readJsonString(val);
 			Map<String,?> newKObj = (Map<String, ?>) newOBJ.get("val");
-			boolean re = this.updateKObjTable(key, newKObj);
+			boolean re = this.updateKObjTable(key,jsonPath,newKObj);
 			msg.addData("update", re);
 		}
 		//查询

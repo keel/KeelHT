@@ -206,15 +206,18 @@ public final class DaoManager {
 	
 	
 	/**
-	 * 添加一个Dao,同时确定它 获取方式(单例或是每次均新建)
+	 * 添加一个Dao 
 	 * @param dao Dao对象
-	 * @return
+	 * @return 如果已存在同名dao或dao初始化失败则返回false
 	 */
 	public static final boolean addDao(DaoInterface dao){
 		if (dao == null) {
 			return false;
 		}
 		if (daoMap.containsKey(dao.getName())) {
+			return false;
+		}
+		if (!dao.init()) {
 			return false;
 		}
 		daoMap.put(dao.getName(), dao);
@@ -226,13 +229,30 @@ public final class DaoManager {
 	 * 更改某一个key对应的Dao实例
 	 * @param name Dao的name
 	 * @param dao 新的Dao
+	 * @return dao为null或初始化失败则返回false
 	 */
-	public static final void changeDao(String name,DaoInterface dao){
+	public static final boolean changeDao(String name,DaoInterface dao){
 		if (dao == null) {
-			return;
+			return false;
+		}
+		if (!dao.init()) {
+			return false;
 		}
 		daoMap.put(name, dao);
 		log.info("Dao changed: "+dao.getName());
+		return true;
+	}
+	
+	/**
+	 * 将dao配置保存到配置文件中
+	 * @param dao
+	 * @return
+	 */
+	public static final boolean storeDao(DaoInterface dao){
+		String key = dao.getName();
+		//新增或更新某一个Dao
+		boolean re = KIoc.updateIniFileNode(iniFilePath, new String[]{"daos"}, 0, key, dao.toJsonConfig());
+		return re;
 	}
 	
 	/**

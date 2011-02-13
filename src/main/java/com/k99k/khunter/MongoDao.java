@@ -1,18 +1,16 @@
 package com.k99k.khunter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 
 /**
@@ -67,6 +65,11 @@ public class MongoDao implements DaoInterface{
 	private String type;
 	
 	/**
+	 * dao对应的json配置
+	 */
+	private HashMap<String,Object> jsonConfig = new HashMap<String,Object>();
+	
+	/**
 	 * 创建建时初始化id生成器
 	 * @param daoName Dao名称
 	 */
@@ -103,6 +106,12 @@ public class MongoDao implements DaoInterface{
 			log.error("init error!", e);
 			return false;
 		}
+		jsonConfig.put("_class", this.getClass().getName());
+		jsonConfig.put("_dataSource", this.dataSource.getName());
+		jsonConfig.put("tableName", this.tableName);
+		jsonConfig.put("dbType", this.dbType);
+		jsonConfig.put("type", this.type);
+		jsonConfig.put("id", this.id);
 		return true;
 	}
 
@@ -148,13 +157,14 @@ public class MongoDao implements DaoInterface{
 	 * @param fields
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public Map<String,Object> findOneMap(BasicDBObject query,BasicDBObject fields){
 		try {
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
 			DBCursor cur = coll.find(query,fields,0, 1);
 	        if(cur.hasNext()) {
-	        	return (Map) cur.next();
+	        	return (Map<String,Object>) cur.next();
 	        }
 	        return null;
 		} catch (MongoException e) {
@@ -173,6 +183,7 @@ public class MongoDao implements DaoInterface{
 	 * @param hint 无则为null
 	 * @return List<Map<String,Object>>
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Map<String,Object>> findByProps(BasicDBObject query,BasicDBObject fields,BasicDBObject sortBy,int skip,int len,BasicDBObject hint){
 		int initSize = 20;
 		if (len > 0) {
@@ -242,13 +253,14 @@ public class MongoDao implements DaoInterface{
 	 * @param id long
 	 * @return Map形式,未找到返回null
 	 */
+	@SuppressWarnings("unchecked")
 	public Map<String, Object> findMap(long id){
 		try {
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
 			DBObject o = coll.findOne(id);
 			if (o != null) {
-				return (Map)o;
+				return (Map<String, Object>)o;
 			}
 			return null;
 		} catch (MongoException e) {
@@ -476,7 +488,7 @@ public class MongoDao implements DaoInterface{
 		this.dataSource = (MongoConn) dataSource;
 	}
 
-	public static void main(String[] args) throws Exception {
+	/*public static void main(String[] args) throws Exception {
 
 	        // connect to the local database server
 	        Mongo m = new Mongo();
@@ -584,7 +596,7 @@ public class MongoDao implements DaoInterface{
 
 	        db.resetError();
 	        m.close();
-	    }
+	    }*/
 
 	@Override
 	public String getName() {
@@ -653,6 +665,13 @@ public class MongoDao implements DaoInterface{
 	 */
 	public final void setType(String type) {
 		this.type = type;
+	}
+
+	
+
+	@Override
+	public HashMap<String, Object> toJsonConfig() {
+		return this.jsonConfig;
 	}
 
 

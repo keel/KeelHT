@@ -62,7 +62,10 @@ public final class ErrorCode {
 		errArr[15][5] = "KObjAction-createKObjTable dao not found:";
 		errArr[15][6] = "KObjAction-createKObjTable JSON error";
 		errArr[15][7] = "KObjAction-createKObjTable update kobj.json failed.";
-		errArr[15][8] = "KObjAction- ";
+		errArr[15][8] = "KObjAction-createKObjTable set dao Props failed.";
+		errArr[15][9] = "KObjAction-createKObjTable DaoManager.addDao failed.";
+		errArr[15][10] = "KObjAction-createKObjTable DaoManager.storeDao failed.";
+		errArr[15][11] = "KObjAction-createKObjTable ";
 		
 		
 		
