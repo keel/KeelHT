@@ -25,6 +25,7 @@ public final class JSONTool {
 	
 	/**
 	 * 使用JSONValidatingReader读取json的String
+	 * FIXME 需要处理异常
 	 * @param in String
 	 * @return HashMap
 	 */
@@ -50,12 +51,20 @@ public final class JSONTool {
 	 * @return json String
 	 */
 	public static final String writeFormatedJsonString(HashMap<String,Object> map){
-		JSONWriter jsonWriter = new JSONWriter();
-		StringBuilder sb = new StringBuilder(jsonWriter.write(map));
-		//FIXME 格式化
-		return sb.toString();
+		JSONFormatWriter jsonWriter = new JSONFormatWriter();
+		return jsonWriter.write(map,4);
 	}
 	
+	/**
+	 * 使用JSONWriter将HashMap转成String形式的json,并进行format
+	 * @param map
+	 * @param formatDeep 
+	 * @return json String
+	 */
+	public static final String writeFormatedJsonString(HashMap<String,Object> map,int formatDeep){
+		JSONFormatWriter jsonWriter = new JSONFormatWriter();
+		return jsonWriter.write(map,formatDeep);
+	}
 	
 	/**
 	 * 验证json

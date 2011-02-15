@@ -5,6 +5,7 @@ package com.k99k.khunter;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -20,7 +21,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import org.apache.log4j.Logger;
+
+import com.k99k.khunter.acts.KObjAction;
+import com.k99k.tools.IO;
 import com.k99k.tools.JSONTool;
+import com.k99k.tools.StringUtil;
 
 /**
  * 注入解析器,支持热加载类文件
@@ -381,28 +386,58 @@ public final class KIoc {
 	 * @param iniValue 更新的值
 	 * @return 是否更新成功
 	 */
-	@SuppressWarnings("unchecked")
 	public static final boolean updateIniFileNode(String iniFilePath,String[] jsonPath,int opType,String iniKey,Object iniValue){
+		String ini = KIoc.readTxtInUTF8(iniFilePath);
+		if (ini == null) {
+			return false;
+		}
+		HashMap<String, Object> root = (HashMap<String,Object>) JSONTool.readJsonString(ini);
+		if (root == null) {
+			return false;
+		}
+		String newJson = updateJsonNode(root,jsonPath,opType,iniKey,iniValue);
+		if (newJson != null &&  (!newJson.equals("null"))) {
+			//先备份
+			String bak = iniFilePath+"."+StringUtil.getFormatDateString("yyyyMMdd-HH_mm_ss");
+			try {
+				IO.copy(new File(iniFilePath), new File(bak));
+			} catch (IOException e) {
+				ErrorCode.logError(log, KIoc.ERR_CODE1, 25, e,bak);
+			}
+			KIoc.writeTxtInUTF8(iniFilePath, newJson);
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * 更新json String中的某一节点
+	 * @param root HashMap<String, Object> json的根节点
+	 * @param jsonPath String[] 路径
+	 * @param opType 操作方式:2为删除,其他值为更新或新增
+	 * @param key 更新的key
+	 * @param value 更新的value
+	 * @return 更新后的json String,如果jsonPath有误则返回null或"null"
+	 */
+	@SuppressWarnings("unchecked")
+	public static final String updateJsonNode(HashMap<String, Object> root,String[] jsonPath,int opType,String key,Object value){
 		try {
-			String ini = KIoc.readTxtInUTF8(iniFilePath);
-			HashMap<String,Object> root = (HashMap<String,Object>) JSONTool.readJsonString(ini);
+			
 			HashMap<String,Object> target = root;
 			//定位到需要更新的节点
 			for (int i = 0; i < jsonPath.length; i++) {
 				target = (HashMap<String,Object>)(target.get(jsonPath[i]));
 			}
 			if (opType == 2) {
-				target.remove(iniKey);
+				target.remove(key);
 			}else{
-				target.put(iniKey, iniValue);
+				target.put(key, value);
 			}
-			
-			KIoc.writeTxtInUTF8(iniFilePath, JSONTool.writeFormatedJsonString(root));
+			return JSONTool.writeFormatedJsonString(root);
 		} catch (Exception e) {
-			ErrorCode.logError(log, KIoc.ERR_CODE1, 23,e, iniFilePath+" | "+jsonPath+" | "+iniValue);
-			return false;
+			ErrorCode.logError(log, KIoc.ERR_CODE1, 23,e, root+" | "+jsonPath+" | "+opType);
+			return null;
 		}
-		return true;
 	}
 	
 	
@@ -415,56 +450,63 @@ public final class KIoc {
 	 * @param iniValue 新增节点的值
 	 * @return 是否更新成功
 	 */
-	@SuppressWarnings("unchecked")
 	public static final boolean updateIniFileNode(String iniFilePath,String[] jsonPath,int opType,int position,Object iniValue){
+		String ini = KIoc.readTxtInUTF8(iniFilePath);
+		if (ini == null) {
+			return false;
+		}
+		HashMap<String, Object> root = (HashMap<String,Object>) JSONTool.readJsonString(ini);
+		if (root == null) {
+			return false;
+		}
+		String newJson = updateJsonNode(root,jsonPath,opType,position,iniValue);
+		if (newJson != null &&  (!newJson.equals("null"))) {
+			//先备份
+			String bak = iniFilePath+"."+StringUtil.getFormatDateString("yyyyMMdd-HH_mm_ss");
+			try {
+				IO.copy(new File(iniFilePath), new File(bak));
+			} catch (IOException e) {
+				ErrorCode.logError(log, KIoc.ERR_CODE1, 25, e,bak);
+			}
+			KIoc.writeTxtInUTF8(iniFilePath, newJson);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 更新json String中的某一节点
+	 * @param root HashMap<String, Object> json的根节点
+	 * @param jsonPath String[] 路径
+	 * @param opType 操作方式:2为删除,其他值为更新或新增
+	 * @param position 操作位置,即ArrayList中的index
+	 * @param value 更新的value
+	 * @return 更新后的json String,如果jsonPath有误则返回null或"null"
+	 */
+	@SuppressWarnings("unchecked")
+	public static final String updateJsonNode(HashMap<String, Object> root,String[] jsonPath,int opType,int position,Object value){
 		try {
-			String ini = KIoc.readTxtInUTF8(iniFilePath);
-			HashMap<String,Object> root = (HashMap<String,Object>) JSONTool.readJsonString(ini);
 			HashMap<String,Object> target = root;
 			//定位到需要更新的节点
-			for (int i = 0; i < jsonPath.length-1; i++) {
+			for (int i = 0; i < jsonPath.length; i++) {
 				target = (HashMap<String,Object>)(target.get(jsonPath[i]));
 			}
 			ArrayList<Object> listTarget = (ArrayList<Object>)target.get(jsonPath[jsonPath.length-1]);
 			if (opType == 0) {
-				listTarget.add(iniValue);
+				listTarget.add(value);
 			}else if(opType == 1){
-				listTarget.set(position, iniValue);
+				listTarget.set(position, value);
 			}else if(opType == 2){
 				listTarget.remove(position);
 			}else{
-				listTarget.add(iniValue);
+				listTarget.add(value);
 			}
-			KIoc.writeTxtInUTF8(iniFilePath, JSONTool.writeFormatedJsonString(root));
+			return JSONTool.writeFormatedJsonString(root);
 		} catch (Exception e) {
-			ErrorCode.logError(log, KIoc.ERR_CODE1,24,e, iniFilePath+" | "+jsonPath+" | "+iniValue);
-			return false;
+			ErrorCode.logError(log, KIoc.ERR_CODE1, 24,e, root+" | "+jsonPath+" | "+opType);
+			return null;
 		}
-		return true;
 	}
 	
-	public static void main(String[] args) {
-		/*
-		Action a = (Action)KIoc.loadClassInstance("file:/F:/works/workspace_keel/KHunter/WebContent/WEB-INF/classes/", "com.k99k.khunter.Action", new Object[]{"test"});
-		System.out.println("Action name:"+a.getName());
-		int idi = 3344;
-		KIoc.setProp(a, "id", idi);
-		System.out.println(a.getId());
-		
-		HTItem item = (HTItem)KIoc.loadClassInstance("file:/F:/works/workspace_keel/KHunter/WebContent/WEB-INF/classes/", "com.k99k.khunter.HTItem");
-		String[] props = new String[]{"ack","function","special"};
-		Object[] values = new Object[]{34,"some function","very special"};
-		KIoc.setProps(item, props, values);
-		System.out.println(item.getAck()+"|"+item.getFunction()+"|"+item.getSpecial());
-		*/
-		
-		
-		/*
-		String s = KIoc.readTxtInUTF8("f:/works/workspace_keel/KHunter/WebContent/WEB-INF/actions.json");
-		System.out.println(s);
-		*/
-		
-		
-	}
 
 }

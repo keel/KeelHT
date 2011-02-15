@@ -23,6 +23,33 @@ public final class StringUtil {
 	}
 	
 	/**
+	 * Object转为非负整数int,若为null或其他,返回-1
+	 * @param obj
+	 * @return int
+	 */
+	public static final int objToNonNegativeInt(Object obj){
+		if(obj != null){
+			String s = obj.toString();
+			if(s.matches("[0-9]*")){
+				return Integer.parseInt(s);
+			}
+		}
+		return -1;
+	}
+	
+//	/**
+//	 * 复制HashMap
+//	 * @param map
+//	 * @return hashMap with the same keys and values.
+//	 */
+//	@SuppressWarnings("unchecked")
+//	public static final HashMap hashMapClone(HashMap map){
+//		HashMap target = new HashMap();
+//		target.putAll(map);
+//        return target;
+//	}
+	
+	/**
 	 * 判断一个字符串是不是数字组成
 	 * @param s 字符。
 	 * @return

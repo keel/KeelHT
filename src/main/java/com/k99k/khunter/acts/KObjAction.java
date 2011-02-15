@@ -97,27 +97,27 @@ public class KObjAction extends Action{
 	}
 	
 	
-	/**
-	 * 保存配置,同时将原文件按时间扩展名备份
-	 * @return
-	 */
-	private boolean save(){
-		//保存
-		String configFile = HTManager.getIniPath()+getIniPath();
-		String bak = configFile+"."+StringUtil.getFormatDateString("yyyyMMdd-HH_mm_ss");
-		try {
-			IO.copy(new File(configFile), new File(bak));
-		} catch (IOException e) {
-			ErrorCode.logError(log, KObjAction.ERR_CODE1, 2, e,bak);
-		}
-		HashMap<String,Object> map = new HashMap<String,Object>();
-		map.put("kobjs", kobjMap);
-		boolean re = KIoc.writeTxtInUTF8(configFile, JSONTool.writeJsonString(map));
-		return re;
-	}
+//	/**
+//	 * 保存配置,同时将原文件按时间扩展名备份
+//	 * @return
+//	 */
+//	private boolean save(){
+//		//保存
+//		String configFile = HTManager.getIniPath()+getIniPath();
+//		String bak = configFile+"."+StringUtil.getFormatDateString("yyyyMMdd-HH_mm_ss");
+//		try {
+//			IO.copy(new File(configFile), new File(bak));
+//		} catch (IOException e) {
+//			ErrorCode.logError(log, KObjAction.ERR_CODE1, 2, e,bak);
+//		}
+//		HashMap<String,Object> map = new HashMap<String,Object>();
+//		map.put("kobjs", kobjMap);
+//		boolean re = KIoc.writeTxtInUTF8(configFile, JSONTool.writeJsonString(map));
+//		return re;
+//	}
 	
 	/**
-	 * FIXME 添加一个新的KObj对象,更新配置文件，同时创建出新的DAO加入，并更新dao配置
+	 * 添加一个新的KObj对象,更新配置文件，如果需求则创建新的DAO，并更新dao配置
 	 * @param json String 
 	 * @return 是否操作成功
 	 */
@@ -173,32 +173,50 @@ public class KObjAction extends Action{
 	}
 	
 	/**
-	 * FIXME 更新KObj表结构,同时更新DAO和dao的配置,根据情况确定是否更新已有数据
+	 * 更新KObj表结构,同时更新DAO和dao的配置,根据情况确定是否更新已有数据
 	 * 
-	 * @param key
 	 * @param jsonPath 需要更新的路径
+	 * @param key
 	 * @param newKObj
 	 * @return
 	 */
-	public boolean updateKObjTable(String key,String jsonPath, Map<String, ?> newKObj) {
-		// Object o = kobjMap.get(key);
+	@SuppressWarnings("unchecked")
+	public boolean updateKObjTable(String[] jsonPath, String key,Map<String, ?> newValue) {
 
-		// FIXME 根据情况决定是否处理数据表更新
-
-		// 如果是新表则直接添加，老表则更新
-		kobjMap.put(key, newKObj);
-		return this.save();
-		/*
-		 * Map<String,?> kobj = (Map<String,?>)o;
-		 * 
-		 * for (Iterator<Map<String, ?>> it = newKObj.iterator(); it.hasNext();)
-		 * { Map<String, ?> map = it.next(); if
-		 * (kobj.contains(map.get("column"))) { //判断是否已有 } }
-		 */
+		//生成新的配置文件并检查
+		HashMap<String, Object> kobjMap2 = (HashMap<String, Object>)kobjMap.clone();
+		String newJson = KIoc.updateJsonNode(kobjMap2, jsonPath, 0, key, newValue);
+		if (this.checkKObjJson(newJson) == null) {
+			return false;
+		}
+		//更新kobjMap对象
+		HashMap<String,Object> target = kobjMap;
+		for (int i = 0; i < jsonPath.length; i++) {
+			target = (HashMap<String,Object>)(target.get(jsonPath[i]));
+		}
+		target.put(key,newValue);
+		
+		//更新kobj.json配置文件
+		boolean re = KIoc.updateIniFileNode(HTManager.getIniPath()+this.getIniPath(), jsonPath, 0, key, newValue);
+		return re;
 
 	}
 
+	public boolean updateKObjTable(String[] jsonPath, int position,Object newValue) {
+		// Object o = kobjMap.get(key);
 
+		// FIXME 根据情况决定是否处理数据表更新
+		
+		//应该细分请求,dao的更新请求，columns的更新请求，indexes的更新请求
+		
+		
+		
+		boolean re = KIoc.updateIniFileNode(HTManager.getIniPath()+this.getIniPath(), jsonPath, 0, position, newValue);
+
+		// 如果是新表则直接添加，老表则更新
+		return re;
+
+	}
 	
 	/**
 	 * 检查Kobj的json String
@@ -225,7 +243,7 @@ public class KObjAction extends Action{
 }
 		</pre>
 	 * 
-	 * @return 不合格则返回null
+	 * @return 不合格则返回null,合格则返回所需要的HashMap
 	 */
 	@SuppressWarnings("unchecked")
 	private final HashMap<String,Object> checkKObjJson(String json){
@@ -315,12 +333,25 @@ public class KObjAction extends Action{
 		}
 		//更新或新增
 		else if(subact.equals("update")){
-			String key  = httpmsg.getHttpReq().getParameter("update_key");
+			boolean re = false;
+			String jsonPathString = httpmsg.getHttpReq().getParameter("update_path");
 			String val = httpmsg.getHttpReq().getParameter("update_json");
-			String jsonPath = httpmsg.getHttpReq().getParameter("update_path");
-			HashMap<String,Object> newOBJ = JSONTool.readJsonString(val);
-			Map<String,?> newKObj = (Map<String, ?>) newOBJ.get("val");
-			boolean re = this.updateKObjTable(key,jsonPath,newKObj);
+			int position = StringUtil.objToNonNegativeInt(httpmsg.getHttpReq().getParameter("update_position"));
+			String[] jsonPath = jsonPathString.split(",");
+			Object newOBJ = JSONTool.readJsonString(val);
+			if (newOBJ != null) {
+				if (position < 0) {
+					if (newOBJ instanceof HashMap) {
+						String key  = httpmsg.getHttpReq().getParameter("update_key");
+						Map<String,?> newKObj = (Map<String, ?>) ((Map<String, ?>)newOBJ).get("update_value");
+						re = this.updateKObjTable(jsonPath,key,newKObj);
+					}
+				}else{
+					re = this.updateKObjTable(jsonPath, position, newOBJ);
+				}
+			}
+			
+			
 			msg.addData("update", re);
 		}
 		//查询

@@ -92,7 +92,7 @@ public final class DaoManager {
 	 * @return 是否初始化成功
 	 */
 	@SuppressWarnings("unchecked")
-	public static boolean init(String iniFile,String classPath){
+	public final static boolean init(String iniFile,String classPath){
 		if (!isInitOK) {
 			//读取配置文件刷新注入的Dao数据
 			try {
@@ -179,7 +179,7 @@ public final class DaoManager {
 	 * @param classPath class文件所在的路径
 	 * @return 是否初始化成功
 	 */
-	public static boolean reInit(String iniFile,String classPath){
+	public final static boolean reInit(String iniFile,String classPath){
 		isInitOK = false;
 		return init(iniFile,classPath);
 	}

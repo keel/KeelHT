@@ -50,13 +50,14 @@ public final class ErrorCode {
 		errArr[9][20] = "KIoc-readTxt UnsupportedEncodingException filePath:";
 		errArr[9][21] = "KIoc-readTxt IOException filePath:";
 		errArr[9][22] = "KIoc-writeTxtInUTF8 IOException throwed.file:";
-		errArr[9][23] = "KIoc-updateIniFileNode Exception throwed. ini:";
-		errArr[9][24] = "KIoc-updateIniFileNode(ArrayList) Exception throwed. ini:";
+		errArr[9][23] = "KIoc-updateJsonNode Exception throwed. json:";
+		errArr[9][24] = "KIoc-updateJsonNode(ArrayList) Exception throwed. json:";
+		errArr[9][25] = "KIoc-updateIniFileNode failed - save bak file failed:";
 		
 		
 		//KObjAction
 		errArr[15][1] = "KObjAction-checkKObjJson failed.";
-		errArr[15][2] = "KObjAction-save failed - save bak file failed:";
+		errArr[15][2] = "KObjAction- ";
 		errArr[15][3] = "KObjAction-init kobjs node not exist! KObjAction init failed.";
 		errArr[15][4] = "KObjAction-init Exception throwed.";
 		errArr[15][5] = "KObjAction-createKObjTable dao not found:";
