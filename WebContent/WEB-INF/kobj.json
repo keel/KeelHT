@@ -8,7 +8,15 @@
 			},
 			"columns":[	
 				{"col":"imei","def":"","type":"string","intro":"the imei of handset","len":"30"},
-				{"col":"pwd","def":"qwertnm","type":"string","intro":"password","len":"20"}
+				{"col":"pwd","def":"qwertnm","type":"string","intro":"password","len":"20"},
+				{"col":"tags","def":{},"type":"map","intro":"tagss","len":"20"},
+				{"col":"tags.tagName","def":"","type":"string","intro":"tagName","len":"20"},
+				{"col":"tags.tagId","def":"","type":"long","intro":"tagId","len":"20"},
+				{"col":"comms","def":[],"type":"array","intro":"password","len":"20"},
+				{"col":"comms.*","def":null,"type":"map","intro":"comms element is a map schema","len":"20"},
+				{"col":"comms.*.content","def":"","type":"string","intro":"comment content","len":"120"},
+				{"col":"comms.*.writer","def":"","type":"string","intro":"comment writer","len":"20"},
+				{"col":"comms.*.addTime","def":"","type":"string","intro":"comment addTime","len":"20"}
 			],
 			"indexs":[
 				{"col":"imei","order":"1","intro":"IMEI"}

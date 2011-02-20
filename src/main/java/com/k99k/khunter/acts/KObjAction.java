@@ -207,7 +207,7 @@ public class KObjAction extends Action{
 	 * @return 是否操作成功
 	 */
 	@SuppressWarnings("unchecked")
-	public int createKObj(String json){
+	public int addKObjSchema(String json){
 		//先检验json
 		HashMap<String,Object> map = JSONTool.readJsonString(json);
 		if (map == null) {
@@ -397,8 +397,20 @@ public class KObjAction extends Action{
 		return 0;
 	}
 	
+	
+	
+	/**
+	 * FIXME 更新KObj的列
+	 * @param kobjName
+	 * @param opType 0为新增,1为更新,2为删除,10为批量新增,11为批量更新,12为批量删除
+	 * @param jsonReq
+	 * @return
+	 */
 	public int updateKObjColumns(String kobjName,int opType,String jsonReq){
 		//opType也支持多项操作,多项操作时jsonReq必须为ArrayList，单项操作时可以为Map
+		
+		
+		
 		
 		// FIXME 根据情况决定是否处理已有数据表更新
 		return 0;
@@ -410,6 +422,32 @@ public class KObjAction extends Action{
 		return 0;
 	}
 	
+	///----------------以下为建立具体的KObj及其操作-----------------
+	/**
+	 * FIXME 创建一个空的KObj对象
+	 * @param kobjName
+	 * @return
+	 */
+	public KObject createEmptyKObj(String kobjName){
+		//读取columns配置，并按默认值生成一个新的KObject
+		
+		return null;
+	}
+	
+	/**
+	 * FIXME 检查一个KObject是否符合columns配置
+	 * @param kobjName
+	 * @param kobj
+	 * @return
+	 */
+	public boolean checkKObj(String kobjName,KObject kobj){
+		
+		
+		return true;
+	}
+	
+	
+	///----------------以上为建立具体的KObj及其操作-----------------
 	
 	///----------------以下为DAO操作-----------------
 	
@@ -435,7 +473,7 @@ public class KObjAction extends Action{
 	}
 	
 	/**
-	 * 删除dao
+	 * 删除dao,同时更新配置
 	 * @param daoName
 	 * @return
 	 */
@@ -447,7 +485,7 @@ public class KObjAction extends Action{
 	}
 	
 	/**
-	 * 更新Dao属性,不影响Kobj
+	 * 更新Dao属性,不影响Kobj,注意_class和_dataSource无法在这里更新
 	 * @param daoName
 	 * @param propName
 	 * @param propValue
@@ -458,42 +496,30 @@ public class KObjAction extends Action{
 		if (dao == null) {
 			return 30;
 		}
-		
-		
-		return 0;
-	}
-	
-	
-	/**
-	 * 增加一个KObj对象
-	 * @param kobjName
-	 * @param newKObjJson
-	 * @return
-	 */
-	public int addKObj(String kobjName,String newKObjJson){
-		
-		
-		return 0;
-	}
-	
-	/**
-	 * 更新或删除一个KObj对象
-	 * @param kobjName
-	 * @param newKObj
-	 * @return
-	 */
-	public int updateKObj(String kobjName,Map set,boolean upset,boolean multi){
-		
-		
-		return 0;
-	}
-	
-	public KObject findOneKObj(String kobjName,long id){
-		DaoInterface dao = this.findDao(kobjName);
-		if (dao == null) {
-			return null;
+		if (propName.equals("dbType")) {
+			dao.setDbType(propValue);
+		}else if(propName.equals("type")){
+			dao.setType(propValue);
+		}else if(propName.equals("tableName")){
+			dao.setTableName(propValue);
+		}else if(propName.equals("id") && propValue.matches("\\d+")){
+			dao.setId(Integer.parseInt(propValue));
 		}
-		return dao.findOne(id);
+		//更新配置
+		boolean re = DaoManager.storeDao(daoName);
+		if (!re) {
+			return 31;
+		}
+		return 0;
+	}
+	
+	/**
+	 * 重新载入DAO,使用配置文件的当前配置
+	 * @param daoName
+	 * @return
+	 */
+	public boolean reloadDao(String daoName){
+		return DaoManager.reLoadDao(daoName);
 	}
 	
 	/**
@@ -766,6 +792,12 @@ public class KObjAction extends Action{
 	}
 	
 	
+	///----------------以上为DAO操作-----------------
+	
+	
+	
+	
+	
 	
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#act(com.k99k.khunter.ActionMsg)
@@ -802,11 +834,11 @@ public class KObjAction extends Action{
 		}
 		
 		//创建新的KObj
-		else if(subact.equals("createnew")){
+		else if(subact.equals("addkobjschema")){
 			//String key  = httpmsg.getHttpReq().getParameter("kobj_key");
 			String json  = httpmsg.getHttpReq().getParameter("kobj_json");
-			int err = this.createKObj(json);
-			msg.addData("createnew", ErrorCode.getErrorInfo(KObjAction.ERR_CODE1, err));
+			int err = this.addKObjSchema(json);
+			msg.addData("addkobjschema", ErrorCode.getErrorInfo(KObjAction.ERR_CODE1, err));
 		}
 		//更新KObj
 		else if(subact.equals("updatekobjintro")){

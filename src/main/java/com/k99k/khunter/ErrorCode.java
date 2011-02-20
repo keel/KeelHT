@@ -85,6 +85,10 @@ public final class ErrorCode {
 		errArr[15][27] = "KObjAction-addDao addDao failed. daoName:";
 		errArr[15][28] = "KObjAction-addDao storeDao failed. daoName:";
 		errArr[15][29] = "KObjAction-removeDao DaoManager.removeDao failed. daoName:";
+		errArr[15][30] = "KObjAction-updateDaoProps DaoManager.findDao is null. daoName:";
+		errArr[15][31] = "KObjAction-updateDaoProps DaoManager.storeDao failed. daoName:";
+		errArr[15][32] = "KObjAction- . daoName:";
+		
 		
 		
 		

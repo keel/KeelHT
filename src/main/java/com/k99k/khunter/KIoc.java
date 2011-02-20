@@ -442,7 +442,7 @@ public final class KIoc {
 	 * 更新json HashMap中的某一节点
 	 * @param root HashMap<String, Object> json的根节点
 	 * @param jsonPath String[] 路径
-	 * @param opType 操作方式:2为删除,其他值为更新或新增
+	 * @param opType 操作方式:0或其他值为新增,1为更新,2为删除
 	 * @param arrPostion 如果大于0则表示为数组项的更新，小于0则表示为键值对的更新
 	 * @param key 更新的key
 	 * @param value 更新的value
