@@ -22,7 +22,6 @@ import java.util.Iterator;
 import java.util.Map;
 import org.apache.log4j.Logger;
 
-import com.k99k.khunter.acts.KObjAction;
 import com.k99k.tools.IO;
 import com.k99k.tools.JSONTool;
 import com.k99k.tools.StringUtil;
@@ -349,19 +348,20 @@ public final class KIoc {
 	 * @param json 数据内容
 	 * @return 0表示成功,其他为错误码
 	 */
-	public static final int saveJsonIni(String iniFileName,String json){
-		if (iniFileName == null || iniFileName.trim().length()<2) {
+	public static final int saveJsonToFile(String jsonFilePath,String json){
+		if (jsonFilePath == null || jsonFilePath.trim().length()<2) {
 			return 11;
 			//msg.addData("save", "ini not found.");
 		}else{
-			if (json == null || json.length() < 10) {
+			if (json == null || json.length() < 5) {
 				//msg.addData("save", "no para");
 				return 12;
 			}else {
 				//验证json格式
 				if (JSONTool.validateJsonString(json)) {
 					//保存
-					if(KIoc.writeTxtInUTF8(HTManager.getIniPath()+iniFileName+".json", json)){
+					backupFile(jsonFilePath);
+					if(KIoc.writeTxtInUTF8(jsonFilePath, json)){
 						return 0;
 						//msg.addData("save", "ok");
 					}else{
@@ -376,6 +376,40 @@ public final class KIoc {
 		}
 	}
 	
+	/**
+	 * 保存json形式的文件
+	 * @param jsonFilePath 文件全名路径
+	 * @param json HashMap<String,Object> root of json
+	 * @return 0表示成功,其他为错误码
+	 */
+	public static final int saveJsonToFile(String jsonFilePath,HashMap<String,Object> json){
+		if (json == null || jsonFilePath == null) {
+			return 27;
+		}
+		String jsonString = JSONTool.writeFormatedJsonString(json);
+		if (jsonString == null) {
+			return 10;
+		}
+		return saveJsonToFile(jsonFilePath,jsonString);
+	}
+	
+	/**
+	 * 备份文件,备份文件名为原文件名后跟.yyyyMMdd-HH_mm_ss
+	 * @param filePath 必须为文件名全路径
+	 */
+	public static final void backupFile(String filePath){
+		File f = new File(filePath);
+		//文件不存在时,不用执行备份
+		if ((!f.exists()) || (!f.isFile()) ) {
+			return;
+		}
+		String bak = filePath+"."+StringUtil.getFormatDateString("yyyyMMdd-HH_mm_ss");
+		try {
+			IO.copy(f, new File(bak));
+		} catch (IOException e) {
+			ErrorCode.logError(log, KIoc.ERR_CODE1, 26, e,filePath);
+		}
+	}
 
 	/**
 	 * 更新json配置文件的某一个节点,这里的目标数据是一个键值对
@@ -386,7 +420,7 @@ public final class KIoc {
 	 * @param iniValue 更新的值
 	 * @return 是否更新成功
 	 */
-	public static final boolean updateIniFileNode(String iniFilePath,String[] jsonPath,int opType,String iniKey,Object iniValue){
+	public static final boolean updateIniFileNode(String iniFilePath,String[] jsonPath,int opType,int arrPostion,String iniKey,Object iniValue){
 		String ini = KIoc.readTxtInUTF8(iniFilePath);
 		if (ini == null) {
 			return false;
@@ -395,32 +429,27 @@ public final class KIoc {
 		if (root == null) {
 			return false;
 		}
-		String newJson = updateJsonNode(root,jsonPath,opType,iniKey,iniValue);
-		if (newJson != null &&  (!newJson.equals("null"))) {
-			//先备份
-			String bak = iniFilePath+"."+StringUtil.getFormatDateString("yyyyMMdd-HH_mm_ss");
-			try {
-				IO.copy(new File(iniFilePath), new File(bak));
-			} catch (IOException e) {
-				ErrorCode.logError(log, KIoc.ERR_CODE1, 25, e,bak);
-			}
-			KIoc.writeTxtInUTF8(iniFilePath, newJson);
-			return true;
+		root = updateJsonNode(root,jsonPath,opType,arrPostion,iniKey,iniValue);
+		int re = saveJsonToFile(iniFilePath, root);
+		if (re != 0) {
+			ErrorCode.logError(log, 9, re, " - in KIoc.updateIniFileNode()");
+			return false;
 		}
-		return false;
+		return true;
 	}
 	
 	/**
-	 * 更新json String中的某一节点
+	 * 更新json HashMap中的某一节点
 	 * @param root HashMap<String, Object> json的根节点
 	 * @param jsonPath String[] 路径
 	 * @param opType 操作方式:2为删除,其他值为更新或新增
+	 * @param arrPostion 如果大于0则表示为数组项的更新，小于0则表示为键值对的更新
 	 * @param key 更新的key
 	 * @param value 更新的value
 	 * @return 更新后的json String,如果jsonPath有误则返回null或"null"
 	 */
 	@SuppressWarnings("unchecked")
-	public static final String updateJsonNode(HashMap<String, Object> root,String[] jsonPath,int opType,String key,Object value){
+	public static final HashMap<String, Object> updateJsonNode(HashMap<String, Object> root,String[] jsonPath,int opType,int arrPostion,String key,Object value){
 		try {
 			
 			HashMap<String,Object> target = root;
@@ -428,12 +457,28 @@ public final class KIoc {
 			for (int i = 0; i < jsonPath.length; i++) {
 				target = (HashMap<String,Object>)(target.get(jsonPath[i]));
 			}
-			if (opType == 2) {
-				target.remove(key);
-			}else{
-				target.put(key, value);
+			//arrPostion<0则为key,value对更新
+			if (arrPostion < 0) {
+				if (opType == 2) {
+					target.remove(key);
+				}else{
+					target.put(key, value);
+				}
 			}
-			return JSONTool.writeFormatedJsonString(root);
+			//arrPostion>=0则为数组项更新
+			else{
+				ArrayList<Object> listTarget = (ArrayList<Object>)target.get(jsonPath[jsonPath.length-1]);
+				if (opType == 0) {
+					listTarget.add(value);
+				}else if(opType == 1){
+					listTarget.set(arrPostion, value);
+				}else if(opType == 2){
+					listTarget.remove(arrPostion);
+				}else{
+					listTarget.add(value);
+				}
+			}
+			return root;//JSONTool.writeFormatedJsonString(root);
 		} catch (Exception e) {
 			ErrorCode.logError(log, KIoc.ERR_CODE1, 23,e, root+" | "+jsonPath+" | "+opType);
 			return null;
@@ -441,72 +486,66 @@ public final class KIoc {
 	}
 	
 	
-	/**
-	 * 更新json配置文件的某一个数组节点,加入目标值(iniValue)
-	 * @param iniFilePath 配置文件全路径
-	 * @param jsonPath json路径 ,String[]，最后一个为ArrayList的键
-	 * @param opType 操作方式:0或其他值为新增,1为更新,2为删除
-	 * @param position 操作位置,即ArrayList中的index
-	 * @param iniValue 新增节点的值
-	 * @return 是否更新成功
-	 */
-	public static final boolean updateIniFileNode(String iniFilePath,String[] jsonPath,int opType,int position,Object iniValue){
-		String ini = KIoc.readTxtInUTF8(iniFilePath);
-		if (ini == null) {
-			return false;
-		}
-		HashMap<String, Object> root = (HashMap<String,Object>) JSONTool.readJsonString(ini);
-		if (root == null) {
-			return false;
-		}
-		String newJson = updateJsonNode(root,jsonPath,opType,position,iniValue);
-		if (newJson != null &&  (!newJson.equals("null"))) {
-			//先备份
-			String bak = iniFilePath+"."+StringUtil.getFormatDateString("yyyyMMdd-HH_mm_ss");
-			try {
-				IO.copy(new File(iniFilePath), new File(bak));
-			} catch (IOException e) {
-				ErrorCode.logError(log, KIoc.ERR_CODE1, 25, e,bak);
-			}
-			KIoc.writeTxtInUTF8(iniFilePath, newJson);
-			return true;
-		}
-		return false;
-	}
+//	/**
+//	 * 更新json配置文件的某一个数组节点,加入目标值(iniValue)
+//	 * @param iniFilePath 配置文件全路径
+//	 * @param jsonPath json路径 ,String[]，最后一个为ArrayList的键
+//	 * @param opType 操作方式:0或其他值为新增,1为更新,2为删除
+//	 * @param position 操作位置,即ArrayList中的index
+//	 * @param iniValue 新增节点的值
+//	 * @return 是否更新成功
+//	 */
+//	public static final boolean updateIniFileNode(String iniFilePath,String[] jsonPath,int opType,int position,String key,Object iniValue){
+//		String ini = KIoc.readTxtInUTF8(iniFilePath);
+//		if (ini == null) {
+//			return false;
+//		}
+//		HashMap<String, Object> root = (HashMap<String,Object>) JSONTool.readJsonString(ini);
+//		if (root == null) {
+//			return false;
+//		}
+//		HashMap<String, Object> newJson = updateJsonNode(root,jsonPath,opType,position,key,iniValue);
+//		if (newJson != null) {
+//			backupFile(iniFilePath);
+//			KIoc.writeTxtInUTF8(iniFilePath, JSONTool.writeFormatedJsonString(newJson));
+//			return true;
+//		}
+//		return false;
+//	}
 
-	/**
-	 * 更新json String中的某一节点
-	 * @param root HashMap<String, Object> json的根节点
-	 * @param jsonPath String[] 路径
-	 * @param opType 操作方式:2为删除,其他值为更新或新增
-	 * @param position 操作位置,即ArrayList中的index
-	 * @param value 更新的value
-	 * @return 更新后的json String,如果jsonPath有误则返回null或"null"
-	 */
-	@SuppressWarnings("unchecked")
-	public static final String updateJsonNode(HashMap<String, Object> root,String[] jsonPath,int opType,int position,Object value){
-		try {
-			HashMap<String,Object> target = root;
-			//定位到需要更新的节点
-			for (int i = 0; i < jsonPath.length; i++) {
-				target = (HashMap<String,Object>)(target.get(jsonPath[i]));
-			}
-			ArrayList<Object> listTarget = (ArrayList<Object>)target.get(jsonPath[jsonPath.length-1]);
-			if (opType == 0) {
-				listTarget.add(value);
-			}else if(opType == 1){
-				listTarget.set(position, value);
-			}else if(opType == 2){
-				listTarget.remove(position);
-			}else{
-				listTarget.add(value);
-			}
-			return JSONTool.writeFormatedJsonString(root);
-		} catch (Exception e) {
-			ErrorCode.logError(log, KIoc.ERR_CODE1, 24,e, root+" | "+jsonPath+" | "+opType);
-			return null;
-		}
-	}
+//	/**
+//	 * 更新json String中的某一节点
+//	 * @param root HashMap<String, Object> json的根节点
+//	 * @param jsonPath String[] 路径
+//	 * @param opType 操作方式:2为删除,其他值为更新或新增
+//	 * @param position 操作位置,即ArrayList中的index
+//	 * @param value 更新的value
+//	 * @return 更新后的json String,如果jsonPath有误则返回null或"null"
+//	 */
+//	@SuppressWarnings("unchecked")
+//	public static final String updateJsonNode(HashMap<String, Object> root,String[] jsonPath,int opType,int position,Object value){
+//		try {
+//			HashMap<String,Object> target = root;
+//			//定位到需要更新的节点
+//			for (int i = 0; i < jsonPath.length; i++) {
+//				target = (HashMap<String,Object>)(target.get(jsonPath[i]));
+//			}
+//			ArrayList<Object> listTarget = (ArrayList<Object>)target.get(jsonPath[jsonPath.length-1]);
+//			if (opType == 0) {
+//				listTarget.add(value);
+//			}else if(opType == 1){
+//				listTarget.set(position, value);
+//			}else if(opType == 2){
+//				listTarget.remove(position);
+//			}else{
+//				listTarget.add(value);
+//			}
+//			return JSONTool.writeFormatedJsonString(root);
+//		} catch (Exception e) {
+//			ErrorCode.logError(log, KIoc.ERR_CODE1, 24,e, root+" | "+jsonPath+" | "+opType);
+//			return null;
+//		}
+//	}
 	
 
 }

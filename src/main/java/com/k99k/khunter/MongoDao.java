@@ -116,12 +116,12 @@ public class MongoDao implements DaoInterface{
 	}
 
 	/**
-	 * 查找对象
+	 * 按ID查找单个对象
 	 * @param id long
 	 * @return 未找到返回null
 	 */
 	public KObject findOne(long id){
-		Map<String, Object> m = this.findMap(id);
+		Map<String, Object> m = this.findOneMap(id);
 		if (m != null) {
 			return  new  KObject(m);
 		}
@@ -147,8 +147,9 @@ public class MongoDao implements DaoInterface{
 	 * @param id long
 	 * @return 未找到返回null
 	 */
-	public Map<String,Object> findOneMap(BasicDBObject query){
-		return this.findOneMap(query, null);
+	public Map<String,Object> findOneMap(HashMap<String,Object> query){
+		BasicDBObject q = new BasicDBObject(query);
+		return this.findOneMap(q, null);
 	}
 	
 	/**
@@ -158,16 +159,18 @@ public class MongoDao implements DaoInterface{
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public Map<String,Object> findOneMap(BasicDBObject query,BasicDBObject fields){
+	public Map<String,Object> findOneMap(HashMap<String,Object> query,HashMap<String, Object> fields){
 		try {
+			BasicDBObject q = new BasicDBObject(query);
+			BasicDBObject f = new BasicDBObject(fields);
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
-			DBCursor cur = coll.find(query,fields,0, 1);
+			DBCursor cur = coll.find(q,f,0, 1);
 	        if(cur.hasNext()) {
 	        	return (Map<String,Object>) cur.next();
 	        }
 	        return null;
-		} catch (MongoException e) {
+		} catch (Exception e) {
 			log.error("find error!", e);
 			return null;
 		}
@@ -184,27 +187,33 @@ public class MongoDao implements DaoInterface{
 	 * @return List<Map<String,Object>>
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Map<String,Object>> findByProps(BasicDBObject query,BasicDBObject fields,BasicDBObject sortBy,int skip,int len,BasicDBObject hint){
-		int initSize = 20;
-		if (len > 0) {
-			initSize = len;
-		}
-		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>(initSize);
+	public List<Map<String,Object>> query(HashMap<String,Object> query,HashMap<String,Object> fields,HashMap<String,Object> sortBy,int skip,int len,HashMap<String,Object> hint){
 		try {
-			//coll = checkColl(coll);
+			BasicDBObject q = new BasicDBObject(query);
+			BasicDBObject field = new BasicDBObject(fields);
+			BasicDBObject sort = new BasicDBObject(sortBy);
+			BasicDBObject hin = new BasicDBObject(hint);
+			
+			int initSize = 20;
+			if (len > 0) {
+				initSize = len;
+			}
+			List<Map<String,Object>> list = new ArrayList<Map<String,Object>>(initSize);
+			
+				//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
 			DBCursor cur = null;
 			if (sortBy != null) {
-				cur = coll.find(query, fields, skip, len).sort(sortBy).hint(hint);
+				cur = coll.find(q, field, skip, len).sort(sort).hint(hin);
 			} else {
-				cur = coll.find(query, fields, skip, len).hint(hint);
+				cur = coll.find(q, field, skip, len).hint(hin);
 			}
 	        while(cur.hasNext()) {
 	        	Map<String, Object> m = (Map<String, Object>) cur.next();
 	        	list.add(m);
 	        }
 	        return list;
-		} catch (MongoException e) {
+		} catch (Exception e) {
 			log.error("findByProps error!", e);
 			return null;
 		}
@@ -217,13 +226,15 @@ public class MongoDao implements DaoInterface{
 	 * @param hint 无则为null
 	 * @return 数量
 	 */
-	public int count(BasicDBObject query,BasicDBObject hint){
+	public int count(HashMap<String,Object> query,HashMap<String,Object> hint){
 		
 		try {
+			BasicDBObject q = new BasicDBObject(query);
+			BasicDBObject hin = new BasicDBObject(hint);
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
-			return coll.find(query).hint(hint).count();
-		} catch (MongoException e) {
+			return coll.find(q).hint(hin).count();
+		} catch (Exception e) {
 			log.error("findByProps error!", e);
 			return 0;
 		}
@@ -235,13 +246,14 @@ public class MongoDao implements DaoInterface{
 	 * @param query 必须有
 	 * @return 数量
 	 */
-	public int count(BasicDBObject query){
+	public int count(HashMap<String,Object> query){
 		
 		try {
+			BasicDBObject q = new BasicDBObject(query);
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
-			return coll.find(query).count();
-		} catch (MongoException e) {
+			return coll.find(q).count();
+		} catch (Exception e) {
 			log.error("findByProps error!", e);
 			return 0;
 		}
@@ -254,7 +266,7 @@ public class MongoDao implements DaoInterface{
 	 * @return Map形式,未找到返回null
 	 */
 	@SuppressWarnings("unchecked")
-	public Map<String, Object> findMap(long id){
+	public Map<String, Object> findOneMap(long id){
 		try {
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
@@ -263,8 +275,8 @@ public class MongoDao implements DaoInterface{
 				return (Map<String, Object>)o;
 			}
 			return null;
-		} catch (MongoException e) {
-			log.error("findMap error!", e);
+		} catch (Exception e) {
+			log.error("findByMap error!", e);
 			return null;
 		}
 	}
@@ -282,7 +294,7 @@ public class MongoDao implements DaoInterface{
 			kObj.setId(idm.nextId());
 			MongoWrapper w = new MongoWrapper(kObj);
 			coll.insert(w);
-		} catch (MongoException e) {
+		} catch (Exception e) {
 			log.error("add error!", e);
 			return false;
 		}
@@ -299,7 +311,7 @@ public class MongoDao implements DaoInterface{
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
 			coll.save(new MongoWrapper(kObj));
-		} catch (MongoException e) {
+		} catch (Exception e) {
 			log.error("save error!", e);
 			return false;
 		}
@@ -318,7 +330,7 @@ public class MongoDao implements DaoInterface{
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
 			coll.update(new BasicDBObject("_id",id),new MongoWrapper(newObj));
-		} catch (MongoException e) {
+		} catch (Exception e) {
 			log.error("update error!", e);
 			return false;
 		}
@@ -329,13 +341,16 @@ public class MongoDao implements DaoInterface{
 	 * 更新单个对象
 	 * @param query BasicDBObject
 	 * @param newObj KObject
-	 * @return
+	 * @param upset 如果不存在是否新建
+	 * @param multi 是否更新多个
+	 * @return 是否完成更新
 	 */
-	public boolean updateOne(BasicDBObject query,KObject newObj) {
+	public boolean updateOne(HashMap<String,Object> query,KObject newObj,boolean upset) {
 		try {
+			BasicDBObject q = new BasicDBObject(query);
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
-			coll.update(query,new MongoWrapper(newObj),false,false);
+			coll.update(q,new MongoWrapper(newObj),upset,false);
 		} catch (MongoException e) {
 			log.error("update error!", e);
 			return false;
@@ -349,11 +364,13 @@ public class MongoDao implements DaoInterface{
 	 * @param set BasicDBObject
 	 * @return
 	 */
-	public boolean updateOne(BasicDBObject query,BasicDBObject set) {
+	public boolean updateOne(HashMap<String,Object> query,HashMap<String,Object> set) {
 		try {
+			BasicDBObject q = new BasicDBObject(query);
+			BasicDBObject s = new BasicDBObject(set);
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
-			coll.update(query,set,false,false);
+			coll.update(q,s,false,false);
 		} catch (MongoException e) {
 			log.error("update error!", e);
 			return false;
@@ -362,16 +379,20 @@ public class MongoDao implements DaoInterface{
 	}
 	
 	/**
-	 * 批量更新对象属性
+	 * 更新对象
 	 * @param query BasicDBObject
 	 * @param set BasicDBObject
-	 * @return
+	 * @param upset 如果不存在是否新建
+	 * @param multi 是否更新多个
+	 * @return 更新是否完成
 	 */
-	public boolean update(BasicDBObject query,BasicDBObject set) {
+	public boolean update(HashMap<String,Object> query,HashMap<String,Object> set,boolean upset,boolean multi) {
 		try {
+			BasicDBObject q = new BasicDBObject(query);
+			BasicDBObject s = new BasicDBObject(set);
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
-			coll.update(query,set,false,true);
+			coll.update(q,s,upset,multi);
 		} catch (MongoException e) {
 			log.error("update error!", e);
 			return false;
@@ -402,11 +423,12 @@ public class MongoDao implements DaoInterface{
 	 * @param multi 是否批量
 	 * @return
 	 */
-	public boolean delete(BasicDBObject query,boolean multi){
+	public boolean delete(HashMap<String,Object> query,boolean multi){
 		try {
+			BasicDBObject q = new BasicDBObject(query);
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
-			coll.update(query,new BasicDBObject("$set",new BasicDBObject("state",-1)),false,multi);
+			coll.update(q,new BasicDBObject("$set",new BasicDBObject("state",-1)),false,multi);
 		} catch (MongoException e) {
 			log.error("delete error!", e);
 			return false;
@@ -420,11 +442,12 @@ public class MongoDao implements DaoInterface{
 	 * @param id
 	 * @return
 	 */
-	public boolean deleteForever(BasicDBObject query){
+	public boolean deleteForever(HashMap<String,Object> query){
 		try {
+			BasicDBObject q = new BasicDBObject(query);
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
-			coll.remove(query);
+			coll.remove(q);
 		} catch (MongoException e) {
 			log.error("deleteForever error!", e);
 			return false;
@@ -673,6 +696,7 @@ public class MongoDao implements DaoInterface{
 	public HashMap<String, Object> toJsonConfig() {
 		return this.jsonConfig;
 	}
+
 
 
 	

@@ -25,7 +25,7 @@ public class KObject {
 	 * @param map 
 	 */
 	public KObject(Map<String, Object> map) {
-		this.propMap = map;
+		this.propMap = new HashMap<String,Object>(map);
 	}
 	
 	/**

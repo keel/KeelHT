@@ -56,7 +56,7 @@ public class ConsoleEditIni extends Action {
 		else if(subact.equals("save")){
 			String iniFileName = httpmsg.getHttpReq().getParameter("ini");
 			String json = httpmsg.getHttpReq().getParameter("json");
-			int err = KIoc.saveJsonIni(iniFileName, json);
+			int err = KIoc.saveJsonToFile(iniFileName, json);
 			
 			msg.addData("save", ErrorCode.getErrorInfo(KIoc.ERR_CODE1, err));
 			

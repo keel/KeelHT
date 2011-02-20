@@ -46,7 +46,7 @@ public class MongoUserDao extends MongoDao implements HTUserDaoInterface{
 	 * @return
 	 */
 	public HTUser findUser(long id){
-		Map<String, Object> m = this.findMap(id);
+		Map<String, Object> m = this.findOneMap(id);
 		if (m != null) {
 			return new HTUser(m);
 		}
@@ -93,7 +93,7 @@ public class MongoUserDao extends MongoDao implements HTUserDaoInterface{
 		BasicDBObject hint = (o2 == null)?null:new BasicDBObject((Map)o2);
 		Object o3 = paras.get("sortby");
 		BasicDBObject sortby = (o3 == null)?null:new BasicDBObject((Map)o3);
-		return this.findByProps(query, feilds, sortby, (paras.get("skip") == null)?0:Integer.parseInt(paras.get("skip").toString()), (paras.get("len") == null)?0:Integer.parseInt(paras.get("len").toString()),hint);
+		return this.query(query, feilds, sortby, (paras.get("skip") == null)?0:Integer.parseInt(paras.get("skip").toString()), (paras.get("len") == null)?0:Integer.parseInt(paras.get("len").toString()),hint);
 	}
 	
 	
@@ -129,7 +129,7 @@ public class MongoUserDao extends MongoDao implements HTUserDaoInterface{
 		BasicDBObject query = (o == null)?null:new BasicDBObject((Map)o);
 		Object o1 = paras.get("set");
 		BasicDBObject set = (o1 == null)?null:new BasicDBObject((Map)o1);
-		return this.update(query, set);
+		return this.update(query, set,false,true);
 	}
 	
 	public boolean deleteUser(Map<String, Object> query,boolean multi){

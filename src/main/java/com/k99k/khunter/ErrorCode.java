@@ -38,10 +38,10 @@ public final class ErrorCode {
 		errArr[4][4] = "page not found.";
 		
 		//KIoc
-		errArr[9][10] = "KIoc-saveJsonIni ini not found.";
-		errArr[9][12] = "KIoc-saveJsonIni json para error.";
-		errArr[9][13] = "KIoc-saveJsonIni writeTxtInUTF8 failed.";
-		errArr[9][14] = "KIoc-saveJsonIni json validate fail";
+		errArr[9][10] = "KIoc-saveJsonToFile ini not found.";
+		errArr[9][12] = "KIoc-saveJsonToFile json para error.";
+		errArr[9][13] = "KIoc-saveJsonToFile writeTxtInUTF8 failed.";
+		errArr[9][14] = "KIoc-saveJsonToFile json validate fail";
 		errArr[9][15] = "KIoc-loadClassInstance Exception throwed.className:";
 		errArr[9][16] = "KIoc-setProp Method can't be found:";
 		errArr[9][17] = "KIoc-setProp Exception throwed.propName:";
@@ -53,6 +53,8 @@ public final class ErrorCode {
 		errArr[9][23] = "KIoc-updateJsonNode Exception throwed. json:";
 		errArr[9][24] = "KIoc-updateJsonNode(ArrayList) Exception throwed. json:";
 		errArr[9][25] = "KIoc-updateIniFileNode failed - save bak file failed:";
+		errArr[9][26] = "KIoc-backupFile failed - file:";
+		errArr[9][26] = "KIoc-saveJsonToFile json map or path is null. file:";
 		
 		
 		//KObjAction
@@ -66,7 +68,23 @@ public final class ErrorCode {
 		errArr[15][8] = "KObjAction-createKObjTable set dao Props failed.";
 		errArr[15][9] = "KObjAction-createKObjTable DaoManager.addDao failed.";
 		errArr[15][10] = "KObjAction-createKObjTable DaoManager.storeDao failed.";
-		errArr[15][11] = "KObjAction-createKObjTable ";
+		errArr[15][11] = "KObjAction-updateDao set dao Props failed.";
+		errArr[15][12] = "KObjAction-updateDao DaoManager.addDao failed.";
+		errArr[15][13] = "KObjAction-updateDao DaoManager.storeDao || save() failed.";
+		errArr[15][14] = "KObjAction-updateDao kobjName is not in kobjMap.";
+		errArr[15][15] = "KObjAction-updateDao DaoManager.changeDao failed.";
+		errArr[15][16] = "KObjAction-updateDao DaoManager.findDao == null";
+		errArr[15][20] = "KObjAction-execDaoFunction jsonReq == null or findDao == null. kobjName:";
+		errArr[15][21] = "KObjAction-execDaoFunction reqMap == null || (!reqMap.containsKey('req'). kobjName:";
+		errArr[15][22] = "KObjAction-execDaoFunction req value error.  kobjName:";
+		errArr[15][23] = "KObjAction-execDaoFunction  daoFuncNum error. kobjName:";
+		errArr[15][24] = "KObjAction-* kobjName is not in kobjMap. kobjName:";
+		errArr[15][25] = "KObjAction-* save failed. kobjName:";
+		errArr[15][26] = "KObjAction-changeKObjDao Dao not exist.Create dao first and try again. kobjName:";
+		errArr[15][26] = "KObjAction-changeKObjDao DaoManager.findDao == null. kobjName:";
+		errArr[15][27] = "KObjAction-addDao addDao failed. daoName:";
+		errArr[15][28] = "KObjAction-addDao storeDao failed. daoName:";
+		errArr[15][29] = "KObjAction-removeDao DaoManager.removeDao failed. daoName:";
 		
 		
 		

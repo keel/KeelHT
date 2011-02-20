@@ -226,6 +226,48 @@ public final class DaoManager {
 	}
 	
 	/**
+	 * 添加一个Dao
+	 * @param name String
+	 * @param _class
+	 * @param _dataSource
+	 * @param dbType
+	 * @param type
+	 * @param tableName
+	 * @param id
+	 * @return 是否添加成功
+	 */
+	public static final boolean addDao(String name,String _class,String _dataSource,String dbType,String type,String tableName,int id){
+		DataSourceInterface ds = DataSourceManager.findDataSource(_dataSource);
+		if (ds == null) {
+			log.error("DataSourceManager.findDataSource error! _class:"+_class+" Name:"+name+" _dataSource:"+_dataSource);
+			return false;
+		}
+		Object o = KIoc.loadClassInstance("file:/"+classFilePath, _class, new Object[]{name,ds});
+		if (o == null) {
+			log.error("loadClassInstance error! _class:"+_class+" _name:"+name);
+			return false;
+		}
+		DaoInterface dao = (DaoInterface)o;
+		dao.setDbType(dbType);
+		dao.setTableName(tableName);
+		dao.setType(type);
+		dao.setId(id);
+		return addDao(dao);
+	}
+	
+	/**
+	 * 去除Dao，同时更新配置文件
+	 * @param name daoName
+	 * @return
+	 */
+	public static final boolean removeDao(String name){
+		daoMap.remove(name);
+		boolean re =KIoc.updateIniFileNode(iniFilePath, new String[]{"daos"}, 2, -1, name, null);
+		return re;
+	}
+	
+	
+	/**
 	 * 更改某一个key对应的Dao实例
 	 * @param name Dao的name
 	 * @param dao 新的Dao
@@ -251,7 +293,22 @@ public final class DaoManager {
 	public static final boolean storeDao(DaoInterface dao){
 		String key = dao.getName();
 		//新增或更新某一个Dao
-		boolean re = KIoc.updateIniFileNode(iniFilePath, new String[]{"daos"}, 0, key, dao.toJsonConfig());
+		boolean re = KIoc.updateIniFileNode(iniFilePath, new String[]{"daos"}, 0,-1, key, dao.toJsonConfig());
+		return re;
+	}
+	
+	/**
+	 * 将dao配置保存到配置文件中,用于Dao已加入daoMap之后
+	 * @param daoName
+	 * @return
+	 */
+	public static final boolean storeDao(String daoName){
+		DaoInterface dao = findDao(daoName);
+		if (dao == null) {
+			return false;
+		}
+		//新增或更新某一个Dao
+		boolean re = KIoc.updateIniFileNode(iniFilePath, new String[]{"daos"}, 0,-1, daoName, dao.toJsonConfig());
 		return re;
 	}
 	

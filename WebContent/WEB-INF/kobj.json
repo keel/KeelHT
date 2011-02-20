@@ -4,7 +4,7 @@
 			"intro":"用户",
 			"dao":{
 				"daoName":"mongoUserDao",
-				"create":"get"
+				"newDaoName":""
 			},
 			"columns":[	
 				{"col":"imei","def":"","type":"string","intro":"the imei of handset","len":"30"},
@@ -18,7 +18,7 @@
 			"intro":"物品",
 			"dao":{
 				"daoName":"mongoDao",
-				"create":"new",
+				"newDaoName":"mongoItemDao",
 				"tableName":"HTItem",
 				"props":{
 					"id":11,
