@@ -35,7 +35,13 @@ public final class ErrorCode {
 			errArr[i][0] = "ok";
 		}
 		
-		errArr[4][4] = "page not found.";
+		
+		//KObjSchema
+		errArr[8][1] = "KObjSchema-initSchema col map error:";
+		errArr[8][2] = "KObjSchema-initSchema checkType || checkColType error:";
+		errArr[8][3] = "KObjSchema-initSchema father col not defined. ";
+		errArr[8][4] = "KObjSchema-initSchema father col is not Map or List. ";
+		errArr[8][5] = "KObjSchema-initSchema validator error. ";
 		
 		//KIoc
 		errArr[9][10] = "KIoc-saveJsonToFile ini not found.";

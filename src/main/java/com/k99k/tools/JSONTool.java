@@ -116,7 +116,7 @@ public final class JSONTool {
 	 * 检查Map是否存在指定的多个String key，且类型分别为valueClass(instanceof)
 	 * @param m Map
 	 * @param keys String[] 
-	 * @param valueClass Object[] 检验其值为 instanceof Object[i]
+	 * @param valueClass Class[] 当为Object.class时可为任意类型
 	 * @return 少任意一个key则返回false
 	 */
 	@SuppressWarnings("unchecked")
@@ -125,6 +125,10 @@ public final class JSONTool {
 			return false;
 		}
 		for (int i = 0; i < keys.length; i++) {
+			//Object可为任意类型
+			if (valueClass[i].equals(Object.class)) {
+				continue;
+			}
 			if (!m.containsKey(keys[i]) || (!m.get(keys[i]).getClass().equals(valueClass[i]))) {
 				return false;
 			}

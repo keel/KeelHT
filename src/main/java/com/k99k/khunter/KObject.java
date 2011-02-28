@@ -101,7 +101,7 @@ public class KObject {
 	/**
 	 * 唯一的属性Map
 	 */
-	private final Map<String,Object> propMap;
+	private final HashMap<String,Object> propMap;
 	
 	public final boolean containsProp(String key){
 		return this.propMap.containsKey(key);
@@ -123,7 +123,7 @@ public class KObject {
 		return this.propMap.size();
 	}
 	
-	public final Map<String,Object> getPropMap(){
+	public final HashMap<String,Object> getPropMap(){
 		return this.propMap;
 	}
 	/**
@@ -361,7 +361,7 @@ public class KObject {
 	 * @param propMap
 	 * @return
 	 */
-	private static final String createPropGetterAndSetterString(Map<String, Object> propMap){
+	private static final String createPropGetterAndSetterString(HashMap<String, Object> propMap){
 		StringBuilder sb = new StringBuilder();
 		for (Iterator<String> it = propMap.keySet().iterator(); it.hasNext();) {
 			String key = it.next();

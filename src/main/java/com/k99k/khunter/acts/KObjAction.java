@@ -181,7 +181,7 @@ public class KObjAction extends Action{
 				for (Iterator<HashMap<String,Object>> it = m3.iterator(); it.hasNext();) {
 					HashMap<String, Object> _map = it.next();
 					//{"col":"pwd","def":"qwertnm","type":"string","intro":"password here","len":"20"}
-					if(!JSONTool.checkMapTypes(_map,new String[]{"col","def","type","intro","len"},new Class[]{String.class,String.class,String.class,String.class})){
+					if(!JSONTool.checkMapTypes(map,new String[]{"col","def","type","intro","len"},new Class[]{String.class,Object.class,Integer.class,String.class,Integer.class})){
 						return null;
 					}
 				}
@@ -189,7 +189,7 @@ public class KObjAction extends Action{
 				for (Iterator<HashMap<String,Object>> it = m4.iterator(); it.hasNext();) {
 					HashMap<String, Object> _map = it.next();
 					//{"col":"imei","order":"1","intro":"IMEI"}
-					if(!JSONTool.checkMapTypes(_map,new String[]{"col","order","intro"},new Class[]{String.class,String.class})){
+					if(!JSONTool.checkMapTypes(_map,new String[]{"col","asc","intro","type","unique"},new Class[]{String.class,Boolean.class,String.class,String.class,Boolean.class})){
 						return null;
 					}
 				}
@@ -431,6 +431,9 @@ public class KObjAction extends Action{
 	public KObject createEmptyKObj(String kobjName){
 		//读取columns配置，并按默认值生成一个新的KObject
 		
+		
+		
+		
 		return null;
 	}
 	
@@ -445,6 +448,9 @@ public class KObjAction extends Action{
 		
 		return true;
 	}
+	
+	
+	
 	
 	
 	///----------------以上为建立具体的KObj及其操作-----------------
