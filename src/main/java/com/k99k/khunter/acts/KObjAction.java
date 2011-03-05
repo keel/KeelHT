@@ -56,49 +56,6 @@ public class KObjAction extends Action{
 //		return list;
 //	}
 	
-	public Map<String, Object> getKObjMap(){
-		return kobjMap;
-	}
-	
-	/**
-	 * 查找所有包含key字符串的的KObj的名称List,不区分大小写
-	 * @param key 查找key
-	 * @return ArrayList<String>
-	 */
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> searchKObjList(String key){
-		key = StringUtil.objToStrNotNull(key).trim();
-		if (key.equals("")) {
-			return kobjMap;
-		}
-		key = key.toLowerCase();
-		HashMap<String, Object> reMap = new HashMap<String, Object>(50);
-		for (Iterator<String> it = kobjMap.keySet().iterator(); it.hasNext();) {
-			String kobj =  it.next();
-			HashMap<String,Object> node = (HashMap<String, Object>) kobjMap.get(kobj);
-			if (kobj.toLowerCase().indexOf(key) > -1 || (node.get("intro").toString().toLowerCase().indexOf(key) > -1)) {
-				reMap.put(kobj,node);
-			}
-		}
-		return reMap;
-	}
-	
-	/**
-	 * 查看某一具体的KObj结构
-	 * @param key KObj的key
-	 * @return Map<String,?>
-	 */
-	@SuppressWarnings("unchecked")
-	public Map<String,?>  findKObjSchema(String key){
-		Object o = kobjMap.get(key);
-		if (o == null) {
-			return null;
-		}
-		Map<String,?> m = (Map<String,?>)o;
-		return m;
-	}
-	
-	
 	/**
 	 * 保存配置,同时将原文件按时间扩展名备份
 	 * @return
@@ -422,38 +379,7 @@ public class KObjAction extends Action{
 		return 0;
 	}
 	
-	///----------------以下为建立具体的KObj及其操作-----------------
-	/**
-	 * FIXME 创建一个空的KObj对象
-	 * @param kobjName
-	 * @return
-	 */
-	public KObject createEmptyKObj(String kobjName){
-		//读取columns配置，并按默认值生成一个新的KObject
-		
-		
-		
-		
-		return null;
-	}
 	
-	/**
-	 * FIXME 检查一个KObject是否符合columns配置
-	 * @param kobjName
-	 * @param kobj
-	 * @return
-	 */
-	public boolean checkKObj(String kobjName,KObject kobj){
-		
-		
-		return true;
-	}
-	
-	
-	
-	
-	
-	///----------------以上为建立具体的KObj及其操作-----------------
 	
 	///----------------以下为DAO操作-----------------
 	
@@ -819,11 +745,19 @@ public class KObjAction extends Action{
 		if (subact.equals("list")) {
 			msg.addData("list", kobjMap);
 		}
-		//find
-		else if(subact.equals("find")){
-			String key  = httpmsg.getHttpReq().getParameter("find_key");
+		//schema_find
+		else if(subact.equals("schema_find")){
+			String key  = httpmsg.getHttpReq().getParameter("schema_key");
 			Map<String,?> m = this.findKObjSchema(key);
-			msg.addData("find", m);
+			msg.addData("schema_find", m);
+		}
+		//schema_update
+		else if(subact.equals("schema_update")){
+			String key  = httpmsg.getHttpReq().getParameter("schema_key");
+			String path  = httpmsg.getHttpReq().getParameter("schema_path");
+			String json  = httpmsg.getHttpReq().getParameter("schema_json");
+			Map<String,?> m = this.findKObjSchema(key);
+			msg.addData("schema_update", m);
 		}
 		//更新或新增
 		else if(subact.equals("update")){

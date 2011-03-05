@@ -19,9 +19,13 @@ public class StringValidator implements KObjColumnValidate {
 	private int small;
 	
 	private int big;
+	
+	private String toStr = StringValidator.class.getName();
 
 	@Override
 	public void initType(int type, String[] paras) {
+		
+		
 		if (type == 0) {
 			//长度大于某值
 			this.validator = new BigThanValidator();
@@ -34,6 +38,17 @@ public class StringValidator implements KObjColumnValidate {
 			this.small = Integer.parseInt(paras[0]);
 			this.big = Integer.parseInt(paras[1]);
 		}
+		
+		StringBuilder sb = new StringBuilder(this.toStr);
+		sb.append(",");
+		sb.append(type);
+		sb.append(",");
+		for (int i = 0; i < paras.length; i++) {
+			sb.append(paras[i]);
+			sb.append(",");
+		}
+		sb.deleteCharAt(sb.length()-1);
+		this.toStr = sb.toString();
 		
 	}
 
@@ -85,6 +100,11 @@ public class StringValidator implements KObjColumnValidate {
 	@Override
 	public boolean validate(Object value) {
 		return this.validator.validate(value);
+	}
+
+	@Override
+	public String toString() {
+		return this.toStr;
 	}
 
 

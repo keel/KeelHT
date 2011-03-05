@@ -36,12 +36,15 @@ public final class ErrorCode {
 		}
 		
 		
-		//KObjSchema
-		errArr[8][1] = "KObjSchema-initSchema col map error:";
+		//KObjManager,KObjSchema
+		errArr[8][1] = "KObjSchema-initSchema json map error:";
 		errArr[8][2] = "KObjSchema-initSchema checkType || checkColType error:";
 		errArr[8][3] = "KObjSchema-initSchema father col not defined. ";
 		errArr[8][4] = "KObjSchema-initSchema father col is not Map or List. ";
 		errArr[8][5] = "KObjSchema-initSchema validator error. ";
+		errArr[8][6] = "KObjManager-init ini json error. ";
+		errArr[8][7] = "KObjManager-init initSchema error. ";
+		errArr[8][8] = "KObjManager-init Exception throwed. ";
 		
 		//KIoc
 		errArr[9][10] = "KIoc-saveJsonToFile ini not found.";

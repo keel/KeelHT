@@ -393,6 +393,21 @@ public class KObjColumn {
 		this.len = len;
 	}
 
-	
+	/**
+	 * toMap用于生成配置文件
+	 * @return
+	 */
+	public HashMap<String,Object> toMap(){
+		HashMap<String,Object> m = new HashMap<String, Object>();
+		m.put("col", this.col);
+		m.put("def", this.def);
+		m.put("intro", this.intro);
+		m.put("type", this.type);
+		m.put("len", this.len);
+		if (this.validator != null) {
+			m.put("validator", this.validator.toString());
+		}
+		return m;
+	}
 	
 }

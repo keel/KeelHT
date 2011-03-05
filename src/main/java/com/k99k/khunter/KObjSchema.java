@@ -22,25 +22,86 @@ public class KObjSchema {
 	/**
 	 * 保存schema的ArrayList,用于验证字段
 	 */
-	private final ArrayList<KObjColumn> schemaList = new ArrayList<KObjColumn>();
+	private final ArrayList<KObjColumn> columnList = new ArrayList<KObjColumn>();
 	
 	/**
 	 * 保存schema的HashMap,用于获取某一字段
 	 */
-	private final HashMap<String,KObjColumn> schemaMap = new HashMap<String, KObjColumn>();
+	private final HashMap<String,KObjColumn> columnMap = new HashMap<String, KObjColumn>();
 	
 	/**
-	 * 初始化Schema,注意父Schema定义必须先于子Schema
-	 * @param schemaDefineList
+	 * 保存KObjIndex的map
+	 */
+	private final HashMap<String,KObjIndex> indexMap = new HashMap<String, KObjIndex>();
+	
+	private int columnSize = 0;
+	
+	/**
+	 * 添加或新增KObjColumn
+	 * @param key
+	 * @param col
+	 */
+	public void setColumn(String key,KObjColumn col){
+		this.columnMap.put(key, col);
+	}
+	
+	public void removeColumn(String key){
+		this.columnMap.remove(key);
+	}
+	
+	public boolean containsColumn(String key){
+		return this.columnMap.containsKey(key);
+	}
+	
+	/**
+	 * 添加或新增KObjIndex
+	 * @param key
+	 * @param index
+	 */
+	public void setIndex(String key,KObjIndex index){
+		this.indexMap.put(key, index);
+	}
+	
+	public void removeIndex(String key){
+		this.indexMap.remove(key);
+	}
+	
+	public boolean containsIndex(String key){
+		return this.indexMap.containsKey(key);
+	}
+	
+	
+	/**
+	 * 获取KObjColumn
+	 * @param key
+	 * @return
+	 */
+	public KObjColumn getKObjColumn(String key){
+		return this.columnMap.get(key);
+	}
+	
+	/**
+	 * 获取KObjIndex
+	 * @param key
+	 * @return
+	 */
+	public KObjIndex getKObjIndex(String key){
+		return this.indexMap.get(key);
+	}
+	
+	/**
+	 * 初始化Schema,注意父column定义必须先于子column
+	 * @param columnDefineList
+	 * @param indexDefineList
 	 * @return 是否初始化成功
 	 */
-	public boolean initSchema(ArrayList<HashMap<String,Object>> schemaDefineList){
+	public boolean initSchema(ArrayList<HashMap<String,Object>> columnDefineList,ArrayList<HashMap<String,Object>> indexDefineList){
 		int i = 0;
-		for (Iterator<HashMap<String, Object>> iterator = schemaDefineList.iterator(); iterator.hasNext();) {
+		for (Iterator<HashMap<String, Object>> iterator = columnDefineList.iterator(); iterator.hasNext();) {
 			HashMap<String, Object> map = iterator.next();
 			//验证Column的key和value类型
 			if(!JSONTool.checkMapTypes(map,new String[]{"col","def","type","intro","len"},new Class[]{String.class,Object.class,Integer.class,String.class,Integer.class})){
-				ErrorCode.logError(log, 8,1, ""+i);
+				ErrorCode.logError(log, 8,1, "kobjColumn:"+i);
 				return false;
 			}
 			
@@ -85,15 +146,15 @@ public class KObjSchema {
 					return false;
 				}
 			}
-			//父Schema必须先定义
-			this.schemaMap.put(col, k);
+			//父column必须先定义
+			this.columnMap.put(col, k);
 			//处理子Column的情况
 			if (col.indexOf('.') > 0) {
 				//获取父Schema
 				int lastDotPosi = col.lastIndexOf('.');
 				String pre = col.substring(0,lastDotPosi);
 				String subKey = col.substring(lastDotPosi+1);
-				KObjColumn preK = this.schemaMap.get(pre);
+				KObjColumn preK = this.columnMap.get(pre);
 				if (preK == null) {
 					ErrorCode.logError(log, 8,3, "index-"+i+" col:"+col);
 					return false;
@@ -101,7 +162,7 @@ public class KObjSchema {
 				if (preK.getType() == 2) {
 					//父Schema为HashMap
 					preK.setSubColumn(subKey, k);
-				}else if(preK.getType() == 3){
+				}else if(preK.getType() == 3 && subKey.equals("*")){
 					//父Schema为ArrayList
 					preK.setSubColumn(k);
 				}else{
@@ -110,10 +171,29 @@ public class KObjSchema {
 				}
 				
 			}else{
-				schemaList.add(k);
+				columnList.add(k);
 			}
 			
 			i++;
+		}
+		this.columnSize = this.columnList.size();
+		
+		//---------------------------
+		//初始化index
+		for (Iterator<HashMap<String, Object>> iterator = indexDefineList.iterator(); iterator.hasNext();) {
+			HashMap<String, Object> map = iterator.next();
+			if(!JSONTool.checkMapTypes(map,new String[]{"col","asc","intro","type","unique"},new Class[]{String.class,Boolean.class,String.class,String.class,Boolean.class})){
+				ErrorCode.logError(log, 8,1, " kobjIndex:"+i);
+				return false;
+			}
+			String col = (String) map.get("col");
+			boolean asc = (Boolean) map.get("asc");
+			String intro = (String) map.get("intro");
+			String type = (String) map.get("type");
+			boolean unique = (Boolean) map.get("unique");
+			
+			KObjIndex ki = new KObjIndex(col, asc, type, intro, unique);
+			this.indexMap.put(col, ki);
 		}
 		
 		return true;
@@ -126,8 +206,8 @@ public class KObjSchema {
 	 * @param value
 	 * @return 字段不存在或验证失败时返回false
 	 */
-	public  boolean validate(String kobjPath,Object value){
-		KObjColumn k = this.schemaMap.get(kobjPath);
+	public  boolean validateColumns(String kobjPath,Object value){
+		KObjColumn k = this.columnMap.get(kobjPath);
 		if (k == null) {
 			return false;
 		}
@@ -135,12 +215,14 @@ public class KObjSchema {
 	}
 	
 	/**
-	 * 验证整个KObj的HashMap
-	 * @param kobjMap
+	 * 验证整个KObj的jsonData
+	 * @param kobjMap HashMap<String,Object>
 	 * @return
 	 */
 	public  boolean validate(HashMap<String,Object> kobjMap){
-		for (Iterator<KObjColumn> iterator = this.schemaList.iterator(); iterator.hasNext();) {
+		
+		//逐个KObjColumn字段验证
+		for (Iterator<KObjColumn> iterator = this.columnList.iterator(); iterator.hasNext();) {
 			KObjColumn kc = iterator.next();
 			String col = kc.getCol();
 			Object o = kobjMap.get(col);
@@ -150,6 +232,10 @@ public class KObjSchema {
 			if(!kc.validateColumn(o)){
 				return false;
 			}
+		}
+		//字段数量判断
+		if (kobjMap.size() != this.columnSize) {
+			return false;
 		}
 		return true;
 	}
@@ -163,7 +249,10 @@ public class KObjSchema {
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean setProp(KObject kobj,String kobjPath,Object prop){
-		if (!this.validate(kobjPath, prop)) {
+		if (kobjPath.indexOf('*') >= 0) {
+			return false;
+		}
+		if (!this.validateColumns(kobjPath, prop)) {
 			return false;
 		}
 		int dotPosi = kobjPath.indexOf('.');
@@ -173,12 +262,12 @@ public class KObjSchema {
 			String[] paths = kobjPath.split("\\.");
 			HashMap<String,Object> target = kobj.getPropMap();
 			for (int i = 0; i < paths.length-1; i++) {
-				if (paths[i].equals("*")) {
-					//ArrayList
-					return false;
-				}else{
-					target = (HashMap<String, Object>) target.get(paths[i]);
-				}
+//				if (paths[i].equals("*")) {
+//					//ArrayList
+//					return false;
+//				}else{
+				target = (HashMap<String, Object>) target.get(paths[i]);
+//				}
 			}
 			target.put(paths[paths.length-1], prop);
 		}else{
@@ -195,7 +284,7 @@ public class KObjSchema {
 	 */
 	public KObject createEmptyKObj(){
 		KObject kobj = new KObject();
-		for (Iterator<KObjColumn> iterator = this.schemaList.iterator(); iterator.hasNext();) {
+		for (Iterator<KObjColumn> iterator = this.columnList.iterator(); iterator.hasNext();) {
 			KObjColumn kc = iterator.next();
 			String col = kc.getCol();
 			kobj.setProp(col, kc.getDef());
@@ -203,18 +292,47 @@ public class KObjSchema {
 		return kobj;
 	}
 	
-	public KObject createKObj(KObject kobj){
-		
-		return null;
-		
-		
-		
+	
+	/**
+	 * 获取所有的索引
+	 * @return HashMap<String,KObjIndex>
+	 */
+	public HashMap<String,KObjIndex> getIndexes(){
+		return this.indexMap;
 	}
 	
-	public KObject setKObjProp(KObject kobj,String propPath,Object prop){
-		
-		
-		return null;
+	/**
+	 * 获取某个索引
+	 * @param colOfIndex
+	 * @return
+	 */
+	public KObjIndex getIndex(String colOfIndex){
+		return this.indexMap.get(colOfIndex);
 	}
+
+
+	/**
+	 * 为配置文件更新用
+	 * @return
+	 */
+	public HashMap<String,Object> toMap() {
+		HashMap<String,Object> map = new HashMap<String, Object>();
+		ArrayList<HashMap<String,Object>> cols = new ArrayList<HashMap<String,Object>>();
+		for (Iterator<String> it = this.columnMap.keySet().iterator(); it.hasNext();) {
+			String key =  it.next();
+			KObjColumn kc = this.columnMap.get(key);
+			cols.add(kc.toMap());
+		}
+		map.put("columns", cols);
+		for (Iterator<String> it = this.indexMap.keySet().iterator(); it.hasNext();) {
+			String key =  it.next();
+			KObjIndex ki = this.indexMap.get(key);
+			cols.add(ki.toMap());
+		}
+		map.put("indexs", cols);
+		return map;
+	}
+	
+	
 	
 }

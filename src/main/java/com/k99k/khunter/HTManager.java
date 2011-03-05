@@ -88,10 +88,14 @@ public final class HTManager {
 					//初始化DataSourceManager
 					initOK = DataSourceManager.init(ini,classPath);
 					log.info("DataSourceManager inited OK? " + initOK);
-					
+
 					//初始化DaoManager
 					initOK = DaoManager.init(ini,classPath);
 					log.info("DaoManager inited OK? " + initOK);
+					
+					//初始化KObjManager
+					initOK = KObjManager.init(iniPath+"kobj.json",classPath);
+					log.info("KObjManager inited OK? " + initOK);
 					
 					//初始化TaskManager
 					initOK = TaskManager.init(ini,classPath);
@@ -142,6 +146,8 @@ public final class HTManager {
 			return ActionManager.findAction(name);
 		}else if(managerName.equals("daos")){
 			return DaoManager.findDao(name);
+		}else if(managerName.equals("kobjs")){
+			return KObjManager.findKObjConfig(name);
 		}else if(managerName.equals("io")){
 			return IOManager.findIO(name);
 		}else if(managerName.equals("dataSources")){
@@ -202,9 +208,13 @@ public final class HTManager {
 		ActionManager.exit();
 		TaskManager.exit();
 		IOManager.exit();
+		DaoManager.exit();
+		KObjManager.exit();
 		DataSourceManager.exit();
 		log.info("================ [HTManager exited] ================");
 	}
+	
+	
 	
 //	static final Map<String,Object> managerMap = createManagerMap();
 //	

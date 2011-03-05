@@ -18,7 +18,7 @@
 				{"col":"comms.*.writer","def":"","type":0,"intro":"comment writer","len":"20"},
 				{"col":"comms.*.addTime","def":"","type":0,"intro":"comment addTime","len":"20"}
 			],
-			"indexs":[
+			"indexes":[
 				{"col":"imei","asc":true,"intro":"IMEI","type":"normal","unique":false}
 			]
 		},
@@ -37,7 +37,7 @@
 				{"col":"ack","def":"0","type":"int","intro":"attack","len":""},
 				{"col":"def","def":"0","type":"int","intro":"defence","len":""}
 			],
-			"indexs":[
+			"indexes":[
 				{"col":"imei","order":"1","intro":"IMEI"}
 			]
 		}

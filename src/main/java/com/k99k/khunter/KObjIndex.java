@@ -3,6 +3,8 @@
  */
 package com.k99k.khunter;
 
+import java.util.HashMap;
+
 /**
  * KObj索引
  * @author keel
@@ -51,6 +53,16 @@ public class KObjIndex {
 		this.unique = unique;
 	}
 
+	
+	public HashMap<String,Object> toMap(){
+		HashMap<String,Object> m = new HashMap<String, Object>();
+		m.put("col", this.col);
+		m.put("intro", this.intro);
+		m.put("type", this.type);
+		m.put("asc", this.asc);
+		m.put("unique", this.unique);
+		return m;
+	}
 
 
 	/**

@@ -354,6 +354,14 @@ public final class DaoManager {
 		
 	}
 	
+
+	/**
+	 * 退出DaoManager时的操作
+	 */
+	public static final void exit(){
+		log.info("DaoManager exited.");
+	}
+	
 	public static void main(String[] args) {
 		
 		String webRoot = "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/";
