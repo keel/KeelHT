@@ -105,13 +105,61 @@ public final class KObjManager {
 		return kc.getKobjSchema();
 	}
 	
+	public static final KObjConfig findKObjConfig(String kobjName){
+		return kobjMap.get(kobjName);
+	}
+
 	public static final KObject createEmptyKObj(String kobjName){
 		KObjConfig kc = (KObjConfig)kobjMap.get(kobjName);
 		return kc.getKobjSchema().createEmptyKObj();
 	}
 	
-	public static final boolean setProp(String kobjName,KObject kobj,String kobjPath,Object prop){
-		KObjConfig kc = (KObjConfig)kobjMap.get(kobjName);
+	/**
+	 * 创建或更新一个KObjConfig
+	 * @param kobjName
+	 * @param map HashMap<String,Object> KObjConfig的json配置
+	 * @return
+	 */
+	public static final boolean setKObjConfig(String kobjName,HashMap<String,Object> map){
+		KObjConfig kc = KObjConfig.newInstance(kobjName, map);
+		if (kc == null) {
+			return false;
+		}
+		kobjMap.put(kobjName, kc);
+		return true;
+	}
+	
+	/**
+	 * FIXME 新增一个具体的KObject对象
+	 * @param kobjKey
+	 * @param kobj
+	 * @return
+	 */
+	public static final int addKObj(String kobjKey,KObject kobj){
+		
+		
+		
+		return 0;
+	}
+	
+	/**
+	 * 是否存在此kobjName的KObjConfig
+	 * @param kobjName
+	 * @return
+	 */
+	public static final boolean containsKObj(String kobjName){
+		return kobjMap.containsKey(kobjName);
+	}
+	
+	/**
+	 * 设置某KObject对象的属性,注意不支持包含ArrayList的节点
+	 * @param kobj
+	 * @param kobjPath
+	 * @param prop
+	 * @return
+	 */
+	public static final boolean setProp(KObject kobj,String kobjPath,Object prop){
+		KObjConfig kc = (KObjConfig)kobjMap.get(kobj.getName());
 		return kc.getKobjSchema().setProp(kobj, kobjPath, prop);
 	}
 	
@@ -123,10 +171,6 @@ public final class KObjManager {
 	public static final boolean validateKObjPath(String kobjName,String kobjPath,Object value){
 		KObjConfig kc = (KObjConfig)kobjMap.get(kobjName);
 		return kc.getKobjSchema().validateColumns(kobjPath, value);
-	}
-	
-	public static final KObjConfig findKObjConfig(String kobjName){
-		return kobjMap.get(kobjName);
 	}
 	
 	/**
@@ -150,24 +194,28 @@ public final class KObjManager {
 				int i = 0;
 				for (Iterator<String> iter = mgr.keySet().iterator(); iter.hasNext();) {
 					String keyName = iter.next();
-					Map<String, ?> m = (Map<String, ?>) mgr.get(keyName);
-					if(!JSONTool.checkMapTypes(m, new String[]{"intro","dao","columns","indexes"}, new Class[]{String.class,HashMap.class,ArrayList.class,ArrayList.class})){
-						ErrorCode.logError(log, 8, 6," key:"+keyName);
-						continue;
-					}
-					KObjConfig kc = new KObjConfig();
-					if(!kc.setDaoConfig((HashMap<String, Object>) m.get("dao"))){
+					HashMap<String, Object> m = (HashMap<String, Object>) mgr.get(keyName);
+//					if(!JSONTool.checkMapTypes(m, new String[]{"intro","dao","columns","indexes"}, new Class[]{String.class,HashMap.class,ArrayList.class,ArrayList.class})){
+//						ErrorCode.logError(log, 8, 6," key:"+keyName);
+//						continue;
+//					}
+					KObjConfig kc = KObjConfig.newInstance(keyName, m);
+					if (kc == null) {
 						ErrorCode.logError(log, 8, 7, " dao error. i:"+i);
 						continue;
 					}
-					KObjSchema ks = new KObjSchema();
-					boolean initSchema = ks.initSchema((ArrayList<HashMap<String, Object>>) m.get("columns"),(ArrayList<HashMap<String, Object>>) m.get("indexes"));
-					if (!initSchema) {
-						ErrorCode.logError(log, 8, 7, " i:"+i);
-						continue;
-					}
-					kc.setKobjSchema(ks);
-					kc.setKobjName(keyName);
+//					if(!kc.setDaoConfig((HashMap<String, Object>) m.get("dao"))){
+//						ErrorCode.logError(log, 8, 7, " dao error. i:"+i);
+//						continue;
+//					}
+//					KObjSchema ks = new KObjSchema();
+//					boolean initSchema = ks.initSchema(keyName,(ArrayList<HashMap<String, Object>>) m.get("columns"),(ArrayList<HashMap<String, Object>>) m.get("indexes"));
+//					if (!initSchema) {
+//						ErrorCode.logError(log, 8, 7, " i:"+i);
+//						continue;
+//					}
+//					kc.setKobjSchema(ks);
+//					kc.setKobjName(keyName);
 					kobjMap.put(keyName, kc);
 				}
 				

@@ -361,7 +361,7 @@ public class KObject {
 	 * @param propMap
 	 * @return
 	 */
-	private static final String createPropGetterAndSetterString(HashMap<String, Object> propMap){
+	public static final String createPropGetterAndSetterString(HashMap<String, Object> propMap){
 		StringBuilder sb = new StringBuilder();
 		for (Iterator<String> it = propMap.keySet().iterator(); it.hasNext();) {
 			String key = it.next();

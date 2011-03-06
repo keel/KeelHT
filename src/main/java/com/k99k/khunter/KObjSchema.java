@@ -19,6 +19,11 @@ import com.k99k.tools.JSONTool;
 public class KObjSchema {
 	
 	static final Logger log = Logger.getLogger(KObjSchema.class);
+	
+	/**
+	 * 对应的kobjName
+	 */
+	private String kobjName;
 	/**
 	 * 保存schema的ArrayList,用于验证字段
 	 */
@@ -37,12 +42,132 @@ public class KObjSchema {
 	private int columnSize = 0;
 	
 	/**
-	 * 添加或新增KObjColumn
-	 * @param key
-	 * @param col
+	 * 初始化Schema,注意父column定义必须先于子column
+	 * @param columnDefineList
+	 * @param indexDefineList
+	 * @return 是否初始化成功
 	 */
-	public void setColumn(String key,KObjColumn col){
-		this.columnMap.put(key, col);
+	public boolean initSchema(String kobjName,ArrayList<HashMap<String,Object>> columnDefineList,ArrayList<HashMap<String,Object>> indexDefineList){
+		this.kobjName = kobjName;
+		int i = 0;
+		for (Iterator<HashMap<String, Object>> iterator = columnDefineList.iterator(); iterator.hasNext();) {
+			HashMap<String, Object> map = iterator.next();
+			int setRe = this.setColumn(map);
+			if (setRe != 0) {
+				ErrorCode.logError(log, 8,setRe, " in initSchema index-"+i);
+				return false;
+			}
+			i++;
+		}
+		this.columnSize = this.columnList.size();
+		
+		//---------------------------
+		//初始化index
+		i = 0;
+		for (Iterator<HashMap<String, Object>> iterator = indexDefineList.iterator(); iterator.hasNext();) {
+			HashMap<String, Object> map = iterator.next();
+			int setRe = setIndex(map);
+			if (setRe != 0) {
+				ErrorCode.logError(log, 8, setRe,  " in initSchema index-"+i);
+				return false;
+			}
+			i++;
+		}
+		return true;
+	}
+
+	/**
+	 * 用HashMap生成一个KObjColumn并进行新增或更新
+	 * @param colMap HashMap<String,Object>
+	 * @return
+	 */
+	public int setColumn(HashMap<String,Object> colMap){
+		try {
+			//验证Column的key和value类型
+			if(!JSONTool.checkMapTypes(colMap,new String[]{"col","def","type","intro","len"},new Class[]{String.class,Object.class,Integer.class,String.class,Integer.class})){
+				//ErrorCode.logError(log, 8,1, "kobjColumn:"+i);
+				return 1;
+			}
+			
+			String col = (String) colMap.get("col");
+			Object def = colMap.get("def");
+			int type = Integer.parseInt(colMap.get("type").toString());
+			String intro = (String) colMap.get("intro");
+			int len = Integer.parseInt(colMap.get("len").toString());
+			
+			//验证type和def
+			if (!KObjColumn.checkType(type) || !KObjColumn.checkColType(def, type)) {
+				//ErrorCode.logError(log, 8,2, "index-"+i+" type:"+type+" default:"+def);
+				return 2;
+			}
+			KObjColumn  k = new KObjColumn(col,def,type,intro,len);	
+			//设置验证器
+			if (colMap.containsKey("validator")) {
+				Object o = colMap.get("validator");
+				if (o instanceof String) {
+				}else{
+					//ErrorCode.logError(log, 8,5, "index-"+i+" validator is not String:"+o);
+					return 5;
+				}
+				//"com.k99k.khunter.StringValidator,0,5"为class+type+paras
+				if (!k.setValidator(o.toString())) {
+					return 5;
+				}
+			}
+			//父column必须先定义
+			this.columnMap.put(col, k);
+			int setsub = this.setSubColumn(k);
+			if (setsub != 0) {
+				return setsub;
+			}
+		} catch (Exception e) {
+			return 11;
+		}
+		
+		return 0;
+	}
+	
+	/**
+	 * 处理子Column的情况
+	 * @param kc KObjColumn
+	 */
+	private final int setSubColumn(KObjColumn kc){
+		String col = kc.getCol();
+		if (col.indexOf('.') > 0) {
+			//获取父Schema
+			int lastDotPosi = col.lastIndexOf('.');
+			String pre = col.substring(0,lastDotPosi);
+			String subKey = col.substring(lastDotPosi+1);
+			KObjColumn preK = this.columnMap.get(pre);
+			if (preK == null) {
+				//ErrorCode.logError(log, 8,3, "index-"+i+" col:"+col);
+				return 3;
+			}
+			if (preK.getType() == 2) {
+				//父Schema为HashMap
+				preK.setSubColumn(subKey, kc);
+			}else if(preK.getType() == 3 && subKey.equals("*")){
+				//父Schema为ArrayList
+				preK.setSubColumn(kc);
+			}else{
+				//ErrorCode.logError(log, 8,4, "index-"+i+" col:"+col);
+				return 4;
+			}
+			
+		}else{
+			columnList.add(kc);
+		}
+		return 0;
+	}
+	
+	/**
+	 * 添加或新增KObjColumn,如果是子字段则处理子字段
+	 * @param col
+	 * @param 0为成功
+	 */
+	public int setColumn(KObjColumn col){
+		this.columnMap.put(col.getCol(), col);
+		return this.setSubColumn(col);
 	}
 	
 	public void removeColumn(String key){
@@ -55,15 +180,59 @@ public class KObjSchema {
 	
 	/**
 	 * 添加或新增KObjIndex
-	 * @param key
 	 * @param index
 	 */
-	public void setIndex(String key,KObjIndex index){
-		this.indexMap.put(key, index);
+	public void setIndex(KObjIndex index){
+		this.indexMap.put(index.getCol(), index);
 	}
 	
-	public void removeIndex(String key){
-		this.indexMap.remove(key);
+	/**
+	 * 设置KObjIndex,同时更新数据库表
+	 * @param iMap HashMap<String,Object>
+	 * @return
+	 */
+	public final int setIndex(HashMap<String,Object> iMap){
+		try {
+			if(!JSONTool.checkMapTypes(iMap,new String[]{"col","asc","intro","type","unique"},new Class[]{String.class,Boolean.class,String.class,String.class,Boolean.class})){
+				//ErrorCode.logError(log, 8,1, " kobjIndex:"+i);
+				return 10;
+			}
+			String col = (String) iMap.get("col");
+			boolean asc = (Boolean) iMap.get("asc");
+			String intro = (String) iMap.get("intro");
+			String type = (String) iMap.get("type");
+			boolean unique = (Boolean) iMap.get("unique");
+			
+			KObjIndex ki = new KObjIndex(col, asc, type, intro, unique);
+			this.indexMap.put(col, ki);
+			DaoInterface dao = DaoManager.findDao(KObjManager.findKObjConfig(this.kobjName).getDaoConfig().getDaoName());
+			if (dao == null) {
+				return 12;
+			}
+			if(!dao.updateIndex(ki)){
+				return 12;
+			}
+		} catch (Exception e) {
+			return 10;
+		}
+		return 0;
+	}
+	
+	/**
+	 * 删除一个索引，同时在数据库中同步删除
+	 * @param key
+	 * @return
+	 */
+	public final boolean removeIndex(String key){
+		KObjIndex ki = this.indexMap.remove(key);
+		DaoInterface dao = DaoManager.findDao(KObjManager.findKObjConfig(this.kobjName).getDaoConfig().getDaoName());
+		if (dao == null) {
+			return false;
+		}
+		if(!dao.removeIndex(ki)){
+			return false;
+		}
+		return true;
 	}
 	
 	public boolean containsIndex(String key){
@@ -89,117 +258,6 @@ public class KObjSchema {
 		return this.indexMap.get(key);
 	}
 	
-	/**
-	 * 初始化Schema,注意父column定义必须先于子column
-	 * @param columnDefineList
-	 * @param indexDefineList
-	 * @return 是否初始化成功
-	 */
-	public boolean initSchema(ArrayList<HashMap<String,Object>> columnDefineList,ArrayList<HashMap<String,Object>> indexDefineList){
-		int i = 0;
-		for (Iterator<HashMap<String, Object>> iterator = columnDefineList.iterator(); iterator.hasNext();) {
-			HashMap<String, Object> map = iterator.next();
-			//验证Column的key和value类型
-			if(!JSONTool.checkMapTypes(map,new String[]{"col","def","type","intro","len"},new Class[]{String.class,Object.class,Integer.class,String.class,Integer.class})){
-				ErrorCode.logError(log, 8,1, "kobjColumn:"+i);
-				return false;
-			}
-			
-			String col = (String) map.get("col");
-			Object def = map.get("def");
-			int type = Integer.parseInt(map.get("type").toString());
-			String intro = (String) map.get("intro");
-			int len = Integer.parseInt(map.get("len").toString());
-			
-			//验证type和def
-			if (!KObjColumn.checkType(type) || !KObjColumn.checkColType(def, type)) {
-				ErrorCode.logError(log, 8,2, "index-"+i+" type:"+type+" default:"+def);
-				return false;
-			}
-			KObjColumn  k = new KObjColumn(col,def,type,intro,len);	
-			//设置验证器
-			if (map.containsKey("validator")) {
-				Object o = map.get("validator");
-				if (o instanceof String) {
-				}else{
-					ErrorCode.logError(log, 8,5, "index-"+i+" validator is not String:"+o);
-					return false;
-				}
-				//"com.k99k.khunter.StringValidator,0,5"为class+type+paras
-				
-				String[] vaArr = o.toString().split(",");
-				String vClass = vaArr[0];
-				int vType = Integer.parseInt(vaArr[1]);
-				String[] vParas = new String[vaArr.length-2];
-				for (int j = 0; j < vaArr.length-2; j++) {
-					vParas[j] = vaArr[j+2];
-				}
-				
-				Object v = KIoc.loadClassInstance(HTManager.getClassPath(), vClass);
-				if (v instanceof KObjColumnValidate) {
-					KObjColumnValidate validator = (KObjColumnValidate)o;
-					//设置参数并初始化
-					validator.initType(vType, vParas);
-					k.setValidator(validator);
-				}else{
-					ErrorCode.logError(log, 8,5, "index-"+i+" validator is not KObjColumnValidate:"+o);
-					return false;
-				}
-			}
-			//父column必须先定义
-			this.columnMap.put(col, k);
-			//处理子Column的情况
-			if (col.indexOf('.') > 0) {
-				//获取父Schema
-				int lastDotPosi = col.lastIndexOf('.');
-				String pre = col.substring(0,lastDotPosi);
-				String subKey = col.substring(lastDotPosi+1);
-				KObjColumn preK = this.columnMap.get(pre);
-				if (preK == null) {
-					ErrorCode.logError(log, 8,3, "index-"+i+" col:"+col);
-					return false;
-				}
-				if (preK.getType() == 2) {
-					//父Schema为HashMap
-					preK.setSubColumn(subKey, k);
-				}else if(preK.getType() == 3 && subKey.equals("*")){
-					//父Schema为ArrayList
-					preK.setSubColumn(k);
-				}else{
-					ErrorCode.logError(log, 8,4, "index-"+i+" col:"+col);
-					return false;
-				}
-				
-			}else{
-				columnList.add(k);
-			}
-			
-			i++;
-		}
-		this.columnSize = this.columnList.size();
-		
-		//---------------------------
-		//初始化index
-		for (Iterator<HashMap<String, Object>> iterator = indexDefineList.iterator(); iterator.hasNext();) {
-			HashMap<String, Object> map = iterator.next();
-			if(!JSONTool.checkMapTypes(map,new String[]{"col","asc","intro","type","unique"},new Class[]{String.class,Boolean.class,String.class,String.class,Boolean.class})){
-				ErrorCode.logError(log, 8,1, " kobjIndex:"+i);
-				return false;
-			}
-			String col = (String) map.get("col");
-			boolean asc = (Boolean) map.get("asc");
-			String intro = (String) map.get("intro");
-			String type = (String) map.get("type");
-			boolean unique = (Boolean) map.get("unique");
-			
-			KObjIndex ki = new KObjIndex(col, asc, type, intro, unique);
-			this.indexMap.put(col, ki);
-		}
-		
-		return true;
-	}
-	
-
 	/**
 	 * 验证某一字段值
 	 * @param kobjPath 字段的路径,如:tags.tagName
@@ -329,10 +387,17 @@ public class KObjSchema {
 			KObjIndex ki = this.indexMap.get(key);
 			cols.add(ki.toMap());
 		}
-		map.put("indexs", cols);
+		map.put("indexes", cols);
 		return map;
 	}
-	
+
+	/**
+	 * @return the kobjName
+	 */
+	public final String getKobjName() {
+		return kobjName;
+	}
+
 	
 	
 }

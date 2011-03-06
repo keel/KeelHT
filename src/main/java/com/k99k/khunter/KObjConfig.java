@@ -3,6 +3,7 @@
  */
 package com.k99k.khunter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.k99k.tools.JSONTool;
@@ -14,46 +15,82 @@ import com.k99k.tools.JSONTool;
  */
 public class KObjConfig {
 
-	public KObjConfig() {
+	private KObjConfig() {
 	}
 	
 	private String kobjName;
 	
 	private String intro;
 	
-	private HashMap<String,Object> daoConfig;
+	private KObjDaoConfig daoConfig;
 	
 	private KObjSchema kobjSchema;
 	
 	
 	/**
-	 * KObjConfig的Json化HashMap，注意此Map不含kobjName
-	 * @return
+	 * 创建新的KObjConfig
+	 * @param key kobjName
+	 * @param map json配置
+	 * @return 创建失败返回null
 	 */
-	public HashMap<String,Object> toMap() {
-		 HashMap<String,Object> map = this.kobjSchema.toMap();
-		 map.put("intro", this.intro);
-		 map.put("dao", daoConfig);
-		 return map;
+	@SuppressWarnings("unchecked")
+	public static final KObjConfig newInstance(String key,HashMap<String,Object> map){
+		KObjConfig kc = new KObjConfig();
+		try {
+			if (!JSONTool.checkMapTypes(map,new String[]{"intro","dao","columns","indexes"},new Class[]{String.class,HashMap.class,ArrayList.class,ArrayList.class})) {
+				return null;
+			}
+			String intro = (String) map.get("intro");
+			HashMap<String,Object> daoMap = (HashMap<String, Object>) map.get("dao");
+			ArrayList<HashMap<String,Object>> colList = (ArrayList<HashMap<String, Object>>) map.get("columns");
+			ArrayList<HashMap<String,Object>> indexList = (ArrayList<HashMap<String, Object>>) map.get("indexes");
+			KObjSchema ks = new KObjSchema();
+			if (!ks.initSchema(key, colList, indexList)) {
+				return null;
+			}
+			kc.setKobjSchema(ks);
+			if (!kc.setDaoConfig(daoMap)) {
+				return null;
+			}
+			kc.setIntro(intro);
+			kc.setKobjName(key);
+			
+		} catch (Exception e) {
+			ErrorCode.logError(KObjManager.log, 8, 12, e, " -in KObjConfig.newInstance");
+			return null;
+		}
+		
+		return kc;
 	}
 	
 	/**
-	 * 验证Dao的配置
-	 * @param map
+	 * KObjConfig的Json化HashMap，注意此Map不含kobjName
 	 * @return
 	 */
-	public boolean checkDaoMap(HashMap<String, Object> map){
-		if(!JSONTool.checkMapTypes(map,new String[]{"daoName","newDaoName"},new Class[]{String.class,String.class})){
-			return false;
-		}
-		//如果create为new,则必须有tableName字段
-		if (map.get("newDaoName").toString().trim().equals("")) {
-			if ((!map.containsKey("tableName")) || map.get("tableName").toString().length()<=0) {
-				return false;
-			}
-		}
-		return true;
+	public final HashMap<String,Object> toMap() {
+		 HashMap<String,Object> map = this.kobjSchema.toMap();
+		 map.put("intro", this.intro);
+		 map.put("dao", daoConfig.toMap());
+		 return map;
 	}
+	
+//	/**
+//	 * 验证Dao的配置
+//	 * @param map
+//	 * @return
+//	 */
+//	public final boolean checkDaoMap(HashMap<String, Object> map){
+//		if(!JSONTool.checkMapTypes(map,new String[]{"daoName","newDaoName"},new Class[]{String.class,String.class})){
+//			return false;
+//		}
+//		//如果create为new,则必须有tableName字段
+//		if (map.get("newDaoName").toString().trim().equals("")) {
+//			if ((!map.containsKey("tableName")) || map.get("tableName").toString().length()<=0) {
+//				return false;
+//			}
+//		}
+//		return true;
+//	}
 
 	/**
 	 * @return the kobjName
@@ -72,7 +109,7 @@ public class KObjConfig {
 	/**
 	 * @return the daoConfig
 	 */
-	public final HashMap<String, Object> getDaoConfig() {
+	public final KObjDaoConfig getDaoConfig() {
 		return daoConfig;
 	}
 
@@ -80,13 +117,20 @@ public class KObjConfig {
 	 * @param daoConfig the daoConfig to set
 	 */
 	public final boolean setDaoConfig(HashMap<String, Object> daoConfig) {
-		if (!checkDaoMap(daoConfig)) {
+		KObjDaoConfig kdc = KObjDaoConfig.newInstance(daoConfig);
+		if (kdc == null) {
 			return false;
 		}
-		this.daoConfig = daoConfig;
+		this.daoConfig = kdc;
 		return true;
 	}
 	
+	/**
+	 * @param kdc the daoConfig to set
+	 */
+	public final void setDaoConfig(KObjDaoConfig kdc) {
+		this.daoConfig = kdc;
+	}
 	
 
 	/**

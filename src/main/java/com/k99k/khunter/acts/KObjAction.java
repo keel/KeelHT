@@ -56,27 +56,27 @@ public class KObjAction extends Action{
 //		return list;
 //	}
 	
-	/**
-	 * 保存配置,同时将原文件按时间扩展名备份
-	 * @return
-	 */
-	private boolean save(){
-		//保存
-		String configFile = HTManager.getIniPath()+getIniPath();
-		HashMap<String,Object> map = new HashMap<String,Object>();
-		map.put("kobjs", kobjMap);
-		if (this.checkKObjJson(kobjMap) == null) {
-			return false;
-		}
-		int re = KIoc.saveJsonToFile(configFile, map);
-		if (re != 0) {
-			ErrorCode.logError(log, 9,re, " - in KObjAction.save()");
-			return false;
-		}
-		return true;
-	}
+//	/**
+//	 * 保存配置,同时将原文件按时间扩展名备份
+//	 * @return
+//	 */
+//	private boolean save(){
+//		//保存
+//		String configFile = HTManager.getIniPath()+getIniPath();
+//		HashMap<String,Object> map = new HashMap<String,Object>();
+//		map.put("kobjs", kobjMap);
+//		if (this.checkKObjJson(kobjMap) == null) {
+//			return false;
+//		}
+//		int re = KIoc.saveJsonToFile(configFile, map);
+//		if (re != 0) {
+//			ErrorCode.logError(log, 9,re, " - in KObjAction.save()");
+//			return false;
+//		}
+//		return true;
+//	}
 	
-	/**
+	/*
 		 * 检查Kobj的json String
 		 * @param json String 样例如下:
 		 * <pre>
@@ -103,60 +103,60 @@ public class KObjAction extends Action{
 		 * 
 		 * @return 不合格则返回null,合格则返回所需要的HashMap
 		 */
-		@SuppressWarnings("unchecked")
-		private final HashMap<String,Object> checkKObjJson(HashMap<String,Object> map){
-			//HashMap<String,Object> map = null;
-			try {
-	//			HashMap<String,Object> map = JSONTool.readJsonString(json);
-	//			if (map == null) {
-	//				return null;
-	//			}
-				
-				Iterator<String> iter = map.keySet().iterator();
-				if (!iter.hasNext()) {
-					return null;
-				}
-				String strKey = iter.next();
-				HashMap<String,Object> m = (HashMap<String, Object>) map.get(strKey);
-				//检查key
-				if(!JSONTool.checkMapTypes(m,new String[]{"intro","dao","columns","indexes"},new Class[]{String.class,HashMap.class,ArrayList.class,ArrayList.class})){
-					return null;
-				}
-				
-				//intro就不检查了
-				//HashMap<String,Object> m1 = (HashMap<String, Object>) map.get("intro");
-				
-				HashMap<String,Object> m2 = (HashMap<String, Object>) map.get("dao");
-				if(!JSONTool.checkMapTypes(m2,new String[]{"daoName","newDaoName"},new Class[]{String.class,String.class})){
-					return null;
-				}
-				//如果create为new,则必须有tableName字段
-				if (m2.get("newDaoName").equals("") && (!m2.containsKey("tableName"))) {
-					return null;
-				}
-				ArrayList<HashMap<String,Object>> m3 = (ArrayList<HashMap<String,Object>>) map.get("column");
-				for (Iterator<HashMap<String,Object>> it = m3.iterator(); it.hasNext();) {
-					HashMap<String, Object> _map = it.next();
-					//{"col":"pwd","def":"qwertnm","type":"string","intro":"password here","len":"20"}
-					if(!JSONTool.checkMapTypes(map,new String[]{"col","def","type","intro","len"},new Class[]{String.class,Object.class,Integer.class,String.class,Integer.class})){
-						return null;
-					}
-				}
-				ArrayList<HashMap<String,Object>> m4 = (ArrayList<HashMap<String,Object>>) map.get("indexes");
-				for (Iterator<HashMap<String,Object>> it = m4.iterator(); it.hasNext();) {
-					HashMap<String, Object> _map = it.next();
-					//{"col":"imei","order":"1","intro":"IMEI"}
-					if(!JSONTool.checkMapTypes(_map,new String[]{"col","asc","intro","type","unique"},new Class[]{String.class,Boolean.class,String.class,String.class,Boolean.class})){
-						return null;
-					}
-				}
-			} catch (Exception e) {
-				ErrorCode.logError(log, KObjAction.ERR_CODE1, 1, e,"");
-				return null;
-			}
-			
-			return map;
-		}
+//		@SuppressWarnings("unchecked")
+//		private final HashMap<String,Object> checkKObjJson(HashMap<String,Object> map){
+//			//HashMap<String,Object> map = null;
+//			try {
+//	//			HashMap<String,Object> map = JSONTool.readJsonString(json);
+//	//			if (map == null) {
+//	//				return null;
+//	//			}
+//				
+//				Iterator<String> iter = map.keySet().iterator();
+//				if (!iter.hasNext()) {
+//					return null;
+//				}
+//				String strKey = iter.next();
+//				HashMap<String,Object> m = (HashMap<String, Object>) map.get(strKey);
+//				//检查key
+//				if(!JSONTool.checkMapTypes(m,new String[]{"intro","dao","columns","indexes"},new Class[]{String.class,HashMap.class,ArrayList.class,ArrayList.class})){
+//					return null;
+//				}
+//				
+//				//intro就不检查了
+//				//HashMap<String,Object> m1 = (HashMap<String, Object>) map.get("intro");
+//				
+//				HashMap<String,Object> m2 = (HashMap<String, Object>) map.get("dao");
+//				if(!JSONTool.checkMapTypes(m2,new String[]{"daoName","newDaoName"},new Class[]{String.class,String.class})){
+//					return null;
+//				}
+//				//如果create为new,则必须有tableName字段
+//				if (m2.get("newDaoName").equals("") && (!m2.containsKey("tableName"))) {
+//					return null;
+//				}
+//				ArrayList<HashMap<String,Object>> m3 = (ArrayList<HashMap<String,Object>>) map.get("column");
+//				for (Iterator<HashMap<String,Object>> it = m3.iterator(); it.hasNext();) {
+//					HashMap<String, Object> _map = it.next();
+//					//{"col":"pwd","def":"qwertnm","type":"string","intro":"password here","len":"20"}
+//					if(!JSONTool.checkMapTypes(map,new String[]{"col","def","type","intro","len"},new Class[]{String.class,Object.class,Integer.class,String.class,Integer.class})){
+//						return null;
+//					}
+//				}
+//				ArrayList<HashMap<String,Object>> m4 = (ArrayList<HashMap<String,Object>>) map.get("indexes");
+//				for (Iterator<HashMap<String,Object>> it = m4.iterator(); it.hasNext();) {
+//					HashMap<String, Object> _map = it.next();
+//					//{"col":"imei","order":"1","intro":"IMEI"}
+//					if(!JSONTool.checkMapTypes(_map,new String[]{"col","asc","intro","type","unique"},new Class[]{String.class,Boolean.class,String.class,String.class,Boolean.class})){
+//						return null;
+//					}
+//				}
+//			} catch (Exception e) {
+//				ErrorCode.logError(log, KObjAction.ERR_CODE1, 1, e,"");
+//				return null;
+//			}
+//			
+//			return map;
+//		}
 
 	/**
 	 * 添加一个新的KObj对象,更新配置文件，如果需求则创建新的DAO，并更新dao配置

@@ -316,6 +316,42 @@ public class KObjColumn {
 	public final void setValidator(KObjColumnValidate validator) {
 		this.validator = validator;
 	}
+	
+	/**
+	 * 用字符串设置Validator
+	 * @param validatorConfig 如"com.k99k.khunter.StringValidator,0,5"为class+type+paras
+	 * @return
+	 */
+	public final boolean setValidator(String validatorConfig){
+		if (validatorConfig == null || validatorConfig.indexOf(',')<0) {
+			return false;
+		}
+		try {
+			String[] vaArr = validatorConfig.split(",");
+			String vClass = vaArr[0];
+			int vType = Integer.parseInt(vaArr[1]);
+			String[] vParas = null;
+			if (vaArr.length > 2) {
+				vParas = new String[vaArr.length-2];
+				for (int j = 0; j < vaArr.length-2; j++) {
+					vParas[j] = vaArr[j+2];
+				}
+			}
+			Object v = KIoc.loadClassInstance(HTManager.getClassPath(), vClass);
+			if (v instanceof KObjColumnValidate) {
+				KObjColumnValidate validator = (KObjColumnValidate)v;
+				//设置参数并初始化
+				validator.initType(vType, vParas);
+				this.setValidator(validator);
+				return true;
+			}else{
+				return false;
+			}
+		} catch (Exception e) {
+			ErrorCode.logError(KObjSchema.log, 8, 9, e, " --in KObjColumn setValidator");
+			return false;
+		}
+	}
 
 
 	/**
@@ -397,7 +433,7 @@ public class KObjColumn {
 	 * toMap用于生成配置文件
 	 * @return
 	 */
-	public HashMap<String,Object> toMap(){
+	public final HashMap<String,Object> toMap(){
 		HashMap<String,Object> m = new HashMap<String, Object>();
 		m.put("col", this.col);
 		m.put("def", this.def);

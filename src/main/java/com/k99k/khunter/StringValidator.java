@@ -4,7 +4,7 @@
 package com.k99k.khunter;
 
 /**
- * imei验证器,仅作示例用
+ * String验证器,内含长度比较
  * @author keel
  *
  */

@@ -497,7 +497,35 @@ public class MongoDao implements DaoInterface{
 	}
 	*/
 
-	 /**
+	 @Override
+	public boolean updateIndex(KObjIndex ki) {
+		try {
+			DBCollection coll = this.dataSource.getColl(tableName);
+			coll.ensureIndex(new BasicDBObject(ki.getCol(), (ki.isAsc())?1:-1),ki.getCol(), ki.isUnique());
+		} catch (Exception e) {
+			log.error("updateIndex error!", e);
+			return false;
+		}
+		return true;
+	}
+
+
+
+	@Override
+	public boolean removeIndex(KObjIndex ki) {
+		try {
+			DBCollection coll = this.dataSource.getColl(tableName);
+			coll.dropIndex(new BasicDBObject(ki.getCol(), (ki.isAsc())?1:-1));
+		} catch (Exception e) {
+			log.error("removeIndex error!", e);
+			return false;
+		}
+		return true;
+	}
+
+
+
+	/**
 	 * @return the dataSource
 	 */
 	public final DataSourceInterface getDataSource() {

@@ -94,7 +94,7 @@ public final class HTManager {
 					log.info("DaoManager inited OK? " + initOK);
 					
 					//初始化KObjManager
-					initOK = KObjManager.init(iniPath+"kobj.json",classPath);
+					initOK = KObjManager.init(iniPath+"kobj.json");
 					log.info("KObjManager inited OK? " + initOK);
 					
 					//初始化TaskManager

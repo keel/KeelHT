@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.mongodb.BasicDBObject;
-
 /**
  * DAO接口
  * @author keel
@@ -13,6 +11,20 @@ import com.mongodb.BasicDBObject;
  */
 public interface DaoInterface extends Cloneable{
 	
+	
+	/**
+	 * 增加或更新一个索引
+	 * @param ki
+	 * @return
+	 */
+	public boolean updateIndex(KObjIndex ki);
+	
+	/**
+	 * 删除一个索引
+	 * @param ki
+	 * @return
+	 */
+	public boolean removeIndex(KObjIndex ki);
 	
 	/**
 	 * 按ID查找单个对象,顺序号为1

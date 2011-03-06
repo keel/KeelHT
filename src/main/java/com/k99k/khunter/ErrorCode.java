@@ -37,14 +37,19 @@ public final class ErrorCode {
 		
 		
 		//KObjManager,KObjSchema
-		errArr[8][1] = "KObjSchema-initSchema json map error:";
-		errArr[8][2] = "KObjSchema-initSchema checkType || checkColType error:";
-		errArr[8][3] = "KObjSchema-initSchema father col not defined. ";
-		errArr[8][4] = "KObjSchema-initSchema father col is not Map or List. ";
-		errArr[8][5] = "KObjSchema-initSchema validator error. ";
+		errArr[8][1] = "KObjSchema-setColumn json map error:";
+		errArr[8][2] = "KObjSchema-setColumn checkType || checkColType error:";
+		errArr[8][3] = "KObjSchema-setSubColumn father col not defined. ";
+		errArr[8][4] = "KObjSchema-setSubColumn father col is not Map or List. ";
+		errArr[8][5] = "KObjSchema-setColumn validator error. ";
 		errArr[8][6] = "KObjManager-init ini json error. ";
 		errArr[8][7] = "KObjManager-init initSchema error. ";
 		errArr[8][8] = "KObjManager-init Exception throwed. ";
+		errArr[8][9] = "KObjSchema-initSchema Exception throwed. ";
+		errArr[8][10] = "KObjSchema-setIndex json error. ";
+		errArr[8][11] = "KObjSchema-setColumn Exception throwed.";
+		errArr[8][11] = "KObjSchema-setIndex dao sync failed.";
+		errArr[8][12] = "KObjManager-setKObjConfig failed.";
 		
 		//KIoc
 		errArr[9][10] = "KIoc-saveJsonToFile ini not found.";
