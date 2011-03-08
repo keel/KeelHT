@@ -114,6 +114,7 @@ public class KObjConfig {
 	}
 
 	/**
+	 * 更新或新增daoConfig
 	 * @param daoConfig the daoConfig to set
 	 */
 	public final boolean setDaoConfig(HashMap<String, Object> daoConfig) {

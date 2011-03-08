@@ -101,7 +101,7 @@ public final class KObjManager {
 	}
 	
 	public static final KObjSchema findSchema(String kobjName){
-		KObjConfig kc = (KObjConfig)kobjMap.get(kobjName);
+		KObjConfig kc = kobjMap.get(kobjName);
 		return kc.getKobjSchema();
 	}
 	
@@ -112,6 +112,40 @@ public final class KObjManager {
 	public static final KObject createEmptyKObj(String kobjName){
 		KObjConfig kc = (KObjConfig)kobjMap.get(kobjName);
 		return kc.getKobjSchema().createEmptyKObj();
+	}
+	
+	/**
+	 * 创建新的KObjConfig，并创建一个默认数据到数据库中，创建相关的索引，再进行删除,注意此方法不会更新配置文件
+	 * @param key kobjName
+	 * @param map json配置
+	 * @return 成功返回0,其他为错误码
+	 */
+	public static final int createKObjConfigToDB(String key,HashMap<String,Object> map){
+		if (kobjMap.containsKey(key)) {
+			return 16;
+		}
+		KObjConfig kc = KObjConfig.newInstance(key, map);
+		if (kc == null) {
+			return 15;
+		}
+		DaoInterface dao = DaoManager.findDao(kc.getDaoConfig().getDaoName());
+		if (dao == null) {
+			return 18;
+		}
+		kobjMap.put(key, kc);
+		KObjSchema ks = kc.getKobjSchema();
+		KObject oneKObj = ks.createEmptyKObj();
+		long id = oneKObj.getId();
+		if (dao.add(oneKObj)) {
+			if (ks.applyIndexes() == 0) {
+				if (dao.deleteOne(id)) {
+					return 0;
+				}
+				return 21;
+			}
+			return 20;
+		}
+		return 19;
 	}
 	
 	/**
@@ -130,15 +164,50 @@ public final class KObjManager {
 	}
 	
 	/**
-	 * FIXME 新增一个具体的KObject对象
+	 * 查找一个kobj对象的Dao
+	 * @param kobjKey
+	 * @return
+	 */
+	public static final DaoInterface findDao(String kobjKey){
+		KObjConfig kc = findKObjConfig(kobjKey);
+		return DaoManager.findDao(kc.getDaoConfig().getDaoName());
+	}
+	
+	/**
+	 * 新增一个具体的KObject对象,更多的操作应使用Schema结合Dao完成
 	 * @param kobjKey
 	 * @param kobj
 	 * @return
 	 */
 	public static final int addKObj(String kobjKey,KObject kobj){
-		
-		
-		
+		KObjConfig kc = findKObjConfig(kobjKey);
+		KObjSchema ks = kc.getKobjSchema();
+		DaoInterface dao = DaoManager.findDao(kc.getDaoConfig().getDaoName());
+		if (!ks.validate(kobj.getPropMap())) {
+			return 13;
+		}
+		if(dao == null || (!dao.add(kobj))){
+			return 14;
+		}
+		return 0;
+	}
+	
+	/**
+	 * 新增一个具体的KObject对象
+	 * @param kobjKey
+	 * @param map
+	 * @return
+	 */
+	public static final int addKObj(String kobjKey,HashMap<String,Object> map){
+		KObjConfig kc = findKObjConfig(kobjKey);
+		KObjSchema ks = kc.getKobjSchema();
+		DaoInterface dao = DaoManager.findDao(kc.getDaoConfig().getDaoName());
+		if (!ks.validate(map)) {
+			return 13;
+		}
+		if(dao == null || (!dao.add(new KObject(map)))){
+			return 14;
+		}
 		return 0;
 	}
 	

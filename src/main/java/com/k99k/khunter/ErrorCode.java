@@ -50,6 +50,15 @@ public final class ErrorCode {
 		errArr[8][11] = "KObjSchema-setColumn Exception throwed.";
 		errArr[8][11] = "KObjSchema-setIndex dao sync failed.";
 		errArr[8][12] = "KObjManager-setKObjConfig failed.";
+		errArr[8][13] = "KObjManager-addKObj KObjConfig validate failed. ";
+		errArr[8][14] = "KObjManager-addKObj dao ==null || dao.add(kobj) failed. ";
+		errArr[8][15] = "KObjManager-createKObjConfig KObjConfig.newInstance ==null . ";
+		errArr[8][16] = "KObjManager-createKObjConfig key is already exist . ";
+		errArr[8][17] = "KObjSchema-applyIndexes failed . ";
+		errArr[8][18] = "KObjManager-createKObjConfig findDao failed. ";
+		errArr[8][19] = "KObjManager-createKObjConfig dao.add(oneKObj) failed. ";
+		errArr[8][20] = "KObjManager-createKObjConfig ks.applyIndexes failed. ";
+		errArr[8][21] = "KObjManager-createKObjConfig dao.deleteOne failed. ";
 		
 		//KIoc
 		errArr[9][10] = "KIoc-saveJsonToFile ini not found.";

@@ -19,6 +19,9 @@ import com.k99k.khunter.ErrorCode;
 import com.k99k.khunter.HTManager;
 import com.k99k.khunter.HttpActionMsg;
 import com.k99k.khunter.KIoc;
+import com.k99k.khunter.KObjConfig;
+import com.k99k.khunter.KObjManager;
+import com.k99k.khunter.KObjSchema;
 import com.k99k.khunter.KObject;
 import com.k99k.tools.JSONTool;
 import com.k99k.tools.StringUtil;
@@ -37,10 +40,11 @@ public class KObjAction extends Action{
 	static final Logger log = Logger.getLogger(ActionManager.class);
 	
 	public static final int ERR_CODE1 = 15;
-	/**
-	 * 存储Action的Map,初始化大小为50
-	 */
-	private static final HashMap<String, Object> kobjMap = new HashMap<String, Object>(50);
+	
+//	/**
+//	 * 存储Action的Map,初始化大小为50
+//	 */
+//	private static final HashMap<String, Object> kobjMap = new HashMap<String, Object>(50);
 
 	
 //	/**
@@ -158,65 +162,65 @@ public class KObjAction extends Action{
 //			return map;
 //		}
 
-	/**
-	 * 添加一个新的KObj对象,更新配置文件，如果需求则创建新的DAO，并更新dao配置
-	 * @param json String 
-	 * @return 是否操作成功
-	 */
-	@SuppressWarnings("unchecked")
-	public int addKObjSchema(String json){
-		//先检验json
-		HashMap<String,Object> map = JSONTool.readJsonString(json);
-		if (map == null) {
-			return 6;
-		}
-		HashMap<String,Object> kobj = this.checkKObjJson(map);
-		if (kobj == null) {
-			return 6;
-		}
-		//kobj的key
-		String key = kobj.keySet().iterator().next();
-		HashMap<String,Object> root = (HashMap<String,Object>)kobj.get(key);
-		//根据DAO配置获取dao,并验证是否存在
-		HashMap<String,Object> daoMap = (HashMap<String,Object>)root.get("dao");
-		String daoKey = daoMap.get("daoName").toString();
-		DaoInterface dao = DaoManager.findDao(daoKey);
-		if (dao == null) {
-			//ErrorCode.logError(log, KObjAction.ERR_CODE1, 5, JSONTool.writeJsonString(kobj));
-			return 5;
-		}
-		
-		//更新kobj.json
-		if(!KIoc.updateIniFileNode(HTManager.getIniPath()+getIniPath(), new String[]{"kobjs"},0,-1, key, root)){
-			//ErrorCode.logError(log, KObjAction.ERR_CODE1, 7, JSONTool.writeJsonString(kobj));
-			return 7;
-		}
-		
-		
-		
-		//创建新Dao---------------------
-		if (dao.getTableName().equals("*")) {
-			//设置dao属性
-			KIoc.setProp(dao, "tableName", daoMap.get("tableName").toString());
-			if (kobj.containsKey("props")) {
-				if(!KIoc.setProps(dao,(Map<String,Object>)daoMap.get("props"))){
-					return 8;
-				}
-			}
-			if(!DaoManager.addDao(dao)){
-				return 9;
-			}
-			if(!DaoManager.storeDao(dao)){
-				return 10;
-			}
-			
-		}
-		//直接引用dao-------------------
-//		else{
+//	/**
+//	 * 添加一个新的KObj对象,更新配置文件，如果需求则创建新的DAO，并更新dao配置
+//	 * @param json String 
+//	 * @return 是否操作成功
+//	 */
+//	@SuppressWarnings("unchecked")
+//	public int addKObjSchema(String json){
+//		//先检验json
+//		HashMap<String,Object> map = JSONTool.readJsonString(json);
+//		if (map == null) {
+//			return 6;
 //		}
-		
-		return 0;
-	}
+//		HashMap<String,Object> kobj = this.checkKObjJson(map);
+//		if (kobj == null) {
+//			return 6;
+//		}
+//		//kobj的key
+//		String key = kobj.keySet().iterator().next();
+//		HashMap<String,Object> root = (HashMap<String,Object>)kobj.get(key);
+//		//根据DAO配置获取dao,并验证是否存在
+//		HashMap<String,Object> daoMap = (HashMap<String,Object>)root.get("dao");
+//		String daoKey = daoMap.get("daoName").toString();
+//		DaoInterface dao = DaoManager.findDao(daoKey);
+//		if (dao == null) {
+//			//ErrorCode.logError(log, KObjAction.ERR_CODE1, 5, JSONTool.writeJsonString(kobj));
+//			return 5;
+//		}
+//		
+//		//更新kobj.json
+//		if(!KIoc.updateIniFileNode(HTManager.getIniPath()+getIniPath(), new String[]{"kobjs"},0,-1, key, root)){
+//			//ErrorCode.logError(log, KObjAction.ERR_CODE1, 7, JSONTool.writeJsonString(kobj));
+//			return 7;
+//		}
+//		
+//		
+//		
+//		//创建新Dao---------------------
+//		if (dao.getTableName().equals("*")) {
+//			//设置dao属性
+//			KIoc.setProp(dao, "tableName", daoMap.get("tableName").toString());
+//			if (kobj.containsKey("props")) {
+//				if(!KIoc.setProps(dao,(Map<String,Object>)daoMap.get("props"))){
+//					return 8;
+//				}
+//			}
+//			if(!DaoManager.addDao(dao)){
+//				return 9;
+//			}
+//			if(!DaoManager.storeDao(dao)){
+//				return 10;
+//			}
+//			
+//		}
+//		//直接引用dao-------------------
+////		else{
+////		}
+//		
+//		return 0;
+//	}
 	
 //	/**
 //	 * 更新KObj表结构,同时更新DAO和dao的配置,根据情况确定是否更新已有数据
@@ -304,82 +308,47 @@ public class KObjAction extends Action{
 	
 	
 
-	/**
-	 * 更新Kobj配置的intro,配置文件将被更新
-	 * @param kobjName
-	 * @param intro
-	 * @return 完成则返回0
-	 */
-	@SuppressWarnings("unchecked")
-	public int updateKobjIntro(String kobjName,String intro){
-		HashMap<String,Object> kobjNode = (HashMap<String, Object>) kobjMap.get(kobjName);
-		if (kobjNode == null) {
-			return 24;
-		}
-		kobjNode.put("intro", intro);
-		if(!this.save()){
-			return 25;
-		}
-		return 0;
-	}
+	
+//	/**
+//	 * 更换Kobj的Dao,只能更换DaoManager中已有的可引用Dao,若要新建需要先在
+//	 * @param kobjName
+//	 * @param newDaoName 必须是可引用的Dao
+//	 * @return
+//	 */
+//	@SuppressWarnings("unchecked")
+//	public int changeKObjDao(String kobjName,String newDaoName){ 
+//		HashMap<String,Object> kobjNode = (HashMap<String, Object>) kobjMap.get(kobjName);
+//		if (kobjNode == null) {
+//			return 24;
+//		}
+//		DaoInterface dao = DaoManager.findDao(newDaoName);
+//		if (dao == null) {
+//			return 27;
+//		}
+//		if (dao.getTableName().equals("*")) {
+//			//如果是新建Dao，则返回错误码，进入新建DAO流程
+//			return 26;
+//		}
+//		//如果新daoName是引用的,直接更换
+//		HashMap<String,Object> daoMap = (HashMap<String,Object>)kobjNode.get("dao");
+//		daoMap.put("daoName", dao.getName());
+//		daoMap.put("newDaoName", "");
+//		daoMap.remove("tableName");
+//		daoMap.remove("props");
+//		if(!KObjManager.saveIni()){
+//			return 25;
+//		}
+//		return 0;
+//	}
+//	
 	
 	/**
-	 * 更换Kobj的Dao,只能更换DaoManager中已有的可引用Dao,若要新建需要先在
-	 * @param kobjName
-	 * @param newDaoName 必须是可引用的Dao
+	 * 保存配置,实际上是KObjManager的配置
 	 * @return
 	 */
-	public int changeKObjDao(String kobjName,String newDaoName){ 
-		HashMap<String,Object> kobjNode = (HashMap<String, Object>) kobjMap.get(kobjName);
-		if (kobjNode == null) {
-			return 24;
-		}
-		DaoInterface dao = DaoManager.findDao(newDaoName);
-		if (dao == null) {
-			return 27;
-		}
-		if (dao.getTableName().equals("*")) {
-			//如果是新建Dao，则返回错误码，进入新建DAO流程
-			return 26;
-		}
-		//如果新daoName是引用的,直接更换
-		HashMap<String,Object> daoMap = (HashMap<String,Object>)kobjNode.get("dao");
-		daoMap.put("daoName", dao.getName());
-		daoMap.put("newDaoName", "");
-		daoMap.remove("tableName");
-		daoMap.remove("props");
-		if(!this.save()){
-			return 25;
-		}
-		return 0;
+	public final boolean save(){
+		return KObjManager.saveIni();
 	}
-	
-	
-	
-	/**
-	 * FIXME 更新KObj的列
-	 * @param kobjName
-	 * @param opType 0为新增,1为更新,2为删除,10为批量新增,11为批量更新,12为批量删除
-	 * @param jsonReq
-	 * @return
-	 */
-	public int updateKObjColumns(String kobjName,int opType,String jsonReq){
-		//opType也支持多项操作,多项操作时jsonReq必须为ArrayList，单项操作时可以为Map
-		
-		
-		
-		
-		// FIXME 根据情况决定是否处理已有数据表更新
-		return 0;
-	}
-	
-	public int updateKOjbIndexes(String kobjName,int opType,String jsonReq){
-		//同上
-		
-		return 0;
-	}
-	
-	
 	
 	///----------------以下为DAO操作-----------------
 	
@@ -454,19 +423,6 @@ public class KObjAction extends Action{
 		return DaoManager.reLoadDao(daoName);
 	}
 	
-	/**
-	 * 定位到DaoInterface
-	 * @param kobjName 
-	 * @return DaoInterface
-	 */
-	private final DaoInterface findDao(String kobjName){
-		Object daoName = JSONTool.findJsonNode(kobjMap, new String[]{kobjName,"dao","daoName"});
-		if (daoName == null) {
-			return null;
-		}
-		DaoInterface dao = DaoManager.findDao(daoName.toString());
-		return dao;
-	}
 	
 	/**
 	 * 执行DAO请求
@@ -485,7 +441,7 @@ public class KObjAction extends Action{
 	 */
 	@SuppressWarnings("unchecked")
 	public final Object execDaoFunction(String kobjName,int daoFunc,String jsonReq){
-		DaoInterface dao = this.findDao(kobjName);
+		DaoInterface dao = KObjManager.findDao(kobjName);
 		if (dao == null || jsonReq == null) {
 			return 20;
 		}
@@ -743,21 +699,23 @@ public class KObjAction extends Action{
 		}
 		msg.addData("subact", subact);
 		if (subact.equals("list")) {
-			msg.addData("list", kobjMap);
+			msg.addData("list", KObjManager.getKObjMap());
 		}
 		//schema_find
 		else if(subact.equals("schema_find")){
 			String key  = httpmsg.getHttpReq().getParameter("schema_key");
-			Map<String,?> m = this.findKObjSchema(key);
-			msg.addData("schema_find", m);
+			KObjSchema ks = KObjManager.findSchema(key);
+			msg.addData("schema_find", ks);
 		}
 		//schema_update
 		else if(subact.equals("schema_update")){
 			String key  = httpmsg.getHttpReq().getParameter("schema_key");
-			String path  = httpmsg.getHttpReq().getParameter("schema_path");
 			String json  = httpmsg.getHttpReq().getParameter("schema_json");
-			Map<String,?> m = this.findKObjSchema(key);
-			msg.addData("schema_update", m);
+			KObjConfig kc = KObjManager.findKObjConfig(key);
+			KObjSchema ks = kc.getKobjSchema();
+			
+			//FIXME ks.setProp(kobj, kobjPath, JSONTool.readJsonString(json));
+			msg.addData("schema_update", ks);
 		}
 		//更新或新增
 		else if(subact.equals("update")){
@@ -775,9 +733,9 @@ public class KObjAction extends Action{
 		
 		//创建新的KObj
 		else if(subact.equals("addkobjschema")){
-			//String key  = httpmsg.getHttpReq().getParameter("kobj_key");
+			String key  = httpmsg.getHttpReq().getParameter("kobj_key");
 			String json  = httpmsg.getHttpReq().getParameter("kobj_json");
-			int err = this.addKObjSchema(json);
+			int err =KObjManager.createKObjConfigToDB(key, JSONTool.readJsonString(json));
 			msg.addData("addkobjschema", ErrorCode.getErrorInfo(KObjAction.ERR_CODE1, err));
 		}
 		//更新KObj
@@ -800,16 +758,16 @@ public class KObjAction extends Action{
 		else if(subact.equals("search")){
 			String key  = httpmsg.getHttpReq().getParameter("search_key");
 			if (key != null) {
-				HashMap<String, Object> re = this.searchKObjList(key);
+				HashMap<String, KObjConfig> re = KObjManager.searchKObjList(key);
 				msg.addData("list", re);
 			}else{
-				msg.addData("list", kobjMap);
+				msg.addData("list", KObjManager.searchKObjList(""));
 			}
 		}
 		//其他未知subact
 		else{
 			msg.addData("subact", "list");
-			msg.addData("list", kobjMap);
+			msg.addData("list", KObjManager.searchKObjList(""));
 		}
 		return super.act(msg);
 	}
@@ -818,24 +776,8 @@ public class KObjAction extends Action{
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#init()
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public void init() {
-		try {
-			String ini = KIoc.readTxtInUTF8(HTManager.getIniPath()+getIniPath());
-			Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
-			Object mapobj =  root.get("kobjs");
-			if (mapobj != null) {
-				Map<String, Object> m = (Map<String, Object>)mapobj;
-				kobjMap.putAll(m);
-				log.info("KObjAction init OK! size:"+kobjMap.size());
-			}else{
-				ErrorCode.logError(log, KObjAction.ERR_CODE1, 3, "");
-				return;
-			}
-		} catch (Exception e) {
-			ErrorCode.logError(log, KObjAction.ERR_CODE1, 4,e, "");
-		}
 	}
 	
 

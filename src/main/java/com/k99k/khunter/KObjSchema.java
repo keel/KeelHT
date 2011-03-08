@@ -42,7 +42,7 @@ public class KObjSchema {
 	private int columnSize = 0;
 	
 	/**
-	 * 初始化Schema,注意父column定义必须先于子column
+	 * 初始化Schema,注意父column定义必须先于子column,无数据库操作
 	 * @param columnDefineList
 	 * @param indexDefineList
 	 * @return 是否初始化成功
@@ -179,11 +179,62 @@ public class KObjSchema {
 	}
 	
 	/**
-	 * 添加或新增KObjIndex
+	 * 添加或新增KObjIndex,不在数据库中操作
 	 * @param index
 	 */
 	public void setIndex(KObjIndex index){
 		this.indexMap.put(index.getCol(), index);
+	}
+	
+	public int setIndex(HashMap<String,Object> iMap){
+		try {
+			if(!JSONTool.checkMapTypes(iMap,new String[]{"col","asc","intro","type","unique"},new Class[]{String.class,Boolean.class,String.class,String.class,Boolean.class})){
+				//ErrorCode.logError(log, 8,1, " kobjIndex:"+i);
+				return 10;
+			}
+			String col = (String) iMap.get("col");
+			boolean asc = (Boolean) iMap.get("asc");
+			String intro = (String) iMap.get("intro");
+			String type = (String) iMap.get("type");
+			boolean unique = (Boolean) iMap.get("unique");
+			
+			KObjIndex ki = new KObjIndex(col, asc, type, intro, unique);
+			this.indexMap.put(col, ki);
+		} catch (Exception e) {
+			return 10;
+		}
+		return 0;
+	}
+	
+	/**
+	 * 应用索引到数据库
+	 * @param indx
+	 * @return
+	 */
+	public final boolean applyIndex(KObjIndex indx){
+		DaoInterface dao = DaoManager.findDao(KObjManager.findKObjConfig(this.kobjName).getDaoConfig().getDaoName());
+		if (dao == null) {
+			return false;
+		}
+		if(!dao.updateIndex(indx)){
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * 应用全部索引到数据库
+	 * @return
+	 */
+	public final int applyIndexes(){
+		for (Iterator<String> it = this.indexMap.keySet().iterator(); it.hasNext();) {
+			String indx = it.next();
+			if (!this.applyIndex(this.indexMap.get(indx))) {
+				return 17;
+			}
+		}
+		
+		return 0;
 	}
 	
 	/**
@@ -191,7 +242,7 @@ public class KObjSchema {
 	 * @param iMap HashMap<String,Object>
 	 * @return
 	 */
-	public final int setIndex(HashMap<String,Object> iMap){
+	public final int setIndexToDB(HashMap<String,Object> iMap){
 		try {
 			if(!JSONTool.checkMapTypes(iMap,new String[]{"col","asc","intro","type","unique"},new Class[]{String.class,Boolean.class,String.class,String.class,Boolean.class})){
 				//ErrorCode.logError(log, 8,1, " kobjIndex:"+i);
@@ -355,7 +406,7 @@ public class KObjSchema {
 	 * 获取所有的索引
 	 * @return HashMap<String,KObjIndex>
 	 */
-	public HashMap<String,KObjIndex> getIndexes(){
+	public final HashMap<String,KObjIndex> getIndexes(){
 		return this.indexMap;
 	}
 	
