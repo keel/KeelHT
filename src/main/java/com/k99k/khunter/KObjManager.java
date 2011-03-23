@@ -3,7 +3,6 @@
  */
 package com.k99k.khunter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -134,9 +133,11 @@ public final class KObjManager {
 		}
 		kobjMap.put(key, kc);
 		KObjSchema ks = kc.getKobjSchema();
+		//生成新id
 		KObject oneKObj = ks.createEmptyKObj();
 		long id = oneKObj.getId();
-		if (dao.add(oneKObj)) {
+		//使用save方法保持id
+		if (dao.save(oneKObj)) {
 			if (ks.applyIndexes() == 0) {
 				if (dao.deleteOne(id)) {
 					return 0;
@@ -270,7 +271,7 @@ public final class KObjManager {
 //					}
 					KObjConfig kc = KObjConfig.newInstance(keyName, m);
 					if (kc == null) {
-						ErrorCode.logError(log, 8, 7, " dao error. i:"+i);
+						ErrorCode.logError(log, 8, 7, "i:"+i);
 						continue;
 					}
 //					if(!kc.setDaoConfig((HashMap<String, Object>) m.get("dao"))){

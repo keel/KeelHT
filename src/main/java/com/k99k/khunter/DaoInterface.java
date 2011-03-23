@@ -11,6 +11,11 @@ import java.util.Map;
  */
 public interface DaoInterface extends Cloneable{
 	
+	/**
+	 * 获取ID管理器
+	 * @return
+	 */
+	public IDManager getIdm();
 	
 	/**
 	 * 增加或更新一个索引

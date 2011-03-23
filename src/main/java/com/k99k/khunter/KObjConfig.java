@@ -38,6 +38,7 @@ public class KObjConfig {
 		KObjConfig kc = new KObjConfig();
 		try {
 			if (!JSONTool.checkMapTypes(map,new String[]{"intro","dao","columns","indexes"},new Class[]{String.class,HashMap.class,ArrayList.class,ArrayList.class})) {
+				ErrorCode.logError(KObjManager.log, 8, 22, map.toString());
 				return null;
 			}
 			String intro = (String) map.get("intro");
@@ -46,10 +47,12 @@ public class KObjConfig {
 			ArrayList<HashMap<String,Object>> indexList = (ArrayList<HashMap<String, Object>>) map.get("indexes");
 			KObjSchema ks = new KObjSchema();
 			if (!ks.initSchema(key, colList, indexList)) {
+				ErrorCode.logError(KObjManager.log, 8, 23, key);
 				return null;
 			}
 			kc.setKobjSchema(ks);
 			if (!kc.setDaoConfig(daoMap)) {
+				ErrorCode.logError(KObjManager.log, 8, 24, daoMap.toString());
 				return null;
 			}
 			kc.setIntro(intro);

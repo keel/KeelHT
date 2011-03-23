@@ -18,11 +18,10 @@ public interface KObjColumnValidate {
 	public boolean validate(Object value);
 	
 	/**
-	 * 设置验证类型和参数并初始化
+	 * 设置验证类型和参数并初始化,同时要处理toString输出
 	 * @param type
 	 * @param paras
 	 */
 	public void initType(int type,String[] paras);
 	
-
 }

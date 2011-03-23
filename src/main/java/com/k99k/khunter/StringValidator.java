@@ -107,9 +107,6 @@ public class StringValidator implements KObjColumnValidate {
 		return this.toStr;
 	}
 
-
-
-
 	
 
 }

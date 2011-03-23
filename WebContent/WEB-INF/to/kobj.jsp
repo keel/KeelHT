@@ -10,7 +10,7 @@ if(o != null ){
 }
 %>
 <div id="rightTop">
-<span class="weight">KObj config: </span> [ <a href="act?act=console&amp;right=editIni&amp;ini=kobj">edit json</a> ] [ <a href="act?act=console&amp;right=addkobj">add new</a> ]
+<span class="weight">KObj config: </span> [ <a href="act?act=console&amp;right=editIni&amp;ini=kobj">edit json</a> ] [ <a href="act?act=console&amp;right=schema_add">add schema</a> ]
 <form id="f_search" action="act?act=console&amp;right=kobj" method="post">
 <input type="text" id="search_key" name="search_key" /><input type="hidden" id="subact" name="subact" value="search" /><input type="submit" value="search" />
 </form>
@@ -24,19 +24,26 @@ if(od==null){
 	return;
 }
 try{
-	Map<String, Object> kobjMap = (Map<String, Object>)od;
-	if(kobjMap.size()<=0){
+	HashMap<String, KObjConfig> kcMap = (HashMap<String, KObjConfig>)od;
+	if(kcMap.size()<=0){
 		out.print("Empty.");
 		return;
 	}else{
 		StringBuilder sb = new StringBuilder();
-		for (Iterator<String> it = kobjMap.keySet().iterator(); it.hasNext();) {
+		for (Iterator<String> it = kcMap.keySet().iterator(); it.hasNext();) {
 			String kobjName =  it.next();
-			HashMap<String,Object> table = (HashMap<String,Object>)kobjMap.get(kobjName);
+			KObjConfig kc = kcMap.get(kobjName);
+			//HashMap<String,Object> table = (HashMap<String,Object>)kobjMap.get(kobjName);
 			sb.append("<p class='tb_list' ><a href='#' class='weight'>");
 			sb.append(kobjName).append("</a> ");
-			sb.append(table.get("intro"));
-			sb.append(" - [ <a href='#'>schema</a> | <a href='#'>query</a>  | <a href='#'>add</a>  | <a href='#'>update</a> ]</p>\r\n");
+			sb.append(kc.getIntro());
+			sb.append(" - [ <a href='act?act=console&amp;right=kobj&amp;subact=schema_find&amp;schema_key=")
+			.append(kobjName)
+			.append("'>schema</a> | <a href='act?act=console&amp;right=kobj&amp;subact=query&amp;schema_key=");
+			sb.append(kobjName);
+			sb.append("'>query KObject</a>  | <a href='act?act=console&amp;right=kobj&amp;subact=kobj_add&amp;schema_key=");
+			sb.append(kobjName);
+			sb.append("'>add KObject</a> ]</p>\r\n");
 		}
 		out.print(sb.toString());
 	}

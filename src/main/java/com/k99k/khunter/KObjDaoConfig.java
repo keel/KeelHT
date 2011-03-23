@@ -6,6 +6,7 @@ package com.k99k.khunter;
 import java.util.HashMap;
 
 import com.k99k.tools.JSONTool;
+import com.k99k.tools.StringUtil;
 
 /**
  * KObjConfig中的daoConfig
@@ -30,8 +31,8 @@ public class KObjDaoConfig {
 		}
 		kdc.daoName = (String) map.get("daoName");
 		kdc.newDaoName = (String) map.get("newDaoName");
-		//如果create为new,则必须有tableName字段
-		if (map.get("newDaoName").toString().trim().equals("")) {
+		//如果newDaoName不为空,则必须有tableName字段
+		if (!map.get("newDaoName").toString().trim().equals("")) {
 			if ((!map.containsKey("tableName")) || map.get("tableName").toString().length()<=0) {
 				return null;
 			}
@@ -42,7 +43,7 @@ public class KObjDaoConfig {
 			HashMap<String,Object> m = (HashMap<String, Object>) o;
 			Object ido = m.get("id");
 			Object typeo = m.get("type");
-			if (ido != null && ido.toString().matches("\\d+")) {
+			if (StringUtil.isDigits(ido.toString())) {
 				kdc.setPropId(Integer.parseInt(ido.toString()));
 			}
 			if (typeo != null && typeo instanceof String) {

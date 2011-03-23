@@ -60,7 +60,7 @@ public class MongoConfig {
 		user.setImei("test IMEI");
 		user.setName("keel");
 		user.setEmail("keel@keel.com");
-		user.setCreateTime(new Date()+"");
+		user.setCreateTime(new Date().getTime());
 		user.setCreatorName("admin");
 		user.setHp(100);
 		user.setGold(20);

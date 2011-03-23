@@ -10,6 +10,7 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 
 import com.k99k.tools.JSONTool;
+import com.k99k.tools.StringUtil;
 
 /**
  * KObj与Dao结合使用的schema，用于产生空的KObj和填充及设置KObj属性
@@ -54,7 +55,7 @@ public class KObjSchema {
 			HashMap<String, Object> map = iterator.next();
 			int setRe = this.setColumn(map);
 			if (setRe != 0) {
-				ErrorCode.logError(log, 8,setRe, " in initSchema index-"+i);
+				ErrorCode.logError(log, 8,setRe, " in initSchema index-"+i+" kobjName:"+kobjName);
 				return false;
 			}
 			i++;
@@ -68,12 +69,23 @@ public class KObjSchema {
 			HashMap<String, Object> map = iterator.next();
 			int setRe = setIndex(map);
 			if (setRe != 0) {
-				ErrorCode.logError(log, 8, setRe,  " in initSchema index-"+i);
+				ErrorCode.logError(log, 8, setRe,  " in initSchema index-"+i+" kobjName:"+kobjName);
 				return false;
 			}
 			i++;
 		}
 		return true;
+	}
+	
+	/**
+	 * FIXME 更新操作
+	 * @param opType
+	 * @return
+	 */
+	public int updateSchema(int opType,Object obj){
+		
+		
+		return 0;
 	}
 
 	/**
@@ -84,7 +96,7 @@ public class KObjSchema {
 	public int setColumn(HashMap<String,Object> colMap){
 		try {
 			//验证Column的key和value类型
-			if(!JSONTool.checkMapTypes(colMap,new String[]{"col","def","type","intro","len"},new Class[]{String.class,Object.class,Integer.class,String.class,Integer.class})){
+			if(!JSONTool.checkMapTypes(colMap,new String[]{"col","def","type","intro","len"},new Class[]{String.class,Object.class,Long.class,String.class,Long.class})){
 				//ErrorCode.logError(log, 8,1, "kobjColumn:"+i);
 				return 1;
 			}
@@ -94,10 +106,17 @@ public class KObjSchema {
 			int type = Integer.parseInt(colMap.get("type").toString());
 			String intro = (String) colMap.get("intro");
 			int len = Integer.parseInt(colMap.get("len").toString());
+			//int类型将进行Long转换处理
+			if (type == 1) {
+				if (!StringUtil.isDigits(def.toString())) {
+					return 2;
+				}
+				def = Integer.parseInt(def.toString());
+			}
 			
 			//验证type和def
 			if (!KObjColumn.checkType(type) || !KObjColumn.checkColType(def, type)) {
-				//ErrorCode.logError(log, 8,2, "index-"+i+" type:"+type+" default:"+def);
+				ErrorCode.logError(log, 8,2, " type:"+type+" default:"+def);
 				return 2;
 			}
 			KObjColumn  k = new KObjColumn(col,def,type,intro,len);	
@@ -301,6 +320,14 @@ public class KObjSchema {
 	}
 	
 	/**
+	 * 获取KObjColumn的HashMap
+	 * @return
+	 */
+	public final HashMap<String,KObjColumn> getKObjColumns(){
+		return this.columnMap;
+	}
+	
+	/**
 	 * 获取KObjIndex
 	 * @param key
 	 * @return
@@ -393,6 +420,11 @@ public class KObjSchema {
 	 */
 	public KObject createEmptyKObj(){
 		KObject kobj = new KObject();
+		
+		//通过Dao设置KObject的ID,其他参数为KObject默认值
+		DaoInterface dao = DaoManager.findDao(KObjManager.findKObjConfig(this.kobjName).getDaoConfig().getDaoName());
+		kobj.setId(dao.getIdm().nextId());
+		
 		for (Iterator<KObjColumn> iterator = this.columnList.iterator(); iterator.hasNext();) {
 			KObjColumn kc = iterator.next();
 			String col = kc.getCol();

@@ -159,15 +159,19 @@ public class KObjColumn {
 	
 	/**
 	 * 验证字段类型
-	 * @param columData
+	 * @param columData 注意：为null时不验证
 	 * @param type KOBJ_COLUMN_TYPES下标
 	 * @return
 	 */
 	public static final boolean checkColType(Object columnData,int type){
-		if (!checkType(type) || columnData == null) {
+		if (columnData == null) {
+			return true;
+		}
+		if (!checkType(type)) {
 			return false;
 		}
-		if (columnData.getClass().getName().equals(KOBJ_COLUMN_TYPES[type])) {
+		String clazzName = columnData.getClass().getName();
+		if (clazzName.equals(KOBJ_COLUMN_TYPES[type])) {
 			return true;
 		}
 		//System.out.print("col:"+columnData.getClass().getName()+" type:"+KOBJ_COLUMN_TYPES[type]+" - ");
@@ -337,7 +341,7 @@ public class KObjColumn {
 					vParas[j] = vaArr[j+2];
 				}
 			}
-			Object v = KIoc.loadClassInstance(HTManager.getClassPath(), vClass);
+			Object v = KIoc.loadClassInstance("file:/"+HTManager.getClassPath(), vClass);
 			if (v instanceof KObjColumnValidate) {
 				KObjColumnValidate validator = (KObjColumnValidate)v;
 				//设置参数并初始化
@@ -351,6 +355,13 @@ public class KObjColumn {
 			ErrorCode.logError(KObjSchema.log, 8, 9, e, " --in KObjColumn setValidator");
 			return false;
 		}
+	}
+	
+	public final String getValidatorString(){
+		if (this.validator == null) {
+			return "";
+		}
+		return this.validator.toString();
 	}
 
 

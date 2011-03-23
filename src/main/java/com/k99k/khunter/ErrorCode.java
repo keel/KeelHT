@@ -43,7 +43,7 @@ public final class ErrorCode {
 		errArr[8][4] = "KObjSchema-setSubColumn father col is not Map or List. ";
 		errArr[8][5] = "KObjSchema-setColumn validator error. ";
 		errArr[8][6] = "KObjManager-init ini json error. ";
-		errArr[8][7] = "KObjManager-init initSchema error. ";
+		errArr[8][7] = "KObjManager-init KObjConfig.newInstance error. ";
 		errArr[8][8] = "KObjManager-init Exception throwed. ";
 		errArr[8][9] = "KObjSchema-initSchema Exception throwed. ";
 		errArr[8][10] = "KObjSchema-setIndex json error. ";
@@ -59,6 +59,9 @@ public final class ErrorCode {
 		errArr[8][19] = "KObjManager-createKObjConfig dao.add(oneKObj) failed. ";
 		errArr[8][20] = "KObjManager-createKObjConfig ks.applyIndexes failed. ";
 		errArr[8][21] = "KObjManager-createKObjConfig dao.deleteOne failed. ";
+		errArr[8][22] = "KObjManager checkMapTypes error. ";
+		errArr[8][23] = "KObjManager-init KObjConfig.newInstance initSchema error:";
+		errArr[8][24] = "KObjManager-init KObjConfig.newInstance setDaoConfig error:";
 		
 		//KIoc
 		errArr[9][10] = "KIoc-saveJsonToFile ini not found.";
@@ -209,7 +212,7 @@ public final class ErrorCode {
 	 * @param errCode2 3位int 
 	 */
 	public static final void logError(Logger log,int errCode1,int errCode2,String plusInfo){
-		log.error(errCode1+"-"+errCode2+" : "+getErrorInfo(errCode1,errCode2));
+		log.error(errCode1+"-"+errCode2+" : "+getErrorInfo(errCode1,errCode2)+plusInfo);
 	}
 	
 	/**

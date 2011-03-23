@@ -8,7 +8,11 @@
 		},
 		"kobj":{	
 			"_class":"com.k99k.khunter.acts.KObjAction"
+		},
+		"dao":{	
+			"_class":"com.k99k.khunter.acts.DaoAction"
 		}
+
 
 	}
 }

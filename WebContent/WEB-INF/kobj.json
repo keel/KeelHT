@@ -7,16 +7,16 @@
 				"newDaoName":""
 			},
 			"columns":[	
-				{"col":"imei","def":"","type":0,"intro":"the imei of handset","len":"30","validator":"com.k99k.khunter.StringValidator,0,5"},
-				{"col":"pwd","def":"qwertnm","type":0,"intro":"password","len":"20"},
-				{"col":"tags","def":{},"type":2,"intro":"tagss","len":"20"},
-				{"col":"tags.tagName","def":"","type":0,"intro":"tagName","len":"20"},
-				{"col":"tags.tagId","def":"","type":4,"intro":"tagId","len":"20"},
-				{"col":"comms","def":[],"type":3,"intro":"password","len":"20"},
-				{"col":"comms.*","def":null,"type":2,"intro":"comms element is a map schema","len":"20"},
-				{"col":"comms.*.content","def":"","type":0,"intro":"comment content","len":"120"},
-				{"col":"comms.*.writer","def":"","type":0,"intro":"comment writer","len":"20"},
-				{"col":"comms.*.addTime","def":"","type":0,"intro":"comment addTime","len":"20"}
+				{"col":"imei","def":"","type":0,"intro":"the imei of handset","len":10,"validator":"com.k99k.khunter.StringValidator,0,5"},
+				{"col":"pwd","def":"qwertnm","type":0,"intro":"password","len":10},
+				{"col":"tags","def":{},"type":2,"intro":"tagss","len":10},
+				{"col":"tags.tagName","def":"","type":0,"intro":"tagName","len":10},
+				{"col":"tags.tagId","def":0,"type":4,"intro":"tagId","len":10},
+				{"col":"comms","def":[],"type":3,"intro":"password","len":10},
+				{"col":"comms.*","def":null,"type":2,"intro":"comms element is a map schema","len":10},
+				{"col":"comms.*.content","def":"","type":0,"intro":"comment content","len":10},
+				{"col":"comms.*.writer","def":"","type":0,"intro":"comment writer","len":10},
+				{"col":"comms.*.addTime","def":"","type":0,"intro":"comment addTime","len":10}
 			],
 			"indexes":[
 				{"col":"imei","asc":true,"intro":"IMEI","type":"normal","unique":false}
@@ -34,11 +34,11 @@
 				}
 			},
 			"columns":[	
-				{"col":"ack","def":"0","type":"int","intro":"attack","len":""},
-				{"col":"def","def":"0","type":"int","intro":"defence","len":""}
+				{"col":"ack","def":12,"type":1,"intro":"attack","len":12},
+				{"col":"def","def":12,"type":1,"intro":"defence","len":12}
 			],
 			"indexes":[
-				{"col":"imei","order":"1","intro":"IMEI"}
+				
 			]
 		}
 		

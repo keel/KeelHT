@@ -108,7 +108,7 @@ public class ActionMsg {
 	 * 删除数据
 	 * @param key
 	 */
-	public void removeDate(String key){
+	public void removeData(String key){
 		this.data.remove(key);
 	}
 	

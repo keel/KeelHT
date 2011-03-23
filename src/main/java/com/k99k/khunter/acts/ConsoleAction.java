@@ -69,13 +69,14 @@ public class ConsoleAction extends Action {
 				se.setAttribute("admin", name);
 				//msg.addData("right", "state");
 				//msg.addData("jspAttr", msg);
-				msg.removeDate("jsp");
+				msg.removeData("jsp");
 				msg.addData("redirect", "act?act=console&right=state");
 			}else{
 				//error
 				msg.addData("jsp", "/WEB-INF/to/login.jsp");
 			}
 		}
+		
 		//退出
 		else if (right.equals("exit")) {
 			se.removeAttribute("admin");

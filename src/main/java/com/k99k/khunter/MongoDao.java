@@ -727,5 +727,14 @@ public class MongoDao implements DaoInterface{
 
 
 
+	/**
+	 * @return the idm
+	 */
+	public final IDManager getIdm() {
+		return idm;
+	}
+
+
+
 	
 }

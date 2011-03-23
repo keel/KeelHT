@@ -13,7 +13,7 @@
 <li><a href="act?act=console&amp;right=DataSources" >DataSources</a></li>
 <li><a href="act?act=console&amp;right=kobj" >KObject</a></li>
 <li><a href="act?act=console&amp;right=Actions" >Actions</a></li>
-<li><a href="act?act=console&amp;right=DAOs" >DAOs</a></li>
+<li><a href="act?act=console&amp;right=dao" >DAOs</a></li>
 <li><a href="act?act=console&amp;right=Tasks" >Tasks</a></li>
 <li><a href="act?act=console&amp;right=IOs" >IOs</a></li>
 </ul>

@@ -37,7 +37,7 @@ public class KObject {
 		this.propMap.put("state", 0);
 		this.propMap.put("level", 0);
 		this.propMap.put("info", "");
-		this.propMap.put("createTime", "");
+		this.propMap.put("createTime", System.currentTimeMillis());
 		this.propMap.put("version", 1);
 		this.propMap.put("name", "");
 		this.propMap.put("creatorName", "");
@@ -63,7 +63,7 @@ public class KObject {
 	 * @param maxProp 初始化propMap大小
 	 */
 	public KObject(long id, int state, int level, String info,
-			String createTime, int version, String name, String creatorName,
+			long createTime, int version, String name, String creatorName,
 			long creatorId, String url,String type,int maxProp) {
 		this.propMap = new HashMap<String,Object>(maxProp);
 		this.propMap.put("id", id);
@@ -93,7 +93,7 @@ public class KObject {
 	 * @param url
 	 */
 	public KObject(long id, int state, int level, String info,
-			String createTime, int version, String name, String creatorName,
+			long createTime, int version, String name, String creatorName,
 			long creatorId, String url,String type) {
 		this(id,state,level,info,createTime,version,name,creatorName,creatorId,url,type,50);
 	}
@@ -237,14 +237,14 @@ public class KObject {
 	/**
 	 * @return the createTime
 	 */
-	public final String getCreateTime() {
-		return getStringByName("createTime");
+	public final long getCreateTime() {
+		return getLongByName("createTime");
 	}
 
 	/**
 	 * @param createTime the createTime to set
 	 */
-	public final void setCreateTime(String createTime) {
+	public final void setCreateTime(long createTime) {
 		this.propMap.put("createTime", createTime);
 	}
 
