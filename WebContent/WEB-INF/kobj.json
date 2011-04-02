@@ -3,8 +3,7 @@
 		"kuser":{
 			"intro":"用户",
 			"dao":{
-				"daoName":"mongoUserDao",
-				"newDaoName":""
+				"daoName":"mongoUserDao"
 			},
 			"columns":[	
 				{"col":"imei","def":"","type":0,"intro":"the imei of handset","len":10,"validator":"com.k99k.khunter.StringValidator,0,5"},

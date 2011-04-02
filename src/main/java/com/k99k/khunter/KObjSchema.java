@@ -95,6 +95,9 @@ public class KObjSchema {
 	 */
 	public int setColumn(HashMap<String,Object> colMap){
 		try {
+			if (colMap == null) {
+				return 1;
+			}
 			//验证Column的key和value类型
 			if(!JSONTool.checkMapTypes(colMap,new String[]{"col","def","type","intro","len"},new Class[]{String.class,Object.class,Long.class,String.class,Long.class})){
 				//ErrorCode.logError(log, 8,1, "kobjColumn:"+i);
@@ -205,6 +208,11 @@ public class KObjSchema {
 		this.indexMap.put(index.getCol(), index);
 	}
 	
+	/**
+	 * 添加或新增KObjIndex,不在数据库中操作
+	 * @param iMap map形式的KObjIndex
+	 * @return 0为成功
+	 */
 	public int setIndex(HashMap<String,Object> iMap){
 		try {
 			if(!JSONTool.checkMapTypes(iMap,new String[]{"col","asc","intro","type","unique"},new Class[]{String.class,Boolean.class,String.class,String.class,Boolean.class})){
@@ -231,7 +239,7 @@ public class KObjSchema {
 	 * @return
 	 */
 	public final boolean applyIndex(KObjIndex indx){
-		DaoInterface dao = DaoManager.findDao(KObjManager.findKObjConfig(this.kobjName).getDaoConfig().getDaoName());
+		DaoInterface dao = KObjManager.findKObjConfig(this.kobjName).getDaoConfig().findDao();
 		if (dao == null) {
 			return false;
 		}
@@ -275,7 +283,7 @@ public class KObjSchema {
 			
 			KObjIndex ki = new KObjIndex(col, asc, type, intro, unique);
 			this.indexMap.put(col, ki);
-			DaoInterface dao = DaoManager.findDao(KObjManager.findKObjConfig(this.kobjName).getDaoConfig().getDaoName());
+			DaoInterface dao = KObjManager.findKObjConfig(this.kobjName).getDaoConfig().findDao();
 			if (dao == null) {
 				return 12;
 			}
@@ -295,7 +303,7 @@ public class KObjSchema {
 	 */
 	public final boolean removeIndex(String key){
 		KObjIndex ki = this.indexMap.remove(key);
-		DaoInterface dao = DaoManager.findDao(KObjManager.findKObjConfig(this.kobjName).getDaoConfig().getDaoName());
+		DaoInterface dao = KObjManager.findKObjConfig(this.kobjName).getDaoConfig().findDao();
 		if (dao == null) {
 			return false;
 		}
@@ -422,7 +430,7 @@ public class KObjSchema {
 		KObject kobj = new KObject();
 		
 		//通过Dao设置KObject的ID,其他参数为KObject默认值
-		DaoInterface dao = DaoManager.findDao(KObjManager.findKObjConfig(this.kobjName).getDaoConfig().getDaoName());
+		DaoInterface dao = KObjManager.findKObjConfig(this.kobjName).getDaoConfig().findDao();
 		kobj.setId(dao.getIdm().nextId());
 		
 		for (Iterator<KObjColumn> iterator = this.columnList.iterator(); iterator.hasNext();) {

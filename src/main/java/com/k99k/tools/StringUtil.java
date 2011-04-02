@@ -62,7 +62,21 @@ public final class StringUtil {
 		return true;
 	}
 
-	
+	/**
+	 * 判断String是否达到指定长度
+	 * @param str
+	 * @param len
+	 * @return
+	 */
+	public static final boolean isStringWithLen(String str,int len){
+		if (str == null) {
+			return false;
+		}
+		if (str.trim().length() < len) {
+			return false;
+		}
+		return true;
+	}
 	
 	public static final int[] stringToIntArray(String arrString,String separator){
 		try {

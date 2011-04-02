@@ -66,6 +66,8 @@ public class KObjConfig {
 		return kc;
 	}
 	
+	
+	
 	/**
 	 * KObjConfig的Json化HashMap，注意此Map不含kobjName
 	 * @return

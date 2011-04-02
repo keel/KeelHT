@@ -127,7 +127,7 @@ public final class KObjManager {
 		if (kc == null) {
 			return 15;
 		}
-		DaoInterface dao = DaoManager.findDao(kc.getDaoConfig().getDaoName());
+		DaoInterface dao = kc.getDaoConfig().findDao();
 		if (dao == null) {
 			return 18;
 		}
@@ -171,7 +171,7 @@ public final class KObjManager {
 	 */
 	public static final DaoInterface findDao(String kobjKey){
 		KObjConfig kc = findKObjConfig(kobjKey);
-		return DaoManager.findDao(kc.getDaoConfig().getDaoName());
+		return kc.getDaoConfig().findDao();
 	}
 	
 	/**
@@ -183,7 +183,7 @@ public final class KObjManager {
 	public static final int addKObj(String kobjKey,KObject kobj){
 		KObjConfig kc = findKObjConfig(kobjKey);
 		KObjSchema ks = kc.getKobjSchema();
-		DaoInterface dao = DaoManager.findDao(kc.getDaoConfig().getDaoName());
+		DaoInterface dao = kc.getDaoConfig().findDao();
 		if (!ks.validate(kobj.getPropMap())) {
 			return 13;
 		}
@@ -202,7 +202,7 @@ public final class KObjManager {
 	public static final int addKObj(String kobjKey,HashMap<String,Object> map){
 		KObjConfig kc = findKObjConfig(kobjKey);
 		KObjSchema ks = kc.getKobjSchema();
-		DaoInterface dao = DaoManager.findDao(kc.getDaoConfig().getDaoName());
+		DaoInterface dao = kc.getDaoConfig().findDao();
 		if (!ks.validate(map)) {
 			return 13;
 		}

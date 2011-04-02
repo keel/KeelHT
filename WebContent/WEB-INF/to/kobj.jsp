@@ -34,16 +34,19 @@ try{
 			String kobjName =  it.next();
 			KObjConfig kc = kcMap.get(kobjName);
 			//HashMap<String,Object> table = (HashMap<String,Object>)kobjMap.get(kobjName);
-			sb.append("<p class='tb_list' ><a href='#' class='weight'>");
-			sb.append(kobjName).append("</a> ");
-			sb.append(kc.getIntro());
-			sb.append(" - [ <a href='act?act=console&amp;right=kobj&amp;subact=schema_find&amp;schema_key=")
+			sb.append("<p class='tb_list' ><span class='orangeBold'>");
+			sb.append(kobjName).append("</span> ");
+			//sb.append(kc.getIntro());
+			sb.append(" [ <a href='act?act=console&amp;right=kobj&amp;subact=schema_find&amp;schema_key=")
 			.append(kobjName)
 			.append("'>schema</a> | <a href='act?act=console&amp;right=kobj&amp;subact=query&amp;schema_key=");
 			sb.append(kobjName);
 			sb.append("'>query KObject</a>  | <a href='act?act=console&amp;right=kobj&amp;subact=kobj_add&amp;schema_key=");
 			sb.append(kobjName);
-			sb.append("'>add KObject</a> ]</p>\r\n");
+			sb.append("'>add KObject</a> ] - ");
+			sb.append(kc.getIntro());
+			sb.append("</p>\r\n");
+			
 		}
 		out.print(sb.toString());
 	}

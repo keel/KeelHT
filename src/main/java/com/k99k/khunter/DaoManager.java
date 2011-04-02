@@ -204,6 +204,14 @@ public final class DaoManager {
 		return dao;
 	}
 	
+	/**
+	 * 判断是否存在
+	 * @param name
+	 * @return
+	 */
+	public static final boolean containsDao(String name){
+		return daoMap.containsKey(name);
+	}
 	
 	/**
 	 * 添加一个Dao 

@@ -160,6 +160,8 @@ public interface DaoInterface extends Cloneable{
 	
 	public String getName();
 	
+	public void setName(String name);
+	
 	public boolean init();
 	
 	public int getId();

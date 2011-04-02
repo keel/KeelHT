@@ -25,33 +25,77 @@ public class KObjDaoConfig {
 	 */
 	@SuppressWarnings("unchecked")
 	public static final KObjDaoConfig newInstance(HashMap<String,Object> map){
+		if (map == null) {
+			ErrorCode.logError(KObjManager.log, 8, 24, "newInstance's para 'map' is null.");
+			return null;
+		}
 		KObjDaoConfig kdc = new KObjDaoConfig();
-		if(!JSONTool.checkMapTypes(map,new String[]{"daoName","newDaoName"},new Class[]{String.class,String.class})){
+		if(!JSONTool.checkMapTypes(map,new String[]{"daoName"},new Class[]{String.class})){
+			ErrorCode.logError(KObjManager.log, 8, 24, "newInstance's para 'map' JSONTool.checkMapTypes error.");
 			return null;
 		}
 		kdc.daoName = (String) map.get("daoName");
-		kdc.newDaoName = (String) map.get("newDaoName");
-		//如果newDaoName不为空,则必须有tableName字段
-		if (!map.get("newDaoName").toString().trim().equals("")) {
+		//如果DaoManager中不存在,返回null
+		if (!DaoManager.containsDao(kdc.daoName)) {
+			ErrorCode.logError(KObjManager.log, 8, 24, "daoName is not in DaoManager");
+			return null;
+		}
+		//如果存在newDaoName字段,则表示为非引用Dao,必须有tableName字段生成新Dao
+		if (map.containsKey("newDaoName") ) {
 			if ((!map.containsKey("tableName")) || map.get("tableName").toString().length()<=0) {
+				ErrorCode.logError(KObjManager.log, 8, 24, "have newDaoName,but tableName is not ok.");
 				return null;
 			}
-			kdc.tableName = (String) map.get("tableName");
-		}
-		Object o = map.get("props");
-		if (o != null && o instanceof HashMap) {
-			HashMap<String,Object> m = (HashMap<String, Object>) o;
-			Object ido = m.get("id");
-			Object typeo = m.get("type");
-			if (StringUtil.isDigits(ido.toString())) {
-				kdc.setPropId(Integer.parseInt(ido.toString()));
+			kdc.newDaoName = map.get("newDaoName").toString();
+			kdc.tableName = map.get("tableName").toString();
+			Object o = map.get("props");
+			if (o != null && o instanceof HashMap) {
+				HashMap<String,Object> m = (HashMap<String, Object>) o;
+				Object ido = m.get("id");
+				Object typeo = m.get("type");
+				if (StringUtil.isDigits(ido.toString())) {
+					kdc.setPropId(Integer.parseInt(ido.toString()));
+				}
+				if (typeo != null && typeo instanceof String) {
+					kdc.setPropType(typeo.toString());
+				}
 			}
-			if (typeo != null && typeo instanceof String) {
-				kdc.setPropType(typeo.toString());
+			//--------在DaoManager中创建-----------
+			//如果新名称已被占用，返回null
+			if (DaoManager.containsDao(kdc.newDaoName)) {
+				ErrorCode.logError(KObjManager.log, 8, 24, "newDaoName is already exist.");
+				return null;
+			}else{
+				DaoInterface newDao = DaoManager.cloneDao(kdc.daoName);
+				newDao.setName(kdc.newDaoName);
+				newDao.setTableName(kdc.getTableName());
+				if (kdc.props != null) {
+					if (kdc.props.id != 0) {
+						newDao.setId(kdc.props.id);
+					}
+					if (kdc.props.type != null) {
+						newDao.setType(kdc.props.type);
+					}
+				}
+				
+				if(!DaoManager.addDao(newDao)){
+					ErrorCode.logError(KObjManager.log, 8, 24, "DaoManager.addDao failed.");
+					return null;
+				}
 			}
 		}
-		
 		return kdc;
+	}
+	
+	/**
+	 * 在DaoManager中找到对应的DaoInterface
+	 * @return DaoInterface
+	 */
+	public final DaoInterface findDao(){
+		if (this.newDaoName != null) {
+			return DaoManager.findDao(this.newDaoName);
+		}
+		return DaoManager.findDao(this.daoName);
 	}
 	
 	private String daoName;
@@ -78,9 +122,13 @@ public class KObjDaoConfig {
 	public final HashMap<String,Object> toMap(){
 		HashMap<String,Object> m = new HashMap<String, Object>();
 		m.put("daoName", this.daoName);
-		m.put("newDaoName", this.newDaoName);
-		m.put("tableName", this.tableName);
-		m.put("props", this.props.toMap());
+		if (this.newDaoName != null) {
+			m.put("newDaoName", this.newDaoName);
+			m.put("tableName", this.tableName);
+			if (this.props != null) {
+				m.put("props", this.props.toMap());
+			}
+		}
 		return m;
 	}
 	
