@@ -209,7 +209,7 @@ public class KObjSchema {
 	}
 	
 	/**
-	 * 添加或新增KObjIndex,不在数据库中操作
+	 * 添加或新增KObjIndex,同时在数据库中同步
 	 * @param iMap map形式的KObjIndex
 	 * @return 0为成功
 	 */
@@ -226,7 +226,13 @@ public class KObjSchema {
 			boolean unique = (Boolean) iMap.get("unique");
 			
 			KObjIndex ki = new KObjIndex(col, asc, type, intro, unique);
-			this.indexMap.put(col, ki);
+			//更新到数据库
+			if(KObjManager.findKObjConfig(kobjName).getDaoConfig().findDao().updateIndex(ki)){
+				this.indexMap.put(col, ki);
+			}else{
+				return 25;
+			}
+			
 		} catch (Exception e) {
 			return 10;
 		}

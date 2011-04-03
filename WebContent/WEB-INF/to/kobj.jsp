@@ -10,7 +10,8 @@ if(o != null ){
 }
 %>
 <div id="rightTop">
-<span class="weight">KObj config: </span> [ <a href="act?act=console&amp;right=editIni&amp;ini=kobj">edit json</a> ] [ <a href="act?act=console&amp;right=schema_add">add schema</a> ]
+<span class="weight">KObj config: </span> [ <a href="act?act=console&amp;right=editIni&amp;ini=kobj">edit json</a> | 
+<a href="act?act=console&amp;right=schema_add">add schema</a> ]
 <form id="f_search" action="act?act=console&amp;right=kobj" method="post">
 <input type="text" id="search_key" name="search_key" /><input type="hidden" id="subact" name="subact" value="search" /><input type="submit" value="search" />
 </form>

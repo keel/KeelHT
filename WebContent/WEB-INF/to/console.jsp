@@ -15,6 +15,8 @@ if(o != null ){
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>KHT console</title>
 <link rel="stylesheet" type="text/css" href="css/style.css" />
+<script src="js/jquery.js" type="text/javascript"></script>
+<script src="js/jquery.json-2.2.min.js" type="text/javascript"></script>
 </head>
 <body>
 

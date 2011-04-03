@@ -75,4 +75,8 @@ for (Iterator<String> iterator = indexes.keySet().iterator(); iterator.hasNext()
 out.println(sb);
 %>
 </table>
-
+<script type="text/javascript">
+$(function(){
+	
+});
+</script>

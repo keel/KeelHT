@@ -11,6 +11,7 @@ import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionManager;
 import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.DaoInterface;
+import com.k99k.khunter.ErrorCode;
 import com.k99k.khunter.HttpActionMsg;
 import com.k99k.khunter.KObjConfig;
 import com.k99k.khunter.KObjDaoConfig;
@@ -20,7 +21,7 @@ import com.k99k.tools.JSONTool;
 import com.k99k.tools.StringUtil;
 
 /**
- * KObj和管理，以及Dao的管理
+ * KObj的管理和查询
  * @author keel
  *
  */
@@ -70,14 +71,12 @@ public class KObjAction extends Action{
 			String key  = httpmsg.getHttpReq().getParameter("schema_key");
 			String part  = httpmsg.getHttpReq().getParameter("schema_part");
 			if (key == null || part == null) {
-				msg.addData("re", "error");
-				msg.addData("print", "schema_key or part error.");
+				msg.addData("print", "err:schema_key or part error.");
 				return super.act(msg);
 			}
 			KObjConfig kc = KObjManager.findKObjConfig(key);
 			if (kc == null) {
-				msg.addData("re", "error");
-				msg.addData("print", "kc not found.");
+				msg.addData("print", "err:kc not found.");
 				return super.act(msg);
 			}
 			//失败原因
@@ -88,8 +87,7 @@ public class KObjAction extends Action{
 				if (StringUtil.isStringWithLen(intro, 0)) {
 					kc.setIntro(intro);
 					//print在jsp前面，所以不用remove jsp
-					msg.addData("re", "ok");
-					msg.addData("print", intro);
+					msg.addData("print", "ok:"+intro);
 					return super.act(msg);
 				}
 				rePrint = "intro error";
@@ -102,8 +100,7 @@ public class KObjAction extends Action{
 					if (kdc != null) {
 						//更新KObjConfig
 						kc.setDaoConfig(kdc);
-						msg.addData("re", "ok");
-						msg.addData("print", kdc.toMap());
+						msg.addData("print", "ok:"+kdc.toMap());
 						return super.act(msg);
 					}
 					rePrint = "KObjDaoConfig.newInstance error";
@@ -117,8 +114,7 @@ public class KObjAction extends Action{
 				if (StringUtil.isStringWithLen(colJson, 2)) {
 					KObjSchema ks = kc.getKobjSchema();
 					if(ks.setColumn(JSONTool.readJsonString(colJson)) == 0){
-						msg.addData("re", "ok");
-						msg.addData("print", colJson);
+						msg.addData("print", "ok:"+colJson);
 						return super.act(msg);
 					}
 					rePrint = "ks.setColumn error";
@@ -132,8 +128,7 @@ public class KObjAction extends Action{
 				if (StringUtil.isStringWithLen(indexJson, 2)) {
 					KObjSchema ks = kc.getKobjSchema();
 					if (ks.setIndex(JSONTool.readJsonString(indexJson)) == 0) {
-						msg.addData("re", "ok");
-						msg.addData("print", indexJson);
+						msg.addData("print", "ok:"+indexJson);
 						return super.act(msg);
 					}
 					rePrint = "setIndex error";
@@ -167,8 +162,7 @@ public class KObjAction extends Action{
 						if (dao != null) {
 							List re = dao.query(query, fields, sortby, skip, len, hint);
 							if (re != null) {
-								msg.addData("re", "ok");
-								msg.addData("query_list", re);
+								msg.addData("query_list", "ok:"+re);
 								return super.act(msg);	
 							}
 							rePrint = "dao.query failed.";
@@ -192,14 +186,15 @@ public class KObjAction extends Action{
 			String kcjson  = httpmsg.getHttpReq().getParameter("schema_kcjson");
 			String rePrint = "para error";
 			if (StringUtil.isStringWithLen(key, 2) && StringUtil.isStringWithLen(kcjson, 2)) {
-				
-				//
-				
-				
+				int re = KObjManager.createKObjConfigToDB(key, JSONTool.readJsonString(kcjson));
+				if (re == 0) {
+					msg.addData("print", "ok:"+kcjson);
+					return super.act(msg);	
+				}
+				rePrint = ErrorCode.getErrorInfo(8, re);
 			}
 			//失败的情况
-			msg.addData("re", "error");
-			msg.addData("print", rePrint);
+			msg.addData("print", "err:"+rePrint);
 			return super.act(msg);	
 		}
 		//保存KObjManager的配置文件

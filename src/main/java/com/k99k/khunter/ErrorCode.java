@@ -48,11 +48,10 @@ public final class ErrorCode {
 		errArr[8][9] = "KObjSchema-initSchema Exception throwed. ";
 		errArr[8][10] = "KObjSchema-setIndex json error. ";
 		errArr[8][11] = "KObjSchema-setColumn Exception throwed.";
-		errArr[8][11] = "KObjSchema-setIndex dao sync failed.";
 		errArr[8][12] = "KObjManager-setKObjConfig failed.";
 		errArr[8][13] = "KObjManager-addKObj KObjConfig validate failed. ";
 		errArr[8][14] = "KObjManager-addKObj dao ==null || dao.add(kobj) failed. ";
-		errArr[8][15] = "KObjManager-createKObjConfig KObjConfig.newInstance ==null . ";
+		errArr[8][15] = "KObjManager-createKObjConfig key/map is null or KObjConfig.newInstance ==null . ";
 		errArr[8][16] = "KObjManager-createKObjConfig key is already exist . ";
 		errArr[8][17] = "KObjSchema-applyIndexes failed . ";
 		errArr[8][18] = "KObjManager-createKObjConfig findDao failed. ";
@@ -62,6 +61,7 @@ public final class ErrorCode {
 		errArr[8][22] = "KObjManager checkMapTypes error. ";
 		errArr[8][23] = "KObjManager-init KObjConfig.newInstance initSchema error:";
 		errArr[8][24] = "KObjManager-init KObjConfig.newInstance setDaoConfig error:";
+		errArr[8][25] = "KObjSchema-setIndex dao.updateIndex error. ";
 		
 		//KIoc
 		errArr[9][10] = "KIoc-saveJsonToFile ini not found.";

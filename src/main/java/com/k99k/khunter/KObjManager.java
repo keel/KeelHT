@@ -120,6 +120,9 @@ public final class KObjManager {
 	 * @return 成功返回0,其他为错误码
 	 */
 	public static final int createKObjConfigToDB(String key,HashMap<String,Object> map){
+		if (key == null || map == null) {
+			return 15;
+		}
 		if (kobjMap.containsKey(key)) {
 			return 16;
 		}
@@ -287,6 +290,7 @@ public final class KObjManager {
 //					kc.setKobjSchema(ks);
 //					kc.setKobjName(keyName);
 					kobjMap.put(keyName, kc);
+					log.info("KObjConfig added:"+keyName);
 				}
 				
 			} catch (Exception e) {

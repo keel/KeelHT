@@ -9,6 +9,7 @@
 <li><a href="act?act=console&amp;right=reloadActions" >reloadDaos</a></li>
 <li><a href="act?act=console&amp;right=reloadActions" >reloadKObjs</a></li>
 <li><a href="act?act=console&amp;right=editIni" >editIni</a></li>
+<li><a href="act?act=console&amp;right=test" >test</a></li>
 </ul>
 <div>Manage</div>
 <ul>
