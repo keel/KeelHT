@@ -8,10 +8,19 @@
 <script src="js/jquery.json-2.2.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(function(){
-
-
-	
+	//var obj = {s:true,name:"aaa",num:123,strNum:"2344",map:{a:"aa",b:33}};
+	//$("#newValue").text($.toJSON(obj));
+	testCall("ppp",function (arg) {
+		vara +="haha "+arg+" : ";
+	});
 });
+var vara = "var:";
+function testCall (para,func) {
+	//func.arg = " --this is arg";
+	func(" --this is arg");
+	$("#newValue").text(vara+para);
+}
+
 </script>
 </head>
 <body>
@@ -105,9 +114,9 @@ $(function(){
 		<div id="mainContent">
 <p>当前状态:ok</p>
 
-<p>最新公告:新版本暂未上线.</p>
+<p id="newValue">最新公告:新版本暂未上线.</p>
 
-<p class="editable">old value</p>
+<p class="editable">old value<div>sss</div></p>
 
 <div id="update_kobj">
 	<label for="update_dao">update_dao:</label><input type="text" name="update_dao" value="" id="update_dao"/>

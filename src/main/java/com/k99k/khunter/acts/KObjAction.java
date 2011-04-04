@@ -127,7 +127,7 @@ public class KObjAction extends Action{
 				String indexJson = httpmsg.getHttpReq().getParameter("schema_indexjson");
 				if (StringUtil.isStringWithLen(indexJson, 2)) {
 					KObjSchema ks = kc.getKobjSchema();
-					if (ks.setIndex(JSONTool.readJsonString(indexJson)) == 0) {
+					if (ks.setIndex(JSONTool.readJsonString(indexJson),true) == 0) {
 						msg.addData("print", "ok:"+indexJson);
 						return super.act(msg);
 					}
@@ -199,13 +199,21 @@ public class KObjAction extends Action{
 		}
 		//保存KObjManager的配置文件
 		else if(subact.equals("ini_save")){
-			String re = "error";
-			if(KObjManager.saveIni()){
-				re = "ok";
+			String update  = httpmsg.getHttpReq().getParameter("update");
+			if (update == null) {
+				msg.addData("right", "kobjmgr_saveini");
+				String js = "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/jquery.snippet.min.css\" /><script type=\"text/javascript\" src=\"js/jquery.snippet.min.js\"></script>";
+				msg.addData("headerAdd", js);
+				msg.addData("newIni", JSONTool.writeFormatedJsonString(KObjManager.getCurrentIni(), 5));
+				return super.act(msg);
+			}else{
+				String re = "err:savaIni error.";
+				if(KObjManager.saveIni()){
+					re = "ok:ok";
+				}
+				msg.addData("print", re);
+				return super.act(msg);
 			}
-			msg.addData("re", re);
-			msg.addData("print", re);
-			return super.act(msg);
 		}
 		//查询
 		else if(subact.equals("search")){

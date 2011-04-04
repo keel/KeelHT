@@ -94,7 +94,9 @@ $("#testForm").submit(function(){
 		return false;
 	}
 	// get some values from elements on the page:
-	var $form = $(this), term = $form.find( 'input[name="s"]' ).val(),url = $form.attr( 'action' );
+	var submitBt = $("#submitTest");
+	submitBt.attr("disabled","disabled");
+	var $form = $(this), url = $form.attr( 'action' );
 	var req = {};
 	$("#testForm").find("textarea,input[type='hidden']").each(function (i) {
 		req[this.name] = this.value;
@@ -104,6 +106,7 @@ $("#testForm").submit(function(){
 	$.post( url, req ,
 	  function( data ) {
 	      $("#re").addClass("re").text(data);
+	      submitBt.removeAttr("disabled");
 	  }
 	);
 	

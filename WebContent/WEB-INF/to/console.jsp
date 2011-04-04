@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,com.k99k.tools.*" %>
 <%
 Object o = request.getAttribute("jspAttr");
 HttpActionMsg data = null;
@@ -16,7 +16,7 @@ if(o != null ){
 <title>KHT console</title>
 <link rel="stylesheet" type="text/css" href="css/style.css" />
 <script src="js/jquery.js" type="text/javascript"></script>
-<script src="js/jquery.json-2.2.min.js" type="text/javascript"></script>
+<%=StringUtil.objToStrNotNull(data.getData("headerAdd")) %>
 </head>
 <body>
 

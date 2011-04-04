@@ -20,10 +20,10 @@ if(kc == null){
 <a href="act?act=console&amp;right=kobj">list</a> |  
 <a href="act?act=console&amp;right=kobj">query KObject</a> |
 <a href="act?act=console&amp;right=kobj">add KObject</a> | 
-<a href="act?act=console&amp;right=kobj">save INI</a> ] 
+<a href="act?act=console&amp;right=kobj&amp;subact=ini_save">save INI</a> ] 
 </div>
 <div class="weight">Intro: - [ <a href="act?act=console&amp;right=kobj&amp;schema">edit</a> ]</div>
-<div><%=kc.getIntro() %></div>
+<div id="schema_intro"><%=kc.getIntro() %></div>
 <div class="weight">Dao: - [ <a href="act?act=console&amp;right=kobj&amp;schema">edit</a> ]</div>
 <div><%=kc.getDaoConfig().getDaoName() %></div>
 <div class="weight">Columns: - [ <a href="act?act=console&amp;right=kobj&amp;schema">add</a> ]</div>
@@ -76,7 +76,65 @@ out.println(sb);
 %>
 </table>
 <script type="text/javascript">
+//AJAX热编辑
+function hotEdit(target,url,paras){
+	var $span = $("<span></span>");
+	var $inForm = $("<form style='display: inline;' action=''><input type=\"text\" name=\""+$(target).attr("id")+"\" class=\"hotEditInput\"></form>");
+	var $bt = $("<input type=\"button\" class=\"hotEditBT\" value=\"EDIT\" />");
+	var $bt2 = $("<input type=\"button\" class=\"hotEditBT\" value=\"CANCEL\" />");
+	var $target = $(target);
+	var oldVal = $target.text();
+	//清空原对象
+	$target.text("");
+	$span.appendTo(target).text(oldVal);
+	$inForm.appendTo(target).hide();
+	$bt.appendTo(target);
+	$bt2.appendTo(target).hide();
+	$bt.isSet = false;
+	$bt.click(function(){
+		if(!$bt.isSet){
+			//显示表单并填充input
+			var val = $span.text();
+			$inForm.show().attr('action',url).find("input[type='text']").val(val);
+			$bt.isSet = true;
+			$(this).val("SET");
+			$bt2.show();
+			$span.hide();
+		}else{
+			//提交
+			//var req = $inForm.serialize();
+			//$.extend(paras, req);
+			$inForm.find("textarea,input:text,input:checkbox:checked,input:radio:checked,option:selected").each(function (i) {
+				if(this.tagName.toLowerCase() === "option"){
+					if($(this).parent().tagName.toLowerCase() === "select"){
+						paras[$(this).parent().name] = this.value;
+					}
+				}else{
+					paras[this.name] = this.value;
+				}
+				//alert(this.name+":"+this.value);
+			});
+			//alert(paras);
+			$bt.isSet = false;
+			$bt2.hide();
+			$.post( url, paras ,function( data ) {
+				//根据返回值填充 结果
+				$span.text(data).show();
+				$inForm.hide();
+				$bt.val("EDIT");
+			    //$bt.removeAttr("disabled");
+			}).error(function() { alert("error"); });
+		}
+	});
+	$bt2.click(function(){
+		$bt.isSet = false;
+		$span.show();
+		$inForm.hide();
+		$bt.val("EDIT");
+		$(this).hide();
+	});
+}
 $(function(){
-	
+	hotEdit("#schema_intro","act?act=console&right=kobj&subact=schema_update",{schema_key:"kuser",schema_part : "intro"});
 });
 </script>

@@ -67,7 +67,7 @@ public class KObjSchema {
 		i = 0;
 		for (Iterator<HashMap<String, Object>> iterator = indexDefineList.iterator(); iterator.hasNext();) {
 			HashMap<String, Object> map = iterator.next();
-			int setRe = setIndex(map);
+			int setRe = setIndex(map,false);
 			if (setRe != 0) {
 				ErrorCode.logError(log, 8, setRe,  " in initSchema index-"+i+" kobjName:"+kobjName);
 				return false;
@@ -211,9 +211,11 @@ public class KObjSchema {
 	/**
 	 * 添加或新增KObjIndex,同时在数据库中同步
 	 * @param iMap map形式的KObjIndex
+	 * @param synDB 是否同步到数据库
 	 * @return 0为成功
 	 */
-	public int setIndex(HashMap<String,Object> iMap){
+	public int setIndex(HashMap<String,Object> iMap,boolean synDB){
+		int err = 10;
 		try {
 			if(!JSONTool.checkMapTypes(iMap,new String[]{"col","asc","intro","type","unique"},new Class[]{String.class,Boolean.class,String.class,String.class,Boolean.class})){
 				//ErrorCode.logError(log, 8,1, " kobjIndex:"+i);
@@ -226,15 +228,20 @@ public class KObjSchema {
 			boolean unique = (Boolean) iMap.get("unique");
 			
 			KObjIndex ki = new KObjIndex(col, asc, type, intro, unique);
+			err = 25;
 			//更新到数据库
-			if(KObjManager.findKObjConfig(kobjName).getDaoConfig().findDao().updateIndex(ki)){
-				this.indexMap.put(col, ki);
+			if (synDB) {
+				if(KObjManager.findKObjConfig(this.kobjName).getDaoConfig().findDao().updateIndex(ki)){
+					this.indexMap.put(col, ki);
+				}else{
+					return 25;
+				}
 			}else{
-				return 25;
+				this.indexMap.put(col, ki);
 			}
 			
 		} catch (Exception e) {
-			return 10;
+			return err;
 		}
 		return 0;
 	}
@@ -479,12 +486,13 @@ public class KObjSchema {
 			cols.add(kc.toMap());
 		}
 		map.put("columns", cols);
+		ArrayList<HashMap<String,Object>> indexes = new ArrayList<HashMap<String,Object>>();
 		for (Iterator<String> it = this.indexMap.keySet().iterator(); it.hasNext();) {
 			String key =  it.next();
 			KObjIndex ki = this.indexMap.get(key);
-			cols.add(ki.toMap());
+			indexes.add(ki.toMap());
 		}
-		map.put("indexes", cols);
+		map.put("indexes", indexes);
 		return map;
 	}
 

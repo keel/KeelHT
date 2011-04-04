@@ -75,6 +75,19 @@ public final class KObjManager {
 	 */
 	public static final boolean saveIni(){
 		//保存
+		int re = KIoc.saveJsonToFile(iniFilePath, getCurrentIni());
+		if (re != 0) {
+			ErrorCode.logError(log, 9,re, " - in KObjManager.save()");
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * 获取当前配置
+	 * @return HashMap<String,Object>
+	 */
+	public static final HashMap<String,Object> getCurrentIni(){
 		HashMap<String,Object> root = new HashMap<String,Object>();
 		HashMap<String,Object> map = new HashMap<String,Object>();
 		for (Iterator<String> iterator = kobjMap.keySet().iterator(); iterator.hasNext();) {
@@ -82,12 +95,7 @@ public final class KObjManager {
 			map.put(kobjName, ((KObjConfig)kobjMap.get(kobjName)).toMap());
 		}
 		root.put("kobjs", map);
-		int re = KIoc.saveJsonToFile(iniFilePath, root);
-		if (re != 0) {
-			ErrorCode.logError(log, 9,re, " - in KObjManager.save()");
-			return false;
-		}
-		return true;
+		return root;
 	}
 	
 	/**
