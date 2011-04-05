@@ -10,7 +10,7 @@
 			"columns":[
 				{"col":"ack","def":12,"len":12,"type":1,"intro":"attack"},{"col":"def","def":12,"len":12,"type":1,"intro":"defence"}
 			],
-			"intro":"物品ddd"
+			"intro":"物品"
 		},
 		"kuser":{
 			"dao":{

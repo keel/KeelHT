@@ -474,17 +474,39 @@ public class KObjSchema {
 
 
 	/**
+	 * 处理子KObjColumn的toMap
+	 * @param cols
+	 * @param kc
+	 */
+	private final void subToMap(ArrayList<HashMap<String,Object>> cols,KObjColumn kc){
+		ArrayList<KObjColumn> subs = kc.getSubColumns();
+		if (subs != null) {
+			for (Iterator<KObjColumn> it2 = subs.iterator(); it2.hasNext();) {
+				KObjColumn kcc = it2.next();
+				cols.add(kcc.toMap());
+				subToMap(cols,kcc);
+			}
+		}
+	}
+	
+	/**
 	 * 为配置文件更新用
 	 * @return
 	 */
 	public HashMap<String,Object> toMap() {
 		HashMap<String,Object> map = new HashMap<String, Object>();
 		ArrayList<HashMap<String,Object>> cols = new ArrayList<HashMap<String,Object>>();
-		for (Iterator<String> it = this.columnMap.keySet().iterator(); it.hasNext();) {
-			String key =  it.next();
-			KObjColumn kc = this.columnMap.get(key);
+//		for (Iterator<String> it = this.columnMap.keySet().iterator(); it.hasNext();) {
+//			String key =  it.next();
+//			KObjColumn kc = this.columnMap.get(key);
+//			cols.add(kc.toMap());
+//		}
+		for (Iterator<KObjColumn> iterator = this.columnList.iterator(); iterator.hasNext();) {
+			KObjColumn kc = iterator.next();
 			cols.add(kc.toMap());
+			subToMap(cols,kc);
 		}
+		
 		map.put("columns", cols);
 		ArrayList<HashMap<String,Object>> indexes = new ArrayList<HashMap<String,Object>>();
 		for (Iterator<String> it = this.indexMap.keySet().iterator(); it.hasNext();) {

@@ -179,6 +179,33 @@ public class KObjColumn {
 	}
 	
 	/**
+	 * 获取子KObjColumn
+	 * @return ArrayList<KObjColumn>
+	 */
+	public ArrayList<KObjColumn> getSubColumns(){
+		ArrayList<KObjColumn> list = null;
+		if (this.type == 2) {
+			if (this.subColMap == null) {
+				return null;
+			}
+			list = new ArrayList<KObjColumn>();
+			for (Iterator<String> it = this.subColMap.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
+				list.add(this.subColMap.get(key));
+			}
+		}else if(this.type == 3){
+			if (this.subColForList == null) {
+				return null;
+			}
+			list = new ArrayList<KObjColumn>();
+			list.add(this.subColForList);
+		}else{
+			return null;
+		}
+		return list;
+	}
+	
+	/**
 	 * 验证本字段,如果有子字段则轮循验证子字段
 	 * @param columnData
 	 * @return

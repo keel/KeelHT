@@ -22,13 +22,14 @@ if(kc == null){
 <a href="act?act=console&amp;right=kobj">add KObject</a> | 
 <a href="act?act=console&amp;right=kobj&amp;subact=ini_save">save INI</a> ] 
 </div>
-<div class="weight">Intro: - [ <a href="act?act=console&amp;right=kobj&amp;schema">edit</a> ]</div>
+<div id="re"></div>
+<div class="weight">Intro:</div>
 <div id="schema_intro"><%=kc.getIntro() %></div>
-<div class="weight">Dao: - [ <a href="act?act=console&amp;right=kobj&amp;schema">edit</a> ]</div>
-<div><%=kc.getDaoConfig().getDaoName() %></div>
+<div class="weight">Dao: </div>
+<div id="schema_daojson"><%=JSONTool.writeJsonString(kc.getDaoConfig().toMap())%></div>
 <div class="weight">Columns: - [ <a href="act?act=console&amp;right=kobj&amp;schema">add</a> ]</div>
 <table id="schema_columns">
-<tr><th>act</th><th>column</th><th>default</th><th>intro</th><th>len</th><th>validator</th></tr>
+<tr><th>column</th><th>default</th><th>intro</th><th>len</th><th>validator</th><th>EDIT</th></tr>
 <%
 KObjSchema ks = kc.getKobjSchema();
 HashMap<String,KObjColumn> cols = ks.getKObjColumns();
@@ -36,7 +37,7 @@ StringBuilder sb = new StringBuilder();
 for (Iterator<String> iterator = cols.keySet().iterator(); iterator.hasNext();) {
 	String colKey = iterator.next();
 	KObjColumn col = cols.get(colKey);
-	sb.append("<tr><td><a href=\"act?act=console&amp;right=kobj&amp;schema\">edit</a></td><td>");
+	sb.append("<tr><td>");
 	sb.append(col.getCol());
 	sb.append("</td><td>");
 	sb.append(col.getDef());
@@ -46,21 +47,21 @@ for (Iterator<String> iterator = cols.keySet().iterator(); iterator.hasNext();) 
 	sb.append(col.getLen());
 	sb.append("</td><td>");
 	sb.append(col.getValidatorString());
-	sb.append("</td></tr>\r\n");
+	sb.append("</td><td></td></tr>\r\n");
 }
 out.println(sb);
 %>
 </table>
 <div class="weight">Indexes: - [ <a href="act?act=console&amp;right=kobj&amp;schema">add</a> ]</div>
 <table id="schema_indexes">
-<tr><th>act</th><th>column</th><th>asc</th><th>intro</th><th>type</th><th>unique</th></tr>
+<tr><th>column</th><th>asc</th><th>intro</th><th>type</th><th>unique</th><th>EDIT</th></tr>
 <%
 HashMap<String,KObjIndex> indexes = ks.getIndexes();
 sb = new StringBuilder();
 for (Iterator<String> iterator = indexes.keySet().iterator(); iterator.hasNext();) {
 	String colKey = iterator.next();
 	KObjIndex index = indexes.get(colKey);
-	sb.append("<tr><td><a href=\"act?act=console&amp;right=kobj&amp;schema\">edit</a></td><td>");
+	sb.append("<tr><td>");
 	sb.append(index.getCol());
 	sb.append("</td><td>");
 	sb.append(index.isAsc());
@@ -70,71 +71,49 @@ for (Iterator<String> iterator = indexes.keySet().iterator(); iterator.hasNext()
 	sb.append(index.getType());
 	sb.append("</td><td>");
 	sb.append(index.isUnique());
-	sb.append("</td></tr>\r\n");
+	sb.append("</td><td></td></tr>\r\n");
 }
 out.println(sb);
 %>
 </table>
 <script type="text/javascript">
-//AJAX热编辑
-function hotEdit(target,url,paras){
-	var $span = $("<span></span>");
-	var $inForm = $("<form style='display: inline;' action=''><input type=\"text\" name=\""+$(target).attr("id")+"\" class=\"hotEditInput\"></form>");
-	var $bt = $("<input type=\"button\" class=\"hotEditBT\" value=\"EDIT\" />");
-	var $bt2 = $("<input type=\"button\" class=\"hotEditBT\" value=\"CANCEL\" />");
-	var $target = $(target);
-	var oldVal = $target.text();
-	//清空原对象
-	$target.text("");
-	$span.appendTo(target).text(oldVal);
-	$inForm.appendTo(target).hide();
-	$bt.appendTo(target);
-	$bt2.appendTo(target).hide();
-	$bt.isSet = false;
-	$bt.click(function(){
-		if(!$bt.isSet){
-			//显示表单并填充input
-			var val = $span.text();
-			$inForm.show().attr('action',url).find("input[type='text']").val(val);
-			$bt.isSet = true;
-			$(this).val("SET");
-			$bt2.show();
-			$span.hide();
-		}else{
-			//提交
-			//var req = $inForm.serialize();
-			//$.extend(paras, req);
-			$inForm.find("textarea,input:text,input:checkbox:checked,input:radio:checked,option:selected").each(function (i) {
-				if(this.tagName.toLowerCase() === "option"){
-					if($(this).parent().tagName.toLowerCase() === "select"){
-						paras[$(this).parent().name] = this.value;
-					}
-				}else{
-					paras[this.name] = this.value;
-				}
-				//alert(this.name+":"+this.value);
-			});
-			//alert(paras);
-			$bt.isSet = false;
-			$bt2.hide();
-			$.post( url, paras ,function( data ) {
-				//根据返回值填充 结果
-				$span.text(data).show();
-				$inForm.hide();
-				$bt.val("EDIT");
-			    //$bt.removeAttr("disabled");
-			}).error(function() { alert("error"); });
-		}
-	});
-	$bt2.click(function(){
-		$bt.isSet = false;
-		$span.show();
-		$inForm.hide();
-		$bt.val("EDIT");
-		$(this).hide();
-	});
-}
 $(function(){
-	hotEdit("#schema_intro","act?act=console&right=kobj&subact=schema_update",{schema_key:"kuser",schema_part : "intro"});
+	//intro
+	var p_intro = {
+		key : ["schema_intro"],
+		editor : [$.hotEditor.inputTextEditor],
+		bts : "#schema_intro"
+	};
+	$.hotEditor.act("#schema_intro", "act?act=console&right=kobj&subact=schema_update", {schema_key:"<%= kc.getKobjName()%>",schema_part:"intro"}, p_intro, "#re");
+	//dao
+	var p_dao = {
+		key : ["schema_daojson"],
+		editor : [$.hotEditor.textAreaEditor],
+		bts : "#schema_daojson"
+	};
+	$.hotEditor.act("#schema_daojson", "act?act=console&right=kobj&subact=schema_update", {schema_key:"<%= kc.getKobjName()%>",schema_part:"dao"}, p_dao, "#re");
+	//col
+	var p_cols = {
+		target:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)"],
+		key : ["column","default","intro","len","validator"],
+		editor : [$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor],
+		bts : "td:eq(5)",
+		jsonToStr:"schema_coljson"
+	};
+	$("#schema_columns tr:gt(0)").each(function (i) {
+		$.hotEditor.act(this, "act?act=console&right=kobj&subact=schema_update", {schema_key:"<%= kc.getKobjName()%>",schema_part:"col_edit"}, p_cols, "#re");
+	});
+	//index
+	var p_indexes = {
+		target:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)"],
+		key : ["column","asc","intro","type","unique"],
+		editor : [$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor],
+		bts : "td:eq(5)",
+		jsonToStr:"schema_indexjson"
+	};
+	$("#schema_indexes tr:gt(0)").each(function (i) {
+		$.hotEditor.act(this, "act?act=console&right=kobj&subact=schema_update", {schema_key:"<%= kc.getKobjName()%>",schema_part:"index_edit"}, p_indexes, "#re");
+	});
+
 });
 </script>
