@@ -115,7 +115,6 @@ public class KObjAction extends Action{
 				String colJson = httpmsg.getHttpReq().getParameter("schema_coljson");
 				if (StringUtil.isStringWithLen(colJson, 2)) {
 					KObjSchema ks = kc.getKobjSchema();
-					//FIXME 处理json的类型
 					if(ks.setColumn(JSONTool.readJsonString(colJson)) == 0){
 						msg.addData("print", "{\"re\":\"ok\",\"d\":["+colJson+"]}");
 						return super.act(msg);

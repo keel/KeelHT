@@ -132,8 +132,11 @@ public class KObjSchema {
 					return 5;
 				}
 				//"com.k99k.khunter.StringValidator,0,5"为class+type+paras
-				if (!k.setValidator(o.toString())) {
-					return 5;
+				String s = o.toString();
+				if (StringUtil.isStringWithLen(s, 3)) {
+					if (!k.setValidator(o.toString())) {
+						return 5;
+					}
 				}
 			}
 			//父column必须先定义

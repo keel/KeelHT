@@ -29,7 +29,7 @@ if(kc == null){
 <div id="schema_daojson"><%=JSONTool.writeJsonString(kc.getDaoConfig().toMap())%></div>
 <div class="weight">Columns: - [ <a href="act?act=console&amp;right=kobj&amp;schema">add</a> ]</div>
 <table id="schema_columns">
-<tr><th>column</th><th>default</th><th>intro</th><th>len</th><th>validator</th><th>EDIT</th></tr>
+<tr><th>column</th><th>default</th><th>type</th><th>intro</th><th>len</th><th>validator</th><th>EDIT</th></tr>
 <%
 KObjSchema ks = kc.getKobjSchema();
 HashMap<String,KObjColumn> cols = ks.getKObjColumns();
@@ -41,6 +41,8 @@ for (Iterator<String> iterator = cols.keySet().iterator(); iterator.hasNext();) 
 	sb.append(col.getCol());
 	sb.append("</td><td>");
 	sb.append(col.getDef());
+	sb.append("</td><td>");
+	sb.append(col.getType());
 	sb.append("</td><td>");
 	sb.append(col.getIntro());
 	sb.append("</td><td>");
@@ -94,10 +96,11 @@ $(function(){
 	$.hotEditor.act("#schema_daojson", "act?act=console&right=kobj&subact=schema_update", {schema_key:"<%= kc.getKobjName()%>",schema_part:"dao"}, p_dao, "#re");
 	//col
 	var p_cols = {
-		target:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)"],
-		key : ["column","default","intro","len","validator"],
-		editor : [$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor],
-		bts : "td:eq(5)",
+		target:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)","td:eq(5)"],
+		key : ["col","def","type","intro","len","validator"],
+		editor : [$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor],
+		bts : "td:eq(6)",
+		jsonTyps:["s","a","i","s","i","s"],
 		jsonToStr:"schema_coljson"
 	};
 	$("#schema_columns tr:gt(0)").each(function (i) {
@@ -106,9 +109,10 @@ $(function(){
 	//index
 	var p_indexes = {
 		target:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)"],
-		key : ["column","asc","intro","type","unique"],
+		key : ["col","asc","intro","type","unique"],
 		editor : [$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor],
 		bts : "td:eq(5)",
+		jsonTyps:["s","b","s","s","b"],
 		jsonToStr:"schema_indexjson"
 	};
 	$("#schema_indexes tr:gt(0)").each(function (i) {

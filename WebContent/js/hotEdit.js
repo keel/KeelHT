@@ -3,8 +3,10 @@ inputTextEditor : "<input type=\"text\" name=\"t\" class=\"hotEditInput\">",
 textAreaEditor : "<textarea name=\"a\" class=\"hotEditTA\"></textarea>",
 HENull : "HE#NULL",
 checkBoxEditor : "<input type=\"checkbox\" name=\"c\" class=\"hotEditCheckbox\">",
+btSet:"SET",
+btEdit:"EDIT",
 selectEditor : "<select name=\"s\"> <option value=\"true\">true</option> <option value=\"false\">false</option> </select>"
-}
+};
 /*
  * target:定位到editor目标,如:"#targetTB"
  * url:AJAX的提交URL
@@ -13,7 +15,7 @@ selectEditor : "<select name=\"s\"> <option value=\"true\">true</option> <option
  var eParas2 = {
 	//val如存在则默认为此值，若无则为原key的text值,HE#NULL表示为空值
 	//val:["aaa","HE#NULL","HE#NULL","HE#NULL","HE#NULL"], 
-	//editParas.jsonToStr 设置后将使所有的输入形成一个json字符串,作为jsonToStr:json的键值对进入paras
+	//editParas.jsonToStr 设置后将使所有的输入形成一个json字符串,作为jsonToStr:json的键值对进入paras,需要jquery.json插件
 	//jsonToStr:"schema_indexjson",
 	target:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)"],
 	key:["ta","tb","tc","td","te"],
@@ -67,7 +69,7 @@ $.hotEditor.act = function (target,url,paras,editParas,errMsg) {
 		}else{
 			tars[i] = $tar.find(editParas.target[i]);
 		};
-		if(editParas.hasVal && (editParas.val[i] != "HE#NULL")){
+		if(editParas.hasVal && (editParas.val[i] != $.hotEditor.HENull )){
 			tars[i].oldVal = editParas.val[i];
 			tars[i].span = $span.clone().text(tars[i].text());
 		}else{
@@ -75,7 +77,7 @@ $.hotEditor.act = function (target,url,paras,editParas,errMsg) {
 			tars[i].span = $span.clone().text(tars[i].oldVal);
 		};
 		tars[i].text("");
-		if (editParas.editor[i] ==="HE#NULL") {
+		if (editParas.editor[i] ===$.hotEditor.HENull) {
 			tars[i].ed = tars[i].span.clone();
 		}else{
 			tars[i].ed = $(editParas.editor[i]).attr("name",editParas.key[i]).val(tars[i].oldVal);
@@ -94,12 +96,12 @@ $.hotEditor.act = function (target,url,paras,editParas,errMsg) {
 	$tar.bt1.isSet = false;
 	$tar.stateA = function(){
 		for (var i=0; i < len; i++) {
-			var w = tars[i].span.width()+5;
-			if (w<6) {w=50;};
+			var w = tars[i].span.width()+15;
+			if (w<18) {w=50;};
 			tars[i].span.hide();
 			tars[i].ed.show().width(w);
 		}
-		$tar.bt1.val("SET");
+		$tar.bt1.val($.hotEditor.btSet);
 		$tar.bt1.isSet = true;
 		$tar.bt2.show();
 	};
@@ -108,7 +110,7 @@ $.hotEditor.act = function (target,url,paras,editParas,errMsg) {
 			tars[i].span.show();
 			tars[i].ed.hide();
 		}
-		$tar.bt1.val("EDIT").removeAttr("disabled");
+		$tar.bt1.val($.hotEditor.btEdit).removeAttr("disabled");
 		$tar.bt2.hide();
 		$tar.bt1.isSet = false;
 	};
@@ -129,15 +131,17 @@ $.hotEditor.act = function (target,url,paras,editParas,errMsg) {
 					newParas[this.name] = this.value;
 				}
 			});
-			//editParas.jsonToStr 设置后将使所有的输入形成一个json字符串,作为jsonToStr:json的键值对进入paras
-			if (editParas.jsonToStr) {
+			//editParas.jsonToStr和 jsonTyps设置后将使所有的输入形成一个json字符串,作为jsonToStr:json的键值对进入paras
+			//注意此处用到jquery.json插件
+			if (editParas.jsonToStr && editParas.jsonTyps) {
+				newParas = $.hotEditor.parseJson(editParas.jsonTyps,editParas.key,newParas);
+				if (!newParas) {alert("jsonTypes parse error");$tar.stateB();return false;};
 				var jsonStr = $.toJSON(newParas);
 				paras = $.extend({},oldparas);
 				paras[editParas.jsonToStr] = jsonStr;
 			}else{
 				paras = $.extend(newParas,oldparas);
 			};
-			
 			
 			/*
 			for(k in paras){
@@ -157,7 +161,7 @@ $.hotEditor.act = function (target,url,paras,editParas,errMsg) {
 				if (re != null && re.re && re.re === "ok" && re.d && re.d.length === len) {
 					//填充数据
 					for (var i=0; i < len; i++) {
-						if (re.d[i] != "HE#NULL") {
+						if (re.d[i] != $.hotEditor.HENull) {
 							tars[i].span.text(re.d[i]);
 							tars[i].ed.val(re.d[i]);
 						};
@@ -167,7 +171,7 @@ $.hotEditor.act = function (target,url,paras,editParas,errMsg) {
 				}else{
 					//显示错误
 					$tar.stateB();
-					if (re == null) {$(errMsg).text("re:null");}else{$(errMsg).text(re.re+":"+re.d);};
+					if (re == null) {$(errMsg).text("err:parseJSON error");}else{$(errMsg).text(re.re+":"+re.d);};
 				};
 			}).error(function() {$(errMsg).text("post failed.");$tar.stateB(); });
 			
@@ -176,4 +180,46 @@ $.hotEditor.act = function (target,url,paras,editParas,errMsg) {
 	$tar.bt2.click(function() {
 		$tar.stateB();
 	});
+};
+/*
+更换类型,主要用于json中的值
+type为类型标识，如果不能识别类型标识，直接返回原对象	
+*/
+$.hotEditor.parseType = function(type,obj){
+	if (type === "s") {
+		var re = "";
+		if (obj) {re = obj.toString()};
+		return re;
+	}else if (type === "i") {
+		var re = parseInt(obj);
+		if (!re) {return 0;};
+		return re;
+	}else if (type === "b") {
+		if (obj == "false") {return false};
+		return Boolean(obj);
+	}else if (type === "f") {
+		var re = parseFloat(obj);
+		if (!re) {return 0.0;};
+		return re;
+	}else if(type === "a"){
+		//指定类型判断,如 s@abc 表示将abc转换成string,i@abc表示将abc转换成int
+		if (!obj) {return ""};
+		var re = obj.toString();
+		var tag = re.charAt(0);
+		if (re.indexOf('@') == 1 && /[sibf]/.test(tag)) {return $.hotEditor.parseType(tag,re.substr(2))};
+		return re;
+	}else {
+		return obj;
+	}
+};
+/*处理json的数据类型,types与keys要严格对应*/
+$.hotEditor.parseJson = function(types,keys,json){
+	if (types && keys  && json && keys.length === types.length) {
+		for (var i=0; i < types.length; i++) {
+			json[keys[i]] = $.hotEditor.parseType(types[i],json[keys[i]]);
+		};
+		return json;
+	}else{
+		return false;	
+	}
 }

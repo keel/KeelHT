@@ -30,6 +30,7 @@ input[type="text"],input[type="password"]{background-color: #FFF;color:#000;bord
 textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:90%;height:400px;padding:5px;}
 .smallTA{background-color: #FFF;color:#000;border: 1px solid #003333;width:70%;height:200px;padding:5px;}
 .hide{display: none;}
+.wide300{width:300px;}
 /*layout*/
 /*#wrapper{margin:0 auto;width:960px;}*/
 /* #header{background:url("../imgs/homepage01.jpg") no-repeat scroll left top transparent;height:145px;width:778px;}*/
