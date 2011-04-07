@@ -25,7 +25,8 @@ function testCall (para,func) {
 	});
 	*/
 var eParas2 = {
-	target:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)"],
+	target:"",
+	subs:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)"],
 	key:["ta","tb","tc","td","te"],
 	//val如存在则默认为此值，若无则为原key的text值,HE#NULL表示为空值
 	//val:["aaa","HE#NULL","HE#NULL","HE#NULL","HE#NULL"], 
@@ -36,26 +37,48 @@ var eParas2 = {
 		$.hotEditor.HENull,
 		$.hotEditor.checkBoxEditor
 	],
+	msg:"#newValue",
+	url:"#act",
+	preParas:{schema_key:"kuser"},
 	jsonToStr:"schema_indexjson",
 	jsonTyps:["s","a","f","b","i"],
-	bts:"td:eq(5)"
+	bts:"td:eq(5)",
+	addTarget:">"
 };	
 
 	$("#targetTB tr").each(function (i) {
-		$.hotEditor.act(this,"#act",{schema_key:"kuser"},eParas2,"#newValue");
+		//$.hotEditor.act(this,"#act",{schema_key:"kuser"},eParas2,"#newValue");
+		$.hotEditor.act(eParas2,this);
+		
 	});
 	
 	
 var eParas1 = {
-	key:["oldValKey"],
-	editor:[$.hotEditor.inputTextEditor],
-	bts:"#oldVal"
+	msg:"#newValue",
+	addTarget:">",
+	url:"#aaa"
 }	;
 	
-	$.hotEditor.act("#oldVal","#act",{},eParas1,"#newValue");
-	//,d:[\"ddd\"]
-	
+	$.hotEditor.act(eParas1,"#oldVal");
 
+	
+	var obj = {};
+	obj.a = "a";
+	obj.b = "b";
+	obj.s = $('#sideNav');
+	obj.s.f = function() {
+		alert(this.a);
+	};
+	//obj.s.ss = "ss";
+	obj.ddd = {};
+	obj.ddd.o = obj;
+	obj.s.xx = "aaa";
+	obj.s.click(obj,function() {
+		this.x = "bb";
+		alert(obj.s.xx);
+	});
+	obj.a = "haha";
+	//alert(obj.s.xx);
 });
 
 </script>
