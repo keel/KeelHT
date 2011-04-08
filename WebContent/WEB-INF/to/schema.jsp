@@ -27,7 +27,7 @@ if(kc == null){
 <div id="schema_intro"><%=kc.getIntro() %></div>
 <div class="weight">Dao: </div>
 <div id="schema_daojson"><%=JSONTool.writeJsonString(kc.getDaoConfig().toMap())%></div>
-<div class="weight">Columns: - [ <a href="act?act=console&amp;right=kobj&amp;schema">add</a> ]</div>
+<div class="weight">Columns: - <span id="schema_col_add"></span></div>
 <table id="schema_columns">
 <tr><th>column</th><th>default</th><th>type</th><th>intro</th><th>len</th><th>validator</th><th>EDIT</th></tr>
 <%
@@ -54,7 +54,7 @@ for (Iterator<String> iterator = cols.keySet().iterator(); iterator.hasNext();) 
 out.println(sb);
 %>
 </table>
-<div class="weight">Indexes: - [ <a href="act?act=console&amp;right=kobj&amp;schema">add</a> ]</div>
+<div class="weight">Indexes: - <span id="schema_index_add"></span></div>
 <table id="schema_indexes">
 <tr><th>column</th><th>asc</th><th>intro</th><th>type</th><th>unique</th><th>EDIT</th></tr>
 <%
@@ -82,41 +82,51 @@ out.println(sb);
 $(function(){
 	//intro
 	var p_intro = {
-		key : ["schema_intro"],
-		editor : [$.hotEditor.inputTextEditor],
-		bts : "#schema_intro"
+		preParas : {schema_key:"<%= kc.getKobjName()%>",schema_part:"intro"},
+		url:"act?act=console&right=kobj&subact=schema_update",
+		key:["schema_intro"],
+		msg:"#re"
 	};
-	$.hotEditor.act("#schema_intro", "act?act=console&right=kobj&subact=schema_update", {schema_key:"<%= kc.getKobjName()%>",schema_part:"intro"}, p_intro, "#re");
+	$.hotEditor.act(p_intro,"#schema_intro");
 	//dao
 	var p_dao = {
 		key : ["schema_daojson"],
-		editor : [$.hotEditor.textAreaEditor],
-		bts : "#schema_daojson"
+		preParas:{schema_key:"<%= kc.getKobjName()%>",schema_part:"dao"},
+		url:"act?act=console&right=kobj&subact=schema_update",
+		msg:"#re"
 	};
-	$.hotEditor.act("#schema_daojson", "act?act=console&right=kobj&subact=schema_update", {schema_key:"<%= kc.getKobjName()%>",schema_part:"dao"}, p_dao, "#re");
+	$.hotEditor.act(p_dao,"#schema_daojson");
 	//col
 	var p_cols = {
-		target:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)","td:eq(5)"],
+		subs:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)","td:eq(5)"],
 		key : ["col","def","type","intro","len","validator"],
+		url:"act?act=console&right=kobj&subact=schema_update",
 		editor : [$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor],
 		bts : "td:eq(6)",
 		jsonTyps:["s","a","i","s","i","s"],
-		jsonToStr:"schema_coljson"
+		jsonToStr:"schema_coljson",
+		msg:"#re"
+		,addTarget:">"
+		//,addBT:"#schema_col_add"
 	};
 	$("#schema_columns tr:gt(0)").each(function (i) {
-		$.hotEditor.act(this, "act?act=console&right=kobj&subact=schema_update", {schema_key:"<%= kc.getKobjName()%>",schema_part:"col_edit"}, p_cols, "#re");
+		$.hotEditor.act(p_cols,this);
 	});
 	//index
 	var p_indexes = {
-		target:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)"],
+		subs:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)"],
+		url:"act?act=console&right=kobj&subact=schema_update",
 		key : ["col","asc","intro","type","unique"],
 		editor : [$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor],
 		bts : "td:eq(5)",
 		jsonTyps:["s","b","s","s","b"],
-		jsonToStr:"schema_indexjson"
+		jsonToStr:"schema_indexjson",
+		msg:"#re"
+		,addTarget:">"
+		//,addBT:"#schema_index_add"
 	};
 	$("#schema_indexes tr:gt(0)").each(function (i) {
-		$.hotEditor.act(this, "act?act=console&right=kobj&subact=schema_update", {schema_key:"<%= kc.getKobjName()%>",schema_part:"index_edit"}, p_indexes, "#re");
+		$.hotEditor.act(p_indexes,this);
 	});
 
 });
