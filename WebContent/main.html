@@ -38,7 +38,7 @@ var eParas2 = {
 		$.hotEditor.checkBoxEditor
 	],
 	msg:"#newValue",
-	url:"#act",
+	//url:"#act",
 	preParas:{schema_key:"kuser"},
 	jsonToStr:"schema_indexjson",
 	jsonTyps:["s","a","f","b","i"],
@@ -54,9 +54,11 @@ var eParas2 = {
 	
 	
 var eParas1 = {
-	msg:"#newValue",
-	addTarget:">",
-	url:"#aaa"
+	msg:"#newValue"
+	,addTarget:"#addHH"
+	,addBT:"#addBTHH"
+	,key:["oldold"]
+	//,url:"#aaa"
 }	;
 	
 	$.hotEditor.act(eParas1,"#oldVal");
@@ -175,7 +177,12 @@ var eParas1 = {
 <p>当前状态:ok</p>
 
 <p id="newValue">最新公告:新版本暂未上线.</p>
-
+<div id="addBTHH">
+	
+</div>
+<div id="addHH">
+	<input type="text" name="oldold" class="hotEditInput">
+</div>
 <p class="editable" id="oldVal">old value<div>sss</div></p>
 <select name="s" id="sele1">
 	<option value="option1">s0</option>

@@ -117,7 +117,7 @@ $.hotEditor.init = function (editParas) {
 				alert ("paras["+k +"] = "+paras[k]);
 			}
 			*/
-			console.log(ep.paras);
+			//console.log(ep.paras);
 			if (ep.url && ep.paras) {$.hotEditor.ajax(ep,ep.url,ep.paras,false);}else{
 				//不提交，直接更新span
 				for (var i=0; i < ep.len; i++) {
@@ -149,30 +149,28 @@ $.hotEditor.init = function (editParas) {
 			ep.ta.find(".hotEditSpan").remove();
 			ep.ta.find(".hotEditBT").remove();
 			ep.ta.find(".hotEditBT3").remove();
-			if (!ep.editParas.bts) {ep.ta.bts = ep.ta}else{ep.ta.bts = ep.ta.find(ep.editParas.bts);};
-			ep.ta.bt1 = ep.bt1.clone().val(ep.btText1).show();
-			ep.ta.bt2 = ep.bt2.clone().show();
-			ep.ta.bts.append(ep.ta.bt1).append(ep.ta.bt2);
 		}else{
 			//直接使用addTarget对象作为ta
 			ep.ta = $(ep.addTarget);
 		}
-		
+		if (!ep.editParas.bts) {ep.ta.bts = ep.ta}else{ep.ta.bts = ep.ta.find(ep.editParas.bts);};
+		ep.ta.bt1 = ep.bt1.clone().val(ep.btText1).show();
+		ep.ta.bt2 = ep.bt2.clone().show();
+		ep.ta.bts.append(ep.ta.bt1).append(ep.ta.bt2);
+		ep.ta.addClass("hotEditADD");
 		ep.t.after(ep.ta);
 		ep.ta.eds = [];
 		for (var i=0; i < ep.len; i++) {
 			ep.ta.eds[i] = ep.ta.find("[name='"+ep.key[i]+"']").show();
 		};
-		ep.ta.preParas = ep.preParas;
-		if (ep.addPreParas) {ep.ta.preParas = ep.addPreParas;};
-		ep.ta.jsonToStr = ep.jsonToStr;
-		if (ep.addJsonToStr) {ep.ta.jsonToStr = ep.jsonToStr;};
-		ep.ta.jsonTyps = ep.jsonTyps;
-		if (ep.addJsonTyps) {ep.ta.jsonTyps = ep.jsonTyps;};
-		ep.ta.url = ep.url;
-		if (ep.addUrl) {ep.ta.url = ep.addUrl};
+		ep.ta.preParas = (ep.addPreParas)? ep.addPreParas :ep.preParas;
+		ep.ta.jsonToStr = (ep.addJsonToStr)?ep.addJsonToStr: ep.jsonToStr;
+		ep.ta.jsonTyps = (ep.addJsonTyps) ?ep.addJsonTyps: ep.jsonTyps;
+		ep.ta.url = (ep.addUrl) ?ep.addUrl:ep.url;
 		//ep.ta.addTo:完成数据添加后将新数据添加到的位置,注意是after的方式
-		if (!ep.addTo) {ep.ta.addTo = ep.t}else{ep.ta.addTo = $(ep.addTo)};
+		ep.ta.addTo = (ep.addTo) ? $(ep.addTo) : ep.ta;
+		ep.ta.stateA =function(){ep.ta.bt1.removeAttr("disabled").val(ep.btText1);ep.ta.show();}
+		ep.ta.stateB =function(){ep.ta.bt1.removeAttr("disabled").val(ep.btText1);ep.ta.hide();}
 		ep.ta.bt1.click(function() {
 			ep.ta.bt1.val("loading").attr("disabled","disabled");
 			ep.ta.paras = $.hotEditor.prepare($.hotEditor.gather(ep.ta),ep.key,ep.ta.jsonToStr,ep.ta.jsonTyps,ep.ta.preParas);
@@ -181,33 +179,46 @@ $.hotEditor.init = function (editParas) {
 				alert ("paras["+k +"] = "+paras[k]);
 			}
 			*/
-			console.log(ep.ta.paras);
-			if (ep.ta.url && ep.ta.paras) {
-				if ($.hotEditor.ajax(ep,ep.ta.url,ep.ta.paras,true) && ep.ta.addTo != $.hotEditor.HENull) {
-					//在addTo不为HENull的情况下将新数据添加到的位置
+			//console.log(ep.ta.paras);
+			//在addTo不为HENull的情况下将新数据添加到的位置
+			ep.ta.appendNew = function(reVals) {
+				if (ep.ta.addTo != $.hotEditor.HENull && reVals) {
 					var newT = ep.tbak.clone(true).removeAttr("id");
-					for (var i=0; i < ep.len; i++) {
-						if (!ep.subs) {
-							newT.text(ep.reval[i]);
-						}else{
-							tars[i] = ep.t.find(ep.subs[i]);
+					if (ep.len === 1) {
+						newT.text(reVals[0]);
+					}else{
+						for (var i=0; i < ep.len; i++) {
+							newT.find(ep.subs[i]).text(reVals[i]);
 						};
-					};
+					}
 					ep.ta.addTo.after(newT);
-					$.hotEditor.act(ep.editParas,newT);
-				}else{
-					ep.ta.hide();
+					var epNew = $.extend({},ep.editParas);
+					if (ep.addBT) {epNew.addTarget=undefined;};
+					$.hotEditor.act(epNew,newT);
 				};
-			}else{
-				//不提交
 			};
+			if (ep.ta.url && ep.ta.paras) {
+				if ($.hotEditor.ajax(ep,ep.ta.url,ep.ta.paras,ep.ta.appendNew)) {
+					
+				}
+			}else{
+				//不提交,直接添加
+				var reval = [];
+				for (var i=0; i < ep.len; i++) {
+					reval[i] = ep.ta.eds[i].val();
+				}
+				ep.ta.appendNew(reval);
+			};
+			//最后隐藏输入
+			ep.ta.stateB();
 		});
 		ep.ta.bt2.click(function(){
-			ep.ta.hide();
+			ep.ta.stateB();
 		});
 		ep.bt3.click(function() {
-			ep.ta.show();
+			ep.ta.stateA();
 		});
+		ep.ta.stateB();
 	};
  	return ep;
 };
@@ -244,7 +255,7 @@ $.hotEditor.stateB = function(ep) {
 */
 $.hotEditor.prepare = function(newParas,key,jsonToStr,jsonTyps,preParas) {
 	//如果有重新定义,则直接执行
-	//if (ep.prepare) {return ep.prepare();};
+	//if (ep.prepare) {return ep.prepare(newParas,key,jsonToStr,jsonTyps,preParas);};
 	//收集值
 	//var newParas = $.hotEditor.gather(ep.t);
 	
@@ -280,7 +291,7 @@ $.hotEditor.gather = function($tar) {
 /*
 ajax	
 */
-$.hotEditor.ajax = function(ep,url,paras,noFill) {
+$.hotEditor.ajax = function(ep,url,paras,fillFunc) {
 	//返回方法如果不设，则为JSON处理DATA后在msg显示数据
 	if (!ep.callback) {ep.callback = function (data,state) {
 		if (state != "ok") {
@@ -292,15 +303,15 @@ $.hotEditor.ajax = function(ep,url,paras,noFill) {
 					ep.msg.text("err:parseJSON error");
 				}else if (!re && re.re && re.re === "ok" && re.d && re.d.length === len) {
 					//填充数据
-					if (!noFill) {
-						ep.reval = [];
+					if (!fillFunc) {
 						for (var i=0; i < len; i++) {
 							if (re.d[i] != $.hotEditor.HENull) {
 								ep.tars[i].span.text(re.d[i]);
 								ep.tars[i].ed.val(re.d[i]);
-								ep.reval[reval] = re.d[i];
 							};
 						};
+					}else{
+						fillFunc(re.d);
 					};
 					ep.msg.text(re.re);
 					return true;
@@ -317,7 +328,7 @@ $.hotEditor.ajax = function(ep,url,paras,noFill) {
 	$.post(url, paras ,function(data) {
 		//alert("success:"+data);
 		return ep.callback(data,"ok");
-	}).error(function() {ep.callback(data,"err");return false;});
+	}).error(function() {return ep.callback(data,"err");});
  	return false;
 };
 /*
