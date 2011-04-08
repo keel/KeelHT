@@ -161,7 +161,9 @@ $.hotEditor.init = function (editParas) {
 		ep.t.after(ep.ta);
 		ep.ta.eds = [];
 		for (var i=0; i < ep.len; i++) {
-			ep.ta.eds[i] = ep.ta.find("[name='"+ep.key[i]+"']").show();
+			var w = ep.tars[i].span.width()+20;
+			if (w<18) {w=50;};
+			ep.ta.eds[i] = ep.ta.find("[name='"+ep.key[i]+"']").width(w).show();
 		};
 		ep.ta.preParas = (ep.addPreParas)? ep.addPreParas :ep.preParas;
 		ep.ta.jsonToStr = (ep.addJsonToStr)?ep.addJsonToStr: ep.jsonToStr;
@@ -185,10 +187,11 @@ $.hotEditor.init = function (editParas) {
 				if (ep.ta.addTo != $.hotEditor.HENull && reVals) {
 					var newT = ep.tbak.clone(true).removeAttr("id");
 					if (ep.len === 1) {
-						newT.text(reVals[0]);
+						newT.text(reVals[ep.key[0]]);
 					}else{
 						for (var i=0; i < ep.len; i++) {
-							newT.find(ep.subs[i]).text(reVals[i]);
+							var newD = (reVals[ep.key[i]])?reVals[ep.key[i]]:"";
+							newT.find(ep.subs[i]).text(newD);
 						};
 					}
 					ep.ta.addTo.after(newT);
@@ -295,19 +298,20 @@ $.hotEditor.ajax = function(ep,url,paras,fillFunc) {
 	//返回方法如果不设，则为JSON处理DATA后在msg显示数据
 	if (!ep.callback) {ep.callback = function (data,state) {
 		if (state != "ok") {
-			ep.msg.text("post failed.");
+			ep.msg.text("err:post failed.");
 		}else{
 			try{
 				var re = $.parseJSON(data);
 				if (!re) {
 					ep.msg.text("err:parseJSON error");
-				}else if (!re && re.re && re.re === "ok" && re.d && re.d.length === len) {
+				}else if (re && re.re && re.re === "ok" && re.d ) {
 					//填充数据
 					if (!fillFunc) {
-						for (var i=0; i < len; i++) {
+						for (var i=0; i < ep.len; i++) {
 							if (re.d[i] != $.hotEditor.HENull) {
-								ep.tars[i].span.text(re.d[i]);
-								ep.tars[i].ed.val(re.d[i]);
+								var newD = (re.d[ep.key[i]])?re.d[ep.key[i]]:"";
+								ep.tars[i].span.text(newD);
+								ep.tars[i].ed.val(newD);
 							};
 						};
 					}else{
@@ -317,10 +321,10 @@ $.hotEditor.ajax = function(ep,url,paras,fillFunc) {
 					return true;
 				}else{
 					//显示错误
-					ep.msg.text(re.re+":"+re.d);
+					ep.msg.text("err:"+re.re+":"+re.d);
 				};
 			}catch(e){
-				ep.msg.text("callback err:"+data);
+				ep.msg.text("err:callback err:"+data);
 			}
 		}
 		return false;

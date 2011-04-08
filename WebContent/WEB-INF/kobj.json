@@ -2,49 +2,126 @@
 	"kobjs":{
 		"HTItem":{
 			"dao":{
-				"tableName":"HTItem","newDaoName":"mongoItemDao","daoName":"mongoDao","props":{"id":11,"type":"single"}
+				"tableName":"HTItem",
+				"newDaoName":"mongoItemDao",
+				"daoName":"mongoDao",
+				"props":{
+					"id":11,
+					"type":"single"
+				}
 			},
 			"indexes":[
 				
 			],
 			"columns":[
-				{"col":"ack","def":12,"len":12,"type":1,"intro":"attack"},{"col":"def","def":12,"len":12,"type":1,"intro":"defence"}
+				{
+					"col":"ack",
+					"def":12,
+					"len":12,
+					"type":1,
+					"intro":"attack"
+				},
+				{
+					"col":"def",
+					"def":12,
+					"len":12,
+					"type":1,
+					"intro":"defence"
+				}
 			],
-			"intro":"物品ddd"
+			"intro":"物品"
 		},
 		"kuser":{
 			"dao":{
 				"daoName":"mongoUserDao"
 			},
 			"indexes":[
-				{"col":"imei","unique":false,"asc":true,"type":"normal","intro":"IMEI"}
+				{
+					"col":"imei",
+					"unique":false,
+					"asc":true,
+					"type":"normal",
+					"intro":"IMEI"
+				}
 			],
 			"columns":[
-				{"col":"imei","def":"","validator":"com.k99k.khunter.StringValidator,0,5","len":10,"type":0,"intro":"the imei of handset"},{"col":"pwd","def":"qwertnm","len":10,"type":0,"intro":"password"},{"col":"tags","def":{},"len":10,"type":2,"intro":"tagss"
-			},
-			{
-				"col":"tags.tagName","def":"","len":10,"type":0,"intro":"tagName"
-			},
-			{
-				"col":"tags.tagId","def":0,"len":10,"type":4,"intro":"tagId"
-			},
-			{
-				"col":"comms","def":[],"len":10,"type":3,"intro":"password"
-			},
-			{
-				"col":"comms.*","def":null,"len":10,"type":2,"intro":"comms element is a map schema"
-			},
-			{
-				"col":"comms.*.content","def":"","len":10,"type":0,"intro":"comment content"
-			},
-			{
-				"col":"comms.*.writer","def":"","len":10,"type":0,"intro":"comment writer"
-			},
-			{
-				"col":"comms.*.addTime","def":"","len":10,"type":0,"intro":"comment addTime"
-			}
-		],
-		"intro":"用户2"
+				{
+					"col":"imei",
+					"def":"",
+					"validator":"com.k99k.khunter.StringValidator,0,5",
+					"len":10,
+					"type":0,
+					"intro":"the imei of handset"
+				},
+				{
+					"col":"pwd",
+					"def":"qwertnm",
+					"len":10,
+					"type":0,
+					"intro":"password"
+				},
+				{
+					"col":"tags",
+					"def":{
+						
+					},
+					"len":10,
+					"type":2,
+					"intro":"tagss"
+				},
+				{
+					"col":"tags.tagName",
+					"def":"",
+					"len":10,
+					"type":0,
+					"intro":"tagName"
+				},
+				{
+					"col":"tags.tagId",
+					"def":0,
+					"len":10,
+					"type":4,
+					"intro":"tagId"
+				},
+				{
+					"col":"comms",
+					"def":[
+						
+					],
+					"len":10,
+					"type":3,
+					"intro":"password"
+				},
+				{
+					"col":"comms.*",
+					"def":null,
+					"len":10,
+					"type":2,
+					"intro":"comms element is a map schema"
+				},
+				{
+					"col":"comms.*.content",
+					"def":"",
+					"len":10,
+					"type":0,
+					"intro":"comment content"
+				},
+				{
+					"col":"comms.*.writer",
+					"def":"",
+					"len":10,
+					"type":0,
+					"intro":"comment writer"
+				},
+				{
+					"col":"comms.*.addTime",
+					"def":"",
+					"len":10,
+					"type":0,
+					"intro":"comment addTime"
+				}
+			],
+			"intro":"用户"
+		}
 	}
-}
 }

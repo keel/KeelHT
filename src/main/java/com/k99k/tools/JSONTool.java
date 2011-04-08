@@ -52,7 +52,7 @@ public final class JSONTool {
 	 */
 	public static final String writeFormatedJsonString(HashMap<String,Object> map){
 		JSONFormatWriter jsonWriter = new JSONFormatWriter();
-		return jsonWriter.write(map,4);
+		return jsonWriter.write(map,6);
 	}
 	
 	/**

@@ -89,10 +89,10 @@ public class KObjAction extends Action{
 				if (StringUtil.isStringWithLen(intro, 0)) {
 					kc.setIntro(intro);
 					//print在jsp前面，所以不用remove jsp
-					msg.addData("print", "{\"re\":\"ok\",\"d\":[\""+intro+"\"]}");
+					msg.addData("print", "{\"re\":\"ok\",\"d\":{\"schema_intro\":\""+intro+"\"}}");
 					return super.act(msg);
 				}
-				rePrint = "{\"re\":\"err\",\"d\":[\"intro input error\"]}";
+				rePrint = "{\"re\":\"err\",\"d\":{\"schema_intro\":\"intro input error\"}}";
 			}
 			//----------------更新dao---------------
 			else if(part.equals("dao")){
@@ -102,12 +102,12 @@ public class KObjAction extends Action{
 					if (kdc != null) {
 						//更新KObjConfig
 						kc.setDaoConfig(kdc);
-						msg.addData("print", "{\"re\":\"ok\",\"d\":["+JSONTool.writeJsonString(kdc.toMap())+"]}");
+						msg.addData("print", "{\"re\":\"ok\",\"d\":{\""+JSONTool.writeJsonString(kdc.toMap())+"\"}}");
 						return super.act(msg);
 					}
-					rePrint = "{\"re\":\"err\",\"d\":[\"KObjDaoConfig.newInstance error\"]}";
+					rePrint = "{\"re\":\"err\",\"d\":{\"schema_daojson\":\"KObjDaoConfig.newInstance error\"}}";
 				}else{
-					rePrint = "{\"re\":\"err\",\"d\":[\"daoJson error\"]}";
+					rePrint = "{\"re\":\"err\",\"d\":{\"schema_daojson\":\"daoJson error\"}}";
 				}
 			}
 			//----------------更新column---------------
@@ -116,12 +116,12 @@ public class KObjAction extends Action{
 				if (StringUtil.isStringWithLen(colJson, 2)) {
 					KObjSchema ks = kc.getKobjSchema();
 					if(ks.setColumn(JSONTool.readJsonString(colJson)) == 0){
-						msg.addData("print", "{\"re\":\"ok\",\"d\":["+colJson+"]}");
+						msg.addData("print", "{\"re\":\"ok\",\"d\":"+colJson+"}");
 						return super.act(msg);
 					}
-					rePrint = "{\"re\":\"err\",\"d\":[\"ks.setColumn error\"]}";
+					rePrint = "{\"re\":\"err\",\"d\":{\"schema_coljson\":\"ks.setColumn error\"}}";
 				}else{
-					rePrint = "{\"re\":\"err\",\"d\":[\"schema_coljson error\"]}";
+					rePrint = "{\"re\":\"err\",\"d\":{\"schema_coljson\":\"schema_coljson error\"}}";
 				}
 			}
 			//----------------更新index---------------
@@ -130,12 +130,12 @@ public class KObjAction extends Action{
 				if (StringUtil.isStringWithLen(indexJson, 2)) {
 					KObjSchema ks = kc.getKobjSchema();
 					if (ks.setIndex(JSONTool.readJsonString(indexJson),true) == 0) {
-						msg.addData("print", "{\"re\":\"ok\",\"d\":["+indexJson+"]}");
+						msg.addData("print", "{\"re\":\"ok\",\"d\":"+indexJson+"}");
 						return super.act(msg);
 					}
-					rePrint = "{\"re\":\"err\",\"d\":[\"setIndex error\"]}";
+					rePrint = "{\"re\":\"err\",\"d\":{\"schema_indexjson\":\"setIndex error\"}}";
 				}else{
-					rePrint = "{\"re\":\"err\",\"d\":[\"schema_indexjson error\"]}";
+					rePrint = "{\"re\":\"err\",\"d\":{\"schema_indexjson\":\"schema_indexjson error\"}}";
 				}
 			}
 			//失败的情况

@@ -93,11 +93,13 @@ $(function(){
 		key : ["schema_daojson"],
 		preParas:{schema_key:"<%= kc.getKobjName()%>",schema_part:"dao"},
 		url:"act?act=console&right=kobj&subact=schema_update",
+		editor:[$.hotEditor.textAreaEditor],
 		msg:"#re"
 	};
 	$.hotEditor.act(p_dao,"#schema_daojson");
 	//col
 	var p_cols = {
+		preParas:{schema_key:"<%= kc.getKobjName()%>",schema_part:"col_edit"},
 		subs:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)","td:eq(5)"],
 		key : ["col","def","type","intro","len","validator"],
 		url:"act?act=console&right=kobj&subact=schema_update",
@@ -114,6 +116,7 @@ $(function(){
 	});
 	//index
 	var p_indexes = {
+		preParas:{schema_key:"<%= kc.getKobjName()%>",schema_part:"index_edit"},
 		subs:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)"],
 		url:"act?act=console&right=kobj&subact=schema_update",
 		key : ["col","asc","intro","type","unique"],
