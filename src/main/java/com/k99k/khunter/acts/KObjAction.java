@@ -3,7 +3,9 @@
  */
 package com.k99k.khunter.acts;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -11,6 +13,7 @@ import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionManager;
 import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.DaoInterface;
+import com.k99k.khunter.DaoManager;
 import com.k99k.khunter.ErrorCode;
 import com.k99k.khunter.HttpActionMsg;
 import com.k99k.khunter.KObjConfig;
@@ -68,21 +71,27 @@ public class KObjAction extends Action{
 			msg.addData("right", "schema");
 			msg.addData("schema_find", kc);
 		}
+		//schema_add
+		else if(subact.equals("schema_add")){
+			String js = "<script type=\"text/javascript\" src=\"js/jquery.json-2.2.min.js\"></script><script type=\"text/javascript\" src=\"js/hotEdit.js\"></script>";
+			msg.addData("headerAdd", js);
+			msg.addData("right", "schema_add");
+		}
 		//schema_update
 		else if(subact.equals("schema_update")){
 			String key  = httpmsg.getHttpReq().getParameter("schema_key");
 			String part  = httpmsg.getHttpReq().getParameter("schema_part");
 			if (key == null || part == null) {
-				msg.addData("print", "err:schema_key or part error.");
+				msg.addData("print", "{\"re\":\"err\",\"d\":{\"schema_key\":\"schema_key or part error.\"}}");
 				return super.act(msg);
 			}
 			KObjConfig kc = KObjManager.findKObjConfig(key);
 			if (kc == null) {
-				msg.addData("print", "err:kc not found.");
+				msg.addData("print", "{\"re\":\"err\",\"d\":{\"schema_key\":\"not found.\"}}");
 				return super.act(msg);
 			}
 			//失败原因
-			String rePrint = "error.";
+			String rePrint = "{\"re\":\"err\",\"d\":{}";
 			//----------------更新intro---------------
 			if (part.equals("intro")) {
 				String intro = httpmsg.getHttpReq().getParameter("schema_intro");
@@ -124,6 +133,22 @@ public class KObjAction extends Action{
 					rePrint = "{\"re\":\"err\",\"d\":{\"schema_coljson\":\"schema_coljson error\"}}";
 				}
 			}
+			//----------------删除column---------------
+			else if(part.equals("col_del")){
+				String colJson = httpmsg.getHttpReq().getParameter("schema_coljson");
+				if (StringUtil.isStringWithLen(colJson, 2)) {
+					KObjSchema ks = kc.getKobjSchema();
+					String k = JSONTool.readJsonString(colJson).get("col").toString();
+					if(ks.containsColumn(k)){
+						ks.removeColumn(k);
+						msg.addData("print", "{\"re\":\"ok\",\"d\":"+colJson+"}");
+						return super.act(msg);
+					}
+					rePrint = "{\"re\":\"err\",\"d\":{\"schema_coljson\":\"Column key not exsit.\"}}";
+				}else{
+					rePrint = "{\"re\":\"err\",\"d\":{\"schema_coljson\":\"schema_coljson error\"}}";
+				}
+			}
 			//----------------更新index---------------
 			else if(part.equals("index_edit")){
 				String indexJson = httpmsg.getHttpReq().getParameter("schema_indexjson");
@@ -134,6 +159,21 @@ public class KObjAction extends Action{
 						return super.act(msg);
 					}
 					rePrint = "{\"re\":\"err\",\"d\":{\"schema_indexjson\":\"setIndex error\"}}";
+				}else{
+					rePrint = "{\"re\":\"err\",\"d\":{\"schema_indexjson\":\"schema_indexjson error\"}}";
+				}
+			}
+			//----------------删除index---------------
+			else if(part.equals("index_del")){
+				String indexJson = httpmsg.getHttpReq().getParameter("schema_indexjson");
+				if (StringUtil.isStringWithLen(indexJson, 2)) {
+					KObjSchema ks = kc.getKobjSchema();
+					String k = JSONTool.readJsonString(indexJson).get("col").toString();
+					if (ks.removeIndex(k)) {
+						msg.addData("print", "{\"re\":\"ok\",\"d\":"+indexJson+"}");
+						return super.act(msg);
+					}
+					rePrint = "{\"re\":\"err\",\"d\":{\"schema_indexjson\":\"removeIndex error\"}}";
 				}else{
 					rePrint = "{\"re\":\"err\",\"d\":{\"schema_indexjson\":\"schema_indexjson error\"}}";
 				}
@@ -215,6 +255,18 @@ public class KObjAction extends Action{
 				msg.addData("print", re);
 				return super.act(msg);
 			}
+		}
+		//查询dao的Names,返回以,号分开的所有daoNames
+		else if(subact.equals("dao_names")){
+			ArrayList<String> list = DaoManager.getDaoNames();
+			StringBuilder sb = new StringBuilder();
+			for (Iterator<String> it = list.iterator(); it.hasNext();) {
+				String str = it.next();
+				sb.append(str).append(",");
+			}
+			sb.deleteCharAt(sb.length()-1);
+			msg.addData("print", sb.toString());
+			return super.act(msg);
 		}
 		//查询
 		else if(subact.equals("search")){

@@ -7,6 +7,7 @@ btSet:"SET",
 btEdit:"EDIT",
 btCancel:"CANCEL",
 btAdd:"ADD",
+btDel:"DEL",
 selectEditor : "<select name=\"s\"> <option value=\"true\">true</option> <option value=\"false\">false</option> </select>"
 };
 /*
@@ -63,9 +64,11 @@ $.hotEditor.init = function (editParas) {
 	ep.btText2 = $.hotEditor.btEdit;
 	ep.btText3 = $.hotEditor.btCancel;
 	ep.btText4 = $.hotEditor.btAdd;
+	ep.btText5 = $.hotEditor.btDel;
 	ep.bt1 = $("<input type=\"button\" class=\"hotEditBT\" value=\""+ep.btText2+"\" />");
 	ep.bt2 = $("<input type=\"button\" class=\"hotEditBT\" value=\""+ep.btText3+"\" />");
-	ep.bt3 = $("<input type=\"button\" class=\"hotEditBT3\" value=\""+$.hotEditor.btAdd+"\" />");
+	ep.bt3 = $("<input type=\"button\" class=\"hotEditBT3\" value=\""+ep.btText4+"\" />");
+	ep.bt4 = $("<input type=\"button\" class=\"hotEditBT\" value=\""+ep.btText5+"\" />");
 	return ep;
 };
  /*
@@ -132,99 +135,147 @@ $.hotEditor.init = function (editParas) {
 	});
 	//数据添加的处理
 	if (ep.addTarget) {
-		//确定addBT即bt3的位置
-		if (ep.addBT) {
-			$(ep.addBT).append(ep.bt3);
-		}else{
-			//如果未指定bt3的位置,则添加在root的bt2后面,bt3一直存在
-			if(ep.bts.length === 0){
-				ep.t.append(ep.bt3);
-			}else{
-				ep.bts.append(ep.bt3);
-			};
-		};
-		
-		if (ep.addTarget === ">") {
-			ep.ta = $(ep.t).clone(true).removeAttr("id").hide();
-			ep.ta.find(".hotEditSpan").remove();
-			ep.ta.find(".hotEditBT").remove();
-			ep.ta.find(".hotEditBT3").remove();
-		}else{
-			//直接使用addTarget对象作为ta
-			ep.ta = $(ep.addTarget);
-		}
-		if (!ep.editParas.bts) {ep.ta.bts = ep.ta}else{ep.ta.bts = ep.ta.find(ep.editParas.bts);};
-		ep.ta.bt1 = ep.bt1.clone().val(ep.btText1).show();
-		ep.ta.bt2 = ep.bt2.clone().show();
-		ep.ta.bts.append(ep.ta.bt1).append(ep.ta.bt2);
-		ep.ta.addClass("hotEditADD");
-		ep.t.after(ep.ta);
-		ep.ta.eds = [];
-		for (var i=0; i < ep.len; i++) {
-			var w = ep.tars[i].span.width()+20;
-			if (w<18) {w=50;};
-			ep.ta.eds[i] = ep.ta.find("[name='"+ep.key[i]+"']").width(w).show();
-		};
-		ep.ta.preParas = (ep.addPreParas)? ep.addPreParas :ep.preParas;
-		ep.ta.jsonToStr = (ep.addJsonToStr)?ep.addJsonToStr: ep.jsonToStr;
-		ep.ta.jsonTyps = (ep.addJsonTyps) ?ep.addJsonTyps: ep.jsonTyps;
-		ep.ta.url = (ep.addUrl) ?ep.addUrl:ep.url;
-		//ep.ta.addTo:完成数据添加后将新数据添加到的位置,注意是after的方式
-		ep.ta.addTo = (ep.addTo) ? $(ep.addTo) : ep.ta;
-		ep.ta.stateA =function(){ep.ta.bt1.removeAttr("disabled").val(ep.btText1);ep.ta.show();}
-		ep.ta.stateB =function(){ep.ta.bt1.removeAttr("disabled").val(ep.btText1);ep.ta.hide();}
-		ep.ta.bt1.click(function() {
-			ep.ta.bt1.val("loading").attr("disabled","disabled");
-			ep.ta.paras = $.hotEditor.prepare($.hotEditor.gather(ep.ta),ep.key,ep.ta.jsonToStr,ep.ta.jsonTyps,ep.ta.preParas);
-			/*
-			for(k in paras){
-				alert ("paras["+k +"] = "+paras[k]);
-			}
-			*/
-			//console.log(ep.ta.paras);
-			//在addTo不为HENull的情况下将新数据添加到的位置
-			ep.ta.appendNew = function(reVals) {
-				if (ep.ta.addTo != $.hotEditor.HENull && reVals) {
-					var newT = ep.tbak.clone(true).removeAttr("id");
-					if (ep.len === 1) {
-						newT.text(reVals[ep.key[0]]);
-					}else{
-						for (var i=0; i < ep.len; i++) {
-							var newD = (reVals[ep.key[i]])?reVals[ep.key[i]]:"";
-							newT.find(ep.subs[i]).text(newD);
-						};
-					}
-					ep.ta.addTo.after(newT);
-					var epNew = $.extend({},ep.editParas);
-					if (ep.addBT) {epNew.addTarget=undefined;};
-					$.hotEditor.act(epNew,newT);
-				};
-			};
-			if (ep.ta.url && ep.ta.paras) {
-				if ($.hotEditor.ajax(ep,ep.ta.url,ep.ta.paras,ep.ta.appendNew)) {
-					
-				}
-			}else{
-				//不提交,直接添加
-				var reval = [];
-				for (var i=0; i < ep.len; i++) {
-					reval[i] = ep.ta.eds[i].val();
-				}
-				ep.ta.appendNew(reval);
-			};
-			//最后隐藏输入
-			ep.ta.stateB();
-		});
-		ep.ta.bt2.click(function(){
-			ep.ta.stateB();
-		});
-		ep.bt3.click(function() {
-			ep.ta.stateA();
-		});
-		ep.ta.stateB();
+		$.hotEditor.add(ep);
+	};
+	//数据删除
+	if (ep.delBT) {
+		$.hotEditor.del(ep);
 	};
  	return ep;
 };
+$.hotEditor.del = function(ep) {
+	//确定bt4的位置
+	if (ep.delBT != ">") {
+		$(ep.delBT).append(ep.bt4);
+	}else{
+		//如果未指定bt4的位置,则添加在ep的bt3后面,bt4一直存在
+		if(ep.bts.length === 0){
+			ep.t.append(ep.bt4);
+		}else{
+			ep.bts.append(ep.bt4);
+		};
+	};
+	ep.delUrl = (ep.delUrl) ? ep.delUrl : ep.url;
+	ep.delPreParas = (ep.delPreParas)? ep.delPreParas :ep.preParas;
+	ep.delJsonToStr = (ep.delJsonToStr)?ep.delJsonToStr: ep.jsonToStr;
+	ep.delJsonTyps = (ep.delJsonTyps) ?ep.delJsonTyps: ep.jsonTyps;
+	ep.delConfirm = (ep.delConfirm )?ep.delConfirm :"This will be deleted, confirm?";
+	ep.delRemove = function() {
+		ep.t.remove();
+	};
+	//删除
+	ep.bt4.click(function() {
+		//ep.bt4.val("loading").attr("disabled","disabled");
+		ep.delParas = $.hotEditor.prepare($.hotEditor.gather(ep.t),ep.key,ep.delJsonToStr,ep.delJsonTyps,ep.delPreParas);
+		console.log(ep.delParas);
+		if (confirm(ep.delConfirm) ) {
+			if (ep.delUrl && ep.delParas) {
+				if ($.hotEditor.ajax(ep,ep.delUrl,ep.delPreParas,ep.delRemove)) {
+					
+				}
+			}else{
+				//不提交,直接去除
+				ep.delRemove();
+			}
+		};
+	});
+}
+/*
+add实现	,addTarget,addPosition,key,bt1,bt2,bt3,url,addBT,bts,inputWidth,
+*/
+$.hotEditor.add = function (ep) {
+	//确定addBT即bt3的位置
+	if (ep.addBT) {
+		$(ep.addBT).append(ep.bt3);
+	}else{
+		//如果未指定bt3的位置,则添加在root的bt2后面,bt3一直存在
+		if(ep.bts.length === 0){
+			ep.t.append(ep.bt3);
+		}else{
+			ep.bts.append(ep.bt3);
+		};
+	};
+	
+	if (ep.addTarget === ">") {
+		ep.ta = $(ep.t).clone(true).removeAttr("id").hide();
+		ep.ta.find(".hotEditSpan").remove();
+		ep.ta.find(".hotEditBT").remove();
+		ep.ta.find(".hotEditBT3").remove();
+	}else{
+		//直接使用addTarget对象作为ta
+		ep.ta = $(ep.addTarget);
+	}
+	if (!ep.editParas.bts) {ep.ta.bts = ep.ta}else{ep.ta.bts = ep.ta.find(ep.editParas.bts);};
+	ep.ta.bt1 = ep.bt1.clone().val(ep.btText1).show();
+	ep.ta.bt2 = ep.bt2.clone().show();
+	ep.ta.bts.append(ep.ta.bt1).append(ep.ta.bt2);
+	ep.ta.addClass("hotEditADD");
+	//addPosition
+	ep.t.after(ep.ta);
+	ep.ta.eds = [];
+	for (var i=0; i < ep.len; i++) {
+		var w = ep.tars[i].span.width()+20;
+		if (w<18) {w=50;};
+		ep.ta.eds[i] = ep.ta.find("[name='"+ep.key[i]+"']").width(w).show();
+	};
+	ep.ta.preParas = (ep.addPreParas)? ep.addPreParas :ep.preParas;
+	ep.ta.jsonToStr = (ep.addJsonToStr)?ep.addJsonToStr: ep.jsonToStr;
+	ep.ta.jsonTyps = (ep.addJsonTyps) ?ep.addJsonTyps: ep.jsonTyps;
+	ep.ta.url = (ep.addUrl) ?ep.addUrl:ep.url;
+	//ep.ta.addTo:完成数据添加后将新数据添加到的位置,注意是after的方式
+	ep.ta.addTo = (ep.addTo) ? $(ep.addTo) : ep.ta;
+	ep.ta.stateA =function(){ep.ta.bt1.removeAttr("disabled").val(ep.btText1);ep.ta.show();}
+	ep.ta.stateB =function(){ep.ta.bt1.removeAttr("disabled").val(ep.btText1);ep.ta.hide();}
+	//在addTo不为HENull的情况下将新数据添加到的位置
+	ep.ta.appendNew = function(reVals) {
+		if (ep.ta.addTo != $.hotEditor.HENull && reVals) {
+			var newT = ep.tbak.clone(true).removeAttr("id");
+			if (ep.len === 1) {
+				newT.text(reVals[ep.key[0]]);
+			}else{
+				for (var i=0; i < ep.len; i++) {
+					var newD = (reVals[ep.key[i]])?reVals[ep.key[i]]:"";
+					newT.find(ep.subs[i]).text(newD);
+				};
+			}
+			ep.ta.addTo.after(newT);
+			var epNew = $.extend({},ep.editParas);
+			if (ep.addBT) {epNew.addTarget=undefined;};
+			$.hotEditor.act(epNew,newT);
+		};
+	};
+	ep.ta.bt1.click(function() {
+		ep.ta.bt1.val("loading").attr("disabled","disabled");
+		ep.ta.paras = $.hotEditor.prepare($.hotEditor.gather(ep.ta),ep.key,ep.ta.jsonToStr,ep.ta.jsonTyps,ep.ta.preParas);
+		/*
+		for(k in paras){
+			alert ("paras["+k +"] = "+paras[k]);
+		}
+		*/
+		//console.log(ep.ta.paras);
+		if (ep.ta.url && ep.ta.paras) {
+			if ($.hotEditor.ajax(ep,ep.ta.url,ep.ta.paras,ep.ta.appendNew)) {
+				
+			}
+		}else{
+			//不提交,直接添加
+			var reval = [];
+			for (var i=0; i < ep.len; i++) {
+				reval[i] = ep.ta.eds[i].val();
+			}
+			ep.ta.appendNew(reval);
+		};
+		//最后隐藏输入
+		ep.ta.stateB();
+	});
+	ep.ta.bt2.click(function(){
+		ep.ta.stateB();
+	});
+	ep.bt3.click(function() {
+		ep.ta.stateA();
+	});
+	ep.ta.stateB();
+}
 /*
 输入状态	
 */

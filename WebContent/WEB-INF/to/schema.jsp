@@ -33,23 +33,27 @@ if(kc == null){
 <%
 KObjSchema ks = kc.getKobjSchema();
 HashMap<String,KObjColumn> cols = ks.getKObjColumns();
+ArrayList<KObjColumn> colList = ks.getColList();
 StringBuilder sb = new StringBuilder();
-for (Iterator<String> iterator = cols.keySet().iterator(); iterator.hasNext();) {
-	String colKey = iterator.next();
-	KObjColumn col = cols.get(colKey);
-	sb.append("<tr><td>");
-	sb.append(col.getCol());
-	sb.append("</td><td>");
-	sb.append(col.getDef());
-	sb.append("</td><td>");
-	sb.append(col.getType());
-	sb.append("</td><td>");
-	sb.append(col.getIntro());
-	sb.append("</td><td>");
-	sb.append(col.getLen());
-	sb.append("</td><td>");
-	sb.append(col.getValidatorString());
-	sb.append("</td><td></td></tr>\r\n");
+if(colList.size() <= 0){
+	sb.append("<tr><td>col</td><td>default</td><td>type</td><td>intro</td><td>0</td><td></td><td></td></tr>\r\n");
+}else{
+	for (Iterator<KObjColumn> iterator = colList.iterator(); iterator.hasNext();) {
+		KObjColumn col = iterator.next();
+		sb.append("<tr><td>");
+		sb.append(col.getCol());
+		sb.append("</td><td>");
+		sb.append(col.getDef());
+		sb.append("</td><td>");
+		sb.append(col.getType());
+		sb.append("</td><td>");
+		sb.append(col.getIntro());
+		sb.append("</td><td>");
+		sb.append(col.getLen());
+		sb.append("</td><td>");
+		sb.append(col.getValidatorString());
+		sb.append("</td><td></td></tr>\r\n");
+	}
 }
 out.println(sb);
 %>
@@ -60,20 +64,24 @@ out.println(sb);
 <%
 HashMap<String,KObjIndex> indexes = ks.getIndexes();
 sb = new StringBuilder();
-for (Iterator<String> iterator = indexes.keySet().iterator(); iterator.hasNext();) {
-	String colKey = iterator.next();
-	KObjIndex index = indexes.get(colKey);
-	sb.append("<tr><td>");
-	sb.append(index.getCol());
-	sb.append("</td><td>");
-	sb.append(index.isAsc());
-	sb.append("</td><td>");
-	sb.append(index.getIntro());
-	sb.append("</td><td>");
-	sb.append(index.getType());
-	sb.append("</td><td>");
-	sb.append(index.isUnique());
-	sb.append("</td><td></td></tr>\r\n");
+if(indexes.size() <= 0){
+	sb.append("<tr><td>col</td><td>false</td><td>intro</td><td>type</td><td>false</td><td></td></tr>\r\n");
+}else{
+	for (Iterator<String> iterator = indexes.keySet().iterator(); iterator.hasNext();) {
+		String colKey = iterator.next();
+		KObjIndex index = indexes.get(colKey);
+		sb.append("<tr><td>");
+		sb.append(index.getCol());
+		sb.append("</td><td>");
+		sb.append(index.isAsc());
+		sb.append("</td><td>");
+		sb.append(index.getIntro());
+		sb.append("</td><td>");
+		sb.append(index.getType());
+		sb.append("</td><td>");
+		sb.append(index.isUnique());
+		sb.append("</td><td></td></tr>\r\n");
+	}
 }
 out.println(sb);
 %>
@@ -109,6 +117,8 @@ $(function(){
 		jsonToStr:"schema_coljson",
 		msg:"#re"
 		,addTarget:">"
+		,delBT:">"
+		,delPreParas:{schema_key:"<%= kc.getKobjName()%>",schema_part:"col_del"}
 		//,addBT:"#schema_col_add"
 	};
 	$("#schema_columns tr:gt(0)").each(function (i) {
@@ -126,6 +136,8 @@ $(function(){
 		jsonToStr:"schema_indexjson",
 		msg:"#re"
 		,addTarget:">"
+		,delBT:">"
+		,delPreParas:{schema_key:"<%= kc.getKobjName()%>",schema_part:"index_del"}
 		//,addBT:"#schema_index_add"
 	};
 	$("#schema_indexes tr:gt(0)").each(function (i) {

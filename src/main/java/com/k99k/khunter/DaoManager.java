@@ -3,6 +3,7 @@
  */
 package com.k99k.khunter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -363,6 +364,25 @@ public final class DaoManager {
 	}
 	
 
+	/**
+	 * @return the daomap
+	 */
+	public static final Map<String, DaoInterface> getDaoMap() {
+		return daoMap;
+	}
+	
+	/**
+	 * 获取DaoName列表
+	 * @return
+	 */
+	public static final ArrayList<String> getDaoNames() {
+		ArrayList<String> list = new ArrayList<String>();
+		for (Iterator<String> it = daoMap.keySet().iterator(); it.hasNext();) {
+			String dName = it.next();
+			list.add(dName);
+		}
+		return list;
+	}
 	/**
 	 * 退出DaoManager时的操作
 	 */

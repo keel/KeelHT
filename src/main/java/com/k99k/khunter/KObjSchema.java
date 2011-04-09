@@ -467,6 +467,20 @@ public class KObjSchema {
 	}
 	
 	/**
+	 * 获取col列表,包含子col对象
+	 * @return
+	 */
+	public final ArrayList<KObjColumn> getColList(){
+		ArrayList<KObjColumn> list = new ArrayList<KObjColumn>();
+		for (Iterator<KObjColumn> iterator = this.columnList.iterator(); iterator.hasNext();) {
+			KObjColumn kc = iterator.next();
+			list.add(kc);
+			subToList(list,kc);
+		}
+		return list;
+	}
+	
+	/**
 	 * 获取某个索引
 	 * @param colOfIndex
 	 * @return
@@ -488,6 +502,22 @@ public class KObjSchema {
 				KObjColumn kcc = it2.next();
 				cols.add(kcc.toMap());
 				subToMap(cols,kcc);
+			}
+		}
+	}
+	
+	/**
+	 * 处理包含子KObjColumn的toList
+	 * @param colList
+	 * @param kc
+	 */
+	private final void subToList(ArrayList<KObjColumn> colList,KObjColumn kc){
+		ArrayList<KObjColumn> subs = kc.getSubColumns();
+		if (subs != null) {
+			for (Iterator<KObjColumn> it2 = subs.iterator(); it2.hasNext();) {
+				KObjColumn kcc = it2.next();
+				colList.add(kcc);
+				subToList(colList,kcc);
 			}
 		}
 	}

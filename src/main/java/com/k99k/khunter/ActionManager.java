@@ -219,6 +219,19 @@ public final class ActionManager {
 		return true;
 	}
 	
+	/**
+	 * reload All Actions
+	 * @return 全部成功则返回true
+	 */
+	public static final boolean reloadAllActions(){
+		boolean re = true;
+		for (Iterator<String> it = actionMap.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
+			re = reLoadAction(key) ? re : false;
+		}
+		return re;
+	}
+	
 	public static void main(String[] args) {
 		String webRoot = "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/";
 		String jsonFilePath = webRoot+"kconfig.json";
