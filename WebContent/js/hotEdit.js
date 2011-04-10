@@ -8,7 +8,7 @@ btEdit:"EDIT",
 btCancel:"CANCEL",
 btAdd:"ADD",
 btDel:"DEL",
-selectEditor : "<select name=\"s\"> <option value=\"true\">true</option> <option value=\"false\">false</option> </select>"
+selectEditor : "<select name=\"s\"><option value=\"true\">true</option> <option value=\"false\">false</option> </select>"
 };
 /*
 验证参数,并进行初始化,初始化结果体现在ep.initOK上
@@ -122,8 +122,9 @@ $.hotEditor.init = function (editParas) {
 			*/
 			//console.log(ep.paras);
 			if (ep.url && ep.paras) {$.hotEditor.ajax(ep,ep.url,ep.paras,false);}else{
-				//不提交，直接更新span
+				//不提交,直接更新span
 				for (var i=0; i < ep.len; i++) {
+					if (ep.editor[i]===$.hotEditor.HENull) {continue;};
 					ep.tars[i].span.text(ep.tars[i].ed.val());
 				}
 			};
@@ -159,7 +160,7 @@ $.hotEditor.del = function(ep) {
 	ep.delPreParas = (ep.delPreParas)? ep.delPreParas :ep.preParas;
 	ep.delJsonToStr = (ep.delJsonToStr)?ep.delJsonToStr: ep.jsonToStr;
 	ep.delJsonTyps = (ep.delJsonTyps) ?ep.delJsonTyps: ep.jsonTyps;
-	ep.delConfirm = (ep.delConfirm )?ep.delConfirm :"This will be deleted, confirm?";
+	ep.delConfirm = (ep.delConfirm)?ep.delConfirm :"This will be deleted, confirm?";
 	ep.delRemove = function() {
 		ep.t.remove();
 	};
@@ -179,9 +180,9 @@ $.hotEditor.del = function(ep) {
 			}
 		};
 	});
-}
+};
 /*
-add实现	,addTarget,addPosition,key,bt1,bt2,bt3,url,addBT,bts,inputWidth,
+add实现
 */
 $.hotEditor.add = function (ep) {
 	//确定addBT即bt3的位置
@@ -214,6 +215,10 @@ $.hotEditor.add = function (ep) {
 	ep.t.after(ep.ta);
 	ep.ta.eds = [];
 	for (var i=0; i < ep.len; i++) {
+		if (ep.editor[i] ===$.hotEditor.HENull) {
+			ep.ta.eds[i] = ep.ta.find(ep.subs[i]).text(ep.tars[i].span.text());
+			continue;
+		}
 		var w = ep.tars[i].span.width()+20;
 		if (w<18) {w=50;};
 		ep.ta.eds[i] = ep.ta.find("[name='"+ep.key[i]+"']").width(w).show();
@@ -231,9 +236,10 @@ $.hotEditor.add = function (ep) {
 		if (ep.ta.addTo != $.hotEditor.HENull && reVals) {
 			var newT = ep.tbak.clone(true).removeAttr("id");
 			if (ep.len === 1) {
-				newT.text(reVals[ep.key[0]]);
+				newT.text(reVals[ep.key[i]]);
 			}else{
 				for (var i=0; i < ep.len; i++) {
+					if (ep.editor[i]===$.hotEditor.HENull) {continue;};
 					var newD = (reVals[ep.key[i]])?reVals[ep.key[i]]:"";
 					newT.find(ep.subs[i]).text(newD);
 				};
@@ -259,9 +265,9 @@ $.hotEditor.add = function (ep) {
 			}
 		}else{
 			//不提交,直接添加
-			var reval = [];
+			var reval = {};
 			for (var i=0; i < ep.len; i++) {
-				reval[i] = ep.ta.eds[i].val();
+				reval[ep.key[i]] = ep.ta.eds[i].val();
 			}
 			ep.ta.appendNew(reval);
 		};
@@ -275,7 +281,7 @@ $.hotEditor.add = function (ep) {
 		ep.ta.stateA();
 	});
 	ep.ta.stateB();
-}
+};
 /*
 输入状态	
 */
