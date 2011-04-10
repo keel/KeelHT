@@ -171,8 +171,8 @@ $.hotEditor.del = function(ep) {
 		console.log(ep.delParas);
 		if (confirm(ep.delConfirm) ) {
 			if (ep.delUrl && ep.delParas) {
-				if ($.hotEditor.ajax(ep,ep.delUrl,ep.delPreParas,ep.delRemove)) {
-					
+				if ($.hotEditor.ajax(ep,ep.delUrl,ep.delPreParas,function(){})) {
+					ep.delRemove();
 				}
 			}else{
 				//不提交,直接去除

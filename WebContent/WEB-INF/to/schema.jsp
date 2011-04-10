@@ -119,7 +119,6 @@ $(function(){
 		,addTarget:">"
 		,delBT:">"
 		,delPreParas:{schema_key:"<%= kc.getKobjName()%>",schema_part:"col_del"}
-		//,addBT:"#schema_col_add"
 	};
 	$("#schema_columns tr:gt(0)").each(function (i) {
 		$.hotEditor.act(p_cols,this);
@@ -138,7 +137,6 @@ $(function(){
 		,addTarget:">"
 		,delBT:">"
 		,delPreParas:{schema_key:"<%= kc.getKobjName()%>",schema_part:"index_del"}
-		//,addBT:"#schema_index_add"
 	};
 	$("#schema_indexes tr:gt(0)").each(function (i) {
 		$.hotEditor.act(p_indexes,this);

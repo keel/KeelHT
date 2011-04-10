@@ -9,7 +9,7 @@
 </div>
 <div id="re"></div>
 <div class="weight">KObj name:</div>
-<div id="schema_name"></div>
+<div id="schema_key">schema_key</div>
 <div class="weight">Intro:</div>
 <div id="schema_intro"></div>
 <div class="weight">Dao: </div>
@@ -27,29 +27,21 @@
 <script type="text/javascript">
 $(function(){
 	var kobjName = "";
+	var p_k = {msg:"#re"};
+	$.hotEditor.act(p_k,"#schema_key");
 	//intro
-	var p_intro = {
-		preParas : {schema_key:kobjName,schema_part:"intro"},
-		url:"act?act=console&right=kobj&subact=schema_update",
-		key:["schema_intro"],
-		msg:"#re"
-	};
-	$.hotEditor.act(p_intro,"#schema_intro");
+	//var p_intro = {msg:"#re"};
+	$.hotEditor.act(p_k,"#schema_intro");
 	//dao
 	var p_dao = {
-		key : ["schema_daojson"],
-		preParas:{schema_key:kobjName,schema_part:"dao"},
-		url:"act?act=console&right=kobj&subact=schema_update",
 		editor:[$.hotEditor.textAreaEditor],
 		msg:"#re"
 	};
 	$.hotEditor.act(p_dao,"#schema_daojson");
 	//col
 	var p_cols = {
-		preParas:{schema_key:kobjName,schema_part:"col_edit"},
 		subs:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)","td:eq(5)"],
 		key : ["col","def","type","intro","len","validator"],
-		url:"act?act=console&right=kobj&subact=schema_update",
 		editor : [$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor],
 		bts : "td:eq(6)",
 		jsonTyps:["s","a","i","s","i","s"],
@@ -57,17 +49,13 @@ $(function(){
 		msg:"#re"
 		,addTarget:">"
 		,delBT:">"
-		,delPreParas:{schema_key:kobjName,schema_part:"col_del"}
-		//,addBT:"#schema_col_add"
 	};
 	$("#schema_columns tr:gt(0)").each(function (i) {
 		$.hotEditor.act(p_cols,this);
 	});
 	//index
 	var p_indexes = {
-		preParas:{schema_key:kobjName,schema_part:"index_edit"},
 		subs:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)"],
-		url:"act?act=console&right=kobj&subact=schema_update",
 		key : ["col","asc","intro","type","unique"],
 		editor : [$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor],
 		bts : "td:eq(5)",
@@ -76,8 +64,6 @@ $(function(){
 		msg:"#re"
 		,addTarget:">"
 		,delBT:">"
-		,delPreParas:{schema_key:kobjName,schema_part:"index_del"}
-		//,addBT:"#schema_index_add"
 	};
 	$("#schema_indexes tr:gt(0)").each(function (i) {
 		$.hotEditor.act(p_indexes,this);
