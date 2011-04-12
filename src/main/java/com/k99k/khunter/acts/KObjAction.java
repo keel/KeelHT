@@ -229,7 +229,7 @@ public class KObjAction extends Action{
 			if (StringUtil.isStringWithLen(key, 2) && StringUtil.isStringWithLen(kcjson, 2)) {
 				int re = KObjManager.createKObjConfigToDB(key, JSONTool.readJsonString(kcjson));
 				if (re == 0) {
-					msg.addData("print", "ok:"+kcjson);
+					msg.addData("print", "ok");
 					return super.act(msg);	
 				}
 				rePrint = ErrorCode.getErrorInfo(8, re);

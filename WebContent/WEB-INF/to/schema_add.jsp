@@ -34,9 +34,9 @@ newdao : <input type="checkbox" id="isnewdao" />
 </table>
 <hr />
 <div id="json">
-<pre id="jsonPre">
+<div id="jsonPre">
 
-</pre>
+</div>
 <hr />
 </div>
 <input id="schema_add_json" type="button" name="schema_add_json" value="  SCHEMA JSON  " />  
@@ -53,7 +53,7 @@ $(function(){
 			$("#newdaoconfig").hide();
 		}
 	});
-	var kobjName = "";
+	var kobjName = null;
 	var p_k = {msg:"#re"};
 	$.hotEditor.act(p_k,"#schema_key");
 	//intro
@@ -103,6 +103,7 @@ $(function(){
 			return false;
 		}
 		var schema_key = checkInput($("#schema_key").find("input[name='schema_key']"));
+		kobjName = schema_key;
 		var kobj = {};
 		
 		var dao = {};
@@ -110,7 +111,7 @@ $(function(){
 		if(daoName === false){return false;}else{
 			dao["daoName"] = daoName;
 		};
-		if($("#isnewdao").checked){
+		if($("#isnewdao").get(0).checked){
 			var tableName = checkInput("#tableName");
 			var newdaoName = checkInput("#newDaoName");
 			var daoid = checkInput("#daoid",1,"i");
@@ -124,26 +125,29 @@ $(function(){
 				dao["props"] = prop;
 			};
 		}
-		
+		kobj["dao"] = dao;
 		var intro = checkInput($("#schema_intro").find("input[name='intro']"));
 		if(intro === false){return false;};
 		kobj["intro"] = intro;
 		var cols  = [];
-		
+		var types = ["s","a","i","s","i","s"];
+		var keys = ["col","def","type","intro","len","validator"];
 		$("#schema_columns tr:gt(0)").each(function (i) {
 			if(!$(this).hasClass("hotEditADD")){
-				cols[i]=$.hotEditor.gather($(this));
+				cols.push($.hotEditor.parseJson(types,keys,$.hotEditor.gather($(this))));
 			}
 		});
 		kobj["columns"] = cols;
 		var indexes = [];
+		types = ["s","b","s","s","b"];
+		keys = ["col","asc","intro","type","unique"];
 		$("#schema_indexes tr:gt(0)").each(function (i) {
 			if(!$(this).hasClass("hotEditADD")){
-				indexes[i]=$.hotEditor.gather($(this));
+				indexes.push($.hotEditor.parseJson(types,keys,$.hotEditor.gather($(this))));
 			}
 		});
 		kobj["indexes"] = indexes;
-		eval("json["+schema_key+"] = kobj");
+		json[schema_key] = kobj;
 		
 		return json;
 	};
@@ -153,14 +157,15 @@ $(function(){
 		var inp = ($(input))?$.trim($(input).val()):false;
 		if(!inp){return false;};
 		if(inp.length < minLen){return false;}
-		if(type){inp = $.hotEditor.parseType(inp);};
+		if(type){inp = $.hotEditor.parseType(type,inp);};
 		return inp;
 	}
 	
 	$("#schema_addBT,#json").hide();
 	//json显示
+	var data = null;
 	$("#schema_add_json").click(function(){
-		var data = toJson();
+		data = toJson();
 		if(data){
 			$("#jsonPre").html($.toJSON(data));
 			$("#json").show();
@@ -173,8 +178,16 @@ $(function(){
 	//提交
 	$("#schema_addBT").click(function(){
 		//提交
-
-		
+		if(data && kobjName){
+			var paras = {"schema_key":kobjName};
+			paras["schema_kcjson"] = data;
+			$.post("act?act=console&right=kobj&subact=kc_add", paras ,function(re) {
+				//alert("success:"+data);
+				$("#re").text(re);
+			}).error(function() {return alert("post error!");});
+		}else{
+			alert("data error!");
+		}
 	});
 
 });
