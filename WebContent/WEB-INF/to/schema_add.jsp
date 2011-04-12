@@ -11,8 +11,16 @@
 <div class="weight">KObj name:</div>
 <div id="schema_key">schema_key</div>
 <div class="weight">Intro:</div>
-<div id="schema_intro"></div>
-<div class="weight">Dao: </div>
+<div id="schema_intro">intro</div>
+<div class="weight" id="dao">Dao: </div>
+<label for="daoName">daoName:</label><input id="daoName" type="text" name="daoName" value="daoName" /><br />
+newdao : <input type="checkbox" id="isnewdao" />
+<div id="newdaoconfig">
+<label for="tableName">tableName:</label><input id="tableName" type="text" name="tableName" value="" /><br />
+<label for="newDaoName">newDaoName:</label><input id="newDaoName" type="text" name="newDaoName" value="" /><br />
+<label for="daoid">id:</label><input id="daoid" type="text" name="id" value="" /><br />
+<input id="daoType" type="hidden" name="type" value="single" />
+</div>
 <div id="schema_daojson">{"tableName":"HTItem","newDaoName":"mongoItemDao","daoName":"mongoDao","props":{"id":11,"type":"single"}}</div>
 <div class="weight">Columns: - <span id="schema_col_add"></span></div>
 <table id="schema_columns">
@@ -24,8 +32,27 @@
 <tr><th>column</th><th>asc</th><th>intro</th><th>type</th><th>unique</th><th>EDIT</th></tr>
 <tr><td>col</td><td>false</td><td>intro</td><td>type</td><td>false</td><td></td></tr>
 </table>
+<hr />
+<div id="json">
+<pre id="jsonPre">
+
+</pre>
+<hr />
+</div>
+<input id="schema_add_json" type="button" name="schema_add_json" value="  SCHEMA JSON  " />  
+<input id="schema_addBT" type="button" name="schema_addBT" value="  SCHEMA ADD  " />
 <script type="text/javascript">
 $(function(){
+	
+	//dao配置
+	$("#newdaoconfig").hide();
+	$("#isnewdao").click(function(){
+		if(this.checked){
+			$("#newdaoconfig").show();
+		}else{
+			$("#newdaoconfig").hide();
+		}
+	});
 	var kobjName = "";
 	var p_k = {msg:"#re"};
 	$.hotEditor.act(p_k,"#schema_key");
@@ -67,6 +94,87 @@ $(function(){
 	};
 	$("#schema_indexes tr:gt(0)").each(function (i) {
 		$.hotEditor.act(p_indexes,this);
+	});
+	
+	//合成json
+	function toJson(){
+		var json = {};
+		if(!$("#schema_key").find("input[name='schema_key']")){
+			return false;
+		}
+		var schema_key = checkInput($("#schema_key").find("input[name='schema_key']"));
+		var kobj = {};
+		
+		var dao = {};
+		var daoName = checkInput("#daoName");
+		if(daoName === false){return false;}else{
+			dao["daoName"] = daoName;
+		};
+		if($("#isnewdao").checked){
+			var tableName = checkInput("#tableName");
+			var newdaoName = checkInput("#newDaoName");
+			var daoid = checkInput("#daoid",1,"i");
+			var daoType = checkInput("#daoType");
+			if(tableName === false && newdaoName === false || daoid === false|| daoType === false){
+				return false;
+			}else{
+				dao["tableName"] = tableName;
+				dao["newdaoName"] = newdaoName;
+				var prop = {"id":daoid,"type":daoType};
+				dao["props"] = prop;
+			};
+		}
+		
+		var intro = checkInput($("#schema_intro").find("input[name='intro']"));
+		if(intro === false){return false;};
+		kobj["intro"] = intro;
+		var cols  = [];
+		
+		$("#schema_columns tr:gt(0)").each(function (i) {
+			if(!$(this).hasClass("hotEditADD")){
+				cols[i]=$.hotEditor.gather($(this));
+			}
+		});
+		kobj["columns"] = cols;
+		var indexes = [];
+		$("#schema_indexes tr:gt(0)").each(function (i) {
+			if(!$(this).hasClass("hotEditADD")){
+				indexes[i]=$.hotEditor.gather($(this));
+			}
+		});
+		kobj["indexes"] = indexes;
+		eval("json["+schema_key+"] = kobj");
+		
+		return json;
+	};
+
+	function checkInput(input,minLen,type){
+		if(!minLen){minLen = 2;};
+		var inp = ($(input))?$.trim($(input).val()):false;
+		if(!inp){return false;};
+		if(inp.length < minLen){return false;}
+		if(type){inp = $.hotEditor.parseType(inp);};
+		return inp;
+	}
+	
+	$("#schema_addBT,#json").hide();
+	//json显示
+	$("#schema_add_json").click(function(){
+		var data = toJson();
+		if(data){
+			$("#jsonPre").html($.toJSON(data));
+			$("#json").show();
+			$("#schema_addBT").show();
+		}else{
+			$("#json").hide();
+			$("#schema_addBT").hide();
+		}
+	});	
+	//提交
+	$("#schema_addBT").click(function(){
+		//提交
+
+		
 	});
 
 });
