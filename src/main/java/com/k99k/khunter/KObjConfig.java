@@ -36,6 +36,7 @@ public class KObjConfig {
 	@SuppressWarnings("unchecked")
 	public static final KObjConfig newInstance(String key,HashMap<String,Object> map){
 		KObjConfig kc = new KObjConfig();
+		kc.setKobjName(key);
 		try {
 			if (!JSONTool.checkMapTypes(map,new String[]{"intro","dao","columns","indexes"},new Class[]{String.class,HashMap.class,ArrayList.class,ArrayList.class})) {
 				ErrorCode.logError(KObjManager.log, 8, 22, map.toString());
@@ -56,7 +57,6 @@ public class KObjConfig {
 				return null;
 			}
 			kc.setIntro(intro);
-			kc.setKobjName(key);
 			
 		} catch (Exception e) {
 			ErrorCode.logError(KObjManager.log, 8, 12, e, " -in KObjConfig.newInstance");

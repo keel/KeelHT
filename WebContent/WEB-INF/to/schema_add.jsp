@@ -98,7 +98,7 @@ $(function(){
 	
 	//合成json
 	function toJson(){
-		var json = {};
+		//var json = {};
 		if(!$("#schema_key").find("input[name='schema_key']")){
 			return false;
 		}
@@ -147,9 +147,9 @@ $(function(){
 			}
 		});
 		kobj["indexes"] = indexes;
-		json[schema_key] = kobj;
+		//json[schema_key] = kobj;
 		
-		return json;
+		return kobj;
 	};
 
 	function checkInput(input,minLen,type){
@@ -180,7 +180,7 @@ $(function(){
 		//提交
 		if(data && kobjName){
 			var paras = {"schema_key":kobjName};
-			paras["schema_kcjson"] = data;
+			paras["schema_kcjson"] = $.toJSON(data);
 			$.post("act?act=console&right=kobj&subact=kc_add", paras ,function(re) {
 				//alert("success:"+data);
 				$("#re").text(re);
