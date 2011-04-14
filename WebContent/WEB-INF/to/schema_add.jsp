@@ -120,7 +120,7 @@ $(function(){
 				return false;
 			}else{
 				dao["tableName"] = tableName;
-				dao["newdaoName"] = newdaoName;
+				dao["newDaoName"] = newdaoName;
 				var prop = {"id":daoid,"type":daoType};
 				dao["props"] = prop;
 			};

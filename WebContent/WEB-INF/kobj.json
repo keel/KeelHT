@@ -1,5 +1,75 @@
 {
 	"kobjs":{
+		"testTB2":{
+			"dao":{
+				"tableName":"tbTest",
+				"newDaoName":"tbTestDao",
+				"daoName":"mongoDao",
+				"props":{
+					"id":22,
+					"type":"single"
+				}
+			},
+			"indexes":[
+				{
+					"col":"col2",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"introIndex"
+				}
+			],
+			"columns":[
+				{
+					"col":"col1",
+					"def":"defaultcol",
+					"validator":"com.k99k.khunter.StringValidator,0,5",
+					"len":10,
+					"type":0,
+					"intro":"intro of col str"
+				},
+				{
+					"col":"col2",
+					"def":22,
+					"len":4,
+					"type":1,
+					"intro":"intro of int"
+				}
+			],
+			"intro":"introTB"
+		},
+		"testTB":{
+			"dao":{
+				"daoName":"mongoDao"
+			},
+			"indexes":[
+				{
+					"col":"colii",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"intro"
+				}
+			],
+			"columns":[
+				{
+					"col":"col2",
+					"def":"defaultstr",
+					"validator":"com.k99k.khunter.StringValidator,0,5",
+					"len":10,
+					"type":0,
+					"intro":"introStr"
+				},
+				{
+					"col":"colii",
+					"def":3,
+					"len":4,
+					"type":1,
+					"intro":"intro of int"
+				}
+			],
+			"intro":"introTB"
+		},
 		"HTItem":{
 			"dao":{
 				"tableName":"HTItem",
