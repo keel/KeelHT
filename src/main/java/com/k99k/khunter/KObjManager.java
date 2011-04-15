@@ -150,7 +150,7 @@ public final class KObjManager {
 		//使用save方法保持id
 		if (dao.save(oneKObj)) {
 			if (ks.applyIndexes() == 0) {
-				if (dao.deleteOne(id)) {
+				if (dao.deleteForever(id)) {
 					return 0;
 				}
 				return 21;

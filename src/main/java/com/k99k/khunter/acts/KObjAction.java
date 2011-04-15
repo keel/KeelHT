@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import com.k99k.khunter.Action;
@@ -20,6 +21,7 @@ import com.k99k.khunter.KObjConfig;
 import com.k99k.khunter.KObjDaoConfig;
 import com.k99k.khunter.KObjManager;
 import com.k99k.khunter.KObjSchema;
+import com.k99k.khunter.KObject;
 import com.k99k.tools.JSONTool;
 import com.k99k.tools.StringUtil;
 
@@ -220,6 +222,93 @@ public class KObjAction extends Action{
 			msg.addData("re", rePrint);
 			msg.addData("query_list", "");
 			return super.act(msg);	
+		}
+		//具体KObject的crud操作
+		else if(subact.equals("kobj_act")){
+			String kobj_act = httpmsg.getHttpReq().getParameter("kobj_act");
+			String key  = httpmsg.getHttpReq().getParameter("schema_key");
+			String rePrint = "{\"re\":\"err\",\"d\":{}";
+			if (!StringUtil.isStringWithLen(key, 2) || !StringUtil.isStringWithLen(key, 2)) {
+				msg.addData("print", "{\"re\":\"err\",\"d\":{\"schema_key\":\"schema_key or kobj_act error.\"}}");
+				return super.act(msg);
+			}
+			KObjConfig kc = KObjManager.findKObjConfig(key);
+			if (kc == null) {
+				msg.addData("print", "{\"re\":\"err\",\"d\":{\"schema_key\":\"not found.\"}}");
+				return super.act(msg);
+			}
+			//查询kobj
+			if(kobj_act.equals("search")){
+				String kobj_q = httpmsg.getHttpReq().getParameter("kobj_queryjson");
+				String kobj_f = httpmsg.getHttpReq().getParameter("kobj_fieldsjson");
+				String kobj_sort = httpmsg.getHttpReq().getParameter("kobj_sortjson");
+				String kobj_skip = httpmsg.getHttpReq().getParameter("kobj_skip");
+				String kobj_len = httpmsg.getHttpReq().getParameter("kobj_len");
+				String kobj_hint = httpmsg.getHttpReq().getParameter("kobj_hint");
+				HashMap<String,Object> query = (StringUtil.isStringWithLen(kobj_q, 2) && JSONTool.validateJsonString(kobj_q)) ? JSONTool.readJsonString(kobj_q) : null;
+				if (query != null) {
+					HashMap<String,Object> fields = (StringUtil.isStringWithLen(kobj_f, 2) && JSONTool.validateJsonString(kobj_f)) ? JSONTool.readJsonString(kobj_f) : null;
+					HashMap<String,Object> sortBy = (StringUtil.isStringWithLen(kobj_sort, 2) && JSONTool.validateJsonString(kobj_sort)) ? JSONTool.readJsonString(kobj_sort) : null;
+					int skip = (StringUtil.isDigits(kobj_skip))?Integer.parseInt(kobj_skip):0;
+					//默认长度为20
+					int len = (StringUtil.isDigits(kobj_len))?Integer.parseInt(kobj_len):20;
+					HashMap<String,Object> hint = (StringUtil.isStringWithLen(kobj_hint, 2) && JSONTool.validateJsonString(kobj_hint)) ? JSONTool.readJsonString(kobj_hint) : null;
+					List list = kc.getDaoConfig().findDao().query(query, fields, sortBy, skip, len, hint);
+					String d = JSONTool.writeJsonString(list);
+					msg.addData("print", "{\"re\":\"ok\",\"d\":{\"list\":"+d+"}}");
+					return super.act(msg);
+				}else{
+					rePrint = "{\"re\":\"err\",\"d\":{\"kobj_queryjson\":\"kobj_queryjson error\"}}";
+				}
+				
+			}
+			//删除kobj
+			else if(kobj_act.equals("del")){
+				String kobj_id = httpmsg.getHttpReq().getParameter("kobj_id");
+				if (StringUtil.isDigits(kobj_id)) {
+					long kid = Long.parseLong(kobj_id);
+					if (httpmsg.getHttpReq().getParameter("delforever") == null) {
+						if(kc.getDaoConfig().findDao().deleteOne(kid)){
+							msg.addData("print", "{\"re\":\"ok\",\"d\":{\"id\":"+kid+"}}");
+							return super.act(msg);
+						}
+					}else{
+						if (kc.getDaoConfig().findDao().deleteForever(Long.parseLong(kobj_id))) {
+							msg.addData("print", "{\"re\":\"ok\",\"d\":{\"id\":"+kid+",\"forever\":true}}");
+							return super.act(msg);
+						}
+					}
+				}else{
+					rePrint = "{\"re\":\"err\",\"d\":{\"kobj_id\":\"kobj_id error\"}}";
+				}
+			}
+			//add or update KObj
+			else if (kobj_act.equals("update")) {
+				String kobj_json = httpmsg.getHttpReq().getParameter("kobj_json");
+				//如果有kobj_id参数则为更新,无则为添加
+				String kobj_id = httpmsg.getHttpReq().getParameter("kobj_id");
+				if (StringUtil.isStringWithLen(key, 2) && StringUtil.isStringWithLen(kobj_json, 2)) {
+					if (JSONTool.validateJsonString(kobj_json)) {
+						HashMap nk = JSONTool.readJsonString(kobj_json);
+						KObjSchema ks = kc.getKobjSchema();
+						DaoInterface dao = kc.getDaoConfig().findDao();
+						KObject newKObj = (StringUtil.isDigits(kobj_id))?dao.findOne(kobj_id):ks.createEmptyKObj();
+						if (ks.setPropFromMap(nk, newKObj) && dao.save(newKObj)) {
+							msg.addData("print", "{\"re\":\"ok\",\"d\":{\"id\":"+newKObj.getId()+"}}");
+							return super.act(msg);
+						}else{
+							rePrint = "{\"re\":\"err\",\"d\":{\"kobj_json\":\"setPropFromMap or dao.save error\"}}";
+						}
+					}else{
+					rePrint = "{\"re\":\"err\",\"d\":{\"kobj_json\":\"readJsonString error\"}}";
+					}
+				}else{
+				rePrint = "{\"re\":\"err\",\"d\":{\"kobj_json\":\"kobj_json error\"}}";
+				}
+			}
+			//失败的情况
+			msg.addData("re", rePrint);
+			return super.act(msg);
 		}
 		//新增KobjConfig
 		else if(subact.equals("kc_add")){

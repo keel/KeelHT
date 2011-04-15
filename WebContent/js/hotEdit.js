@@ -406,6 +406,7 @@ $.hotEditor.act = function (ep,target) {
 /*
 更换类型,主要用于json中的值
 type为类型标识，如果不能识别类型标识，直接返回原对象
+l为Array类型，m为map类型
 a为任意类型，根据指令符判断,如 s@abc 表示将abc转换成string,i@abc表示将abc转换成int	
 */
 $.hotEditor.parseType = function(type,obj){
@@ -424,6 +425,22 @@ $.hotEditor.parseType = function(type,obj){
 		var re = parseFloat(obj);
 		if (!re) {return 0.0;};
 		return re;
+	}else if (type === "l") {
+		try{
+			var re = $.parseJSON(obj);
+			if(re && re.constructor === Array){return re;};
+		}catch(e){
+			return [];
+		}
+		return [];
+	}else if (type === "m") {
+		try{
+			var re = $.parseJSON(obj);
+			if(re && typeof(re) == 'object' && re.constructor != Array){return re;};
+		}catch(e){
+			return {};
+		}
+		return {};
 	}else if(type === "a"){
 		//指定类型判断
 		if (!obj) {return ""};

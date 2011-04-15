@@ -380,7 +380,6 @@ public class KObjSchema {
 	 * @return
 	 */
 	public  boolean validate(HashMap<String,Object> kobjMap){
-		
 		//逐个KObjColumn字段验证
 		for (Iterator<KObjColumn> iterator = this.columnList.iterator(); iterator.hasNext();) {
 			KObjColumn kc = iterator.next();
@@ -400,6 +399,29 @@ public class KObjSchema {
 		return true;
 	}
 	
+	
+	/**
+	 * 验证并设置属性,支持子对象设置,注意返回失败仍可能有部分属性设置已完成
+	 * FIXME 实现KObject.clone()方法，在失败时返回原对象
+	 * @param kobjMap HashMap<String,Object>
+	 * @param kobj 可为空对象或已有属性的对象，注意map中的数据会覆盖原属性
+	 * @return 是否设置成功,验证不通过则返回false
+	 */
+	public  boolean setPropFromMap(HashMap<String,Object> kobjMap,KObject kobj){
+		//逐个KObjColumn字段验证并设置
+		for (Iterator<KObjColumn> iterator = this.columnList.iterator(); iterator.hasNext();) {
+			KObjColumn kc = iterator.next();
+			String col = kc.getCol();
+			Object o = kobjMap.get(col);
+			if (o == null) {
+				return false;
+			}
+			if(!kc.validateAndSet(o, kobj)){
+				return false;
+			}
+		}
+		return true;
+	}
 	/**
 	 * 设置KObject属性,注意在kobjPath中不包含List，否则返回false
 	 * @param kobj

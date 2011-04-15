@@ -1,43 +1,5 @@
 {
 	"kobjs":{
-		"hello":{
-			"dao":{
-				"tableName":"helloT",
-				"newDaoName":"helloDao",
-				"daoName":"mongoDao",
-				"props":{
-					"id":33,
-					"type":"single"
-				}
-			},
-			"indexes":[
-				{
-					"col":"cc",
-					"unique":false,
-					"asc":true,
-					"type":"normal",
-					"intro":"intro Index"
-				}
-			],
-			"columns":[
-				{
-					"col":"helloName",
-					"def":"defaultname",
-					"validator":"com.k99k.khunter.StringValidator,0,5",
-					"len":20,
-					"type":0,
-					"intro":"hello name"
-				},
-				{
-					"col":"cc",
-					"def":1,
-					"len":4,
-					"type":1,
-					"intro":"intro of cc"
-				}
-			],
-			"intro":"intro of hello"
-		},
 		"testTB2":{
 			"dao":{
 				"tableName":"tbTest",
@@ -69,6 +31,38 @@
 				{
 					"col":"col2",
 					"def":22,
+					"len":4,
+					"type":1,
+					"intro":"intro of int"
+				}
+			],
+			"intro":"introTB"
+		},
+		"testTB":{
+			"dao":{
+				"daoName":"mongoDao"
+			},
+			"indexes":[
+				{
+					"col":"colii",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"intro"
+				}
+			],
+			"columns":[
+				{
+					"col":"col2",
+					"def":"defaultstr",
+					"validator":"com.k99k.khunter.StringValidator,0,5",
+					"len":10,
+					"type":0,
+					"intro":"introStr"
+				},
+				{
+					"col":"colii",
+					"def":3,
 					"len":4,
 					"type":1,
 					"intro":"intro of int"

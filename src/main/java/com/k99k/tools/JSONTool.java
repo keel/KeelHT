@@ -4,6 +4,7 @@
 package com.k99k.tools;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.stringtree.json.JSONErrorListener;
@@ -43,6 +44,16 @@ public final class JSONTool {
 	public static final String writeJsonString(HashMap<String,Object> map){
 		JSONWriter jsonWriter = new JSONWriter();
 		return jsonWriter.write(map);
+	}
+	
+	/**
+	 * 使用JSONWriter将List转成String形式的json
+	 * @param list
+	 * @return
+	 */
+	public static final String writeJsonString(List<Object> list){
+		JSONWriter jsonWriter = new JSONWriter();
+		return jsonWriter.write(list);
 	}
 	
 	/**

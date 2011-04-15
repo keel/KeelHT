@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * KObj的一列
@@ -249,6 +250,63 @@ public class KObjColumn {
 			else if(this.validator != null && !this.validator.validate(columnData)) {
 				return false;
 			}
+		}else{
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * 验证本字段,如果有子字段则轮循验证子字段,同时设置KObject字段
+	 * @param columnData
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public boolean validateAndSet(Object columnData,KObject kobj){
+		if (columnData == null) {
+			return false;
+		}
+		//验证类型
+		if (columnData.getClass().getName().equals(KOBJ_COLUMN_TYPES[this.type])) {
+			//验证子字段为HashMap时
+			if (this.type == 2) {
+				if (this.subColMap==null || (kobj.getProp(keyName) == null) || (!kobj.getProp(keyName).getClass().getName().equals("HashMap"))) {
+					return false;
+				}
+				HashMap<String,Object> m = (HashMap<String,Object>)columnData;
+				HashMap<Object,Object> koc = (HashMap<Object, Object>) kobj.getProp(keyName);
+				for (Iterator<String> iterator = m.keySet().iterator(); iterator
+						.hasNext();) {
+					String key = iterator.next();
+					KObjColumn sub = this.subColMap.get(key);
+					Object val = m.get(key);
+					if (sub == null || !sub.validateColumn(key, val)) {
+						return false;
+					}
+					koc.put(key, val);
+				}
+			}
+			//子字段为ArrayList时
+			else if (this.type == 3) {
+				if (this.subColForList == null || (kobj.getProp(keyName) == null) || (!kobj.getProp(keyName).getClass().getName().equals("ArrayList"))) {
+					return false;
+				}
+				ArrayList<Object> al = (ArrayList<Object>)columnData;
+				ArrayList<Object> koc = (ArrayList<Object>)kobj.getProp(this.keyName);
+				for (Iterator<Object> iterator = al.iterator(); iterator.hasNext();) {
+					Object obj = iterator.next();
+					if (!this.subColForList.validateColumn(obj)) {
+						return false;
+					}
+					koc.add(obj);
+				}
+			}
+			//非父字段,调用KObjColumnValidate接口
+			else if(this.validator != null && !this.validator.validate(columnData)) {
+				return false;
+			}
+			//单个属性直接设置
+			kobj.setProp(this.keyName, columnData);
 		}else{
 			return false;
 		}

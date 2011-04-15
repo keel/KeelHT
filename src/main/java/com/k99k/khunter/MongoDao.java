@@ -209,7 +209,7 @@ public class MongoDao implements DaoInterface{
 				cur = coll.find(q, field, skip, len).hint(hin);
 			}
 	        while(cur.hasNext()) {
-	        	Map<String, Object> m = (Map<String, Object>) cur.next();
+	        	HashMap<String, Object> m = (HashMap<String, Object>) cur.next();
 	        	list.add(m);
 	        }
 	        return list;

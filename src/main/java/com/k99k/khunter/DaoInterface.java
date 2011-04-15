@@ -68,7 +68,7 @@ public interface DaoInterface extends Cloneable{
 	 * @param skip 无则为0
 	 * @param len 无则为0
 	 * @param hint 无则为null
-	 * @return List<Map<String,Object>>
+	 * @return List<Map<String,Object>
 	 */
 	public List<Map<String,Object>> query(HashMap<String,Object> query,HashMap<String,Object> fields,HashMap<String,Object> sortBy,int skip,int len,HashMap<String,Object> hint);
 	
@@ -152,7 +152,12 @@ public interface DaoInterface extends Cloneable{
 	 */
 	public boolean deleteForever(HashMap<String,Object> query);
 	
-	
+	/**
+	 * 从数据库中按条件批量彻底删除,顺序号为16
+	 * @param id
+	 * @return
+	 */
+	public boolean deleteForever(long id);
 	
 	public DataSourceInterface getDataSource();
 	
