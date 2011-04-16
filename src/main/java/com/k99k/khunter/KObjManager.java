@@ -316,13 +316,45 @@ public final class KObjManager {
 	}
 	
 	/**
+	 * 重载入某一个KObjConfig
+	 * @param kcName
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public final static boolean reload(String kcName){
+		//读取配置文件
+		try {
+			String ini = KIoc.readTxtInUTF8(iniFilePath);
+			Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
+			//先定位到json的对应属性
+			Map<String, ?> mgr = (Map<String, ?>) root.get(getName());
+
+			HashMap<String, Object> m = (HashMap<String, Object>) mgr.get(kcName);
+			KObjConfig kc = KObjConfig.newInstance(kcName, m);
+			if (kc == null) {
+				ErrorCode.logError(log, 8, 7, "kobj:"+kcName);
+				return false;
+			}else{
+				kobjMap.put(kcName, kc);
+				log.info("KObjConfig reloaded:"+kcName);
+			}
+		} catch (Exception e) {
+			ErrorCode.logError(log, 8, 8, e, "");
+			return false;
+		}
+		return true;
+	}
+	
+	/**
 	 * 重新初始化
-	 * @param iniFile 配置文件路径
+	 * @param iniFile 配置文件路径,为null时使用当前的配置
 	 * @return 是否初始化成功
 	 */
 	public final static boolean reInit(String iniFile){
+		kobjMap.clear();
+		String ini = (iniFile == null)? iniFilePath : iniFile;
 		isInitOK = false;
-		return init(iniFile);
+		return init(ini);
 	}
 
 	/**

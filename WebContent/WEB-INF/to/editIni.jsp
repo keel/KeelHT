@@ -16,7 +16,7 @@ String save = StringUtil.objToStrNotNull(data.getData("save"));
 if(subact.equals("save")){ 
 	out.print(save);
 } else{ %>
-<form id="commenForm" action="act?act=console&amp;right=editIni" method="post">
+<form id="eIniForm" action="act?act=console&amp;right=editIni" method="post">
 <input type="hidden" id="subact" name="subact" value="save" />
 <input type="hidden" id="ini" name="ini" value="kconfig" />
 <textarea name="json" id="json" /><%=data.getData("json") %></textarea>

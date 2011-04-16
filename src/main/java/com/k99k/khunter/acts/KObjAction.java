@@ -391,6 +391,11 @@ public class KObjAction extends Action{
 	public String getIniPath() {
 		return "kobj.json";
 	}
+
+	@Override
+	public void exit() {
+		
+	}
 	
 	
 }

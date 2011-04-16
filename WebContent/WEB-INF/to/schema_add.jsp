@@ -66,10 +66,11 @@ $(function(){
 	};
 	$.hotEditor.act(p_dao,"#schema_daojson");
 	//col
+	var colType = "<select name=\"s\"><option value=\"0\">String</option><option value=\"1\">Integer</option><option value=\"2\">HashMap</option><option value=\"3\">ArrayList</option><option value=\"4\">Long</option><option value=\"5\">Boolean</option><option value=\"6\">Date</option><option value=\"7\">Double</option></select>";
 	var p_cols = {
 		subs:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)","td:eq(5)"],
 		key : ["col","def","type","intro","len","validator"],
-		editor : [$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor],
+		editor : [$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,colType,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor],
 		bts : "td:eq(6)",
 		jsonTyps:["s","a","i","s","i","s"],
 		jsonToStr:"schema_coljson",
@@ -84,7 +85,7 @@ $(function(){
 	var p_indexes = {
 		subs:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)"],
 		key : ["col","asc","intro","type","unique"],
-		editor : [$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor],
+		editor : [$.hotEditor.inputTextEditor,$.hotEditor.selectEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.selectEditor],
 		bts : "td:eq(5)",
 		jsonTyps:["s","b","s","s","b"],
 		jsonToStr:"schema_indexjson",

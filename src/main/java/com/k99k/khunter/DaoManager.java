@@ -181,8 +181,11 @@ public final class DaoManager {
 	 * @return 是否初始化成功
 	 */
 	public final static boolean reInit(String iniFile,String classPath){
+		daoMap.clear();
+		String ini = (iniFile == null)? iniFilePath : iniFile;
+		String cPath = (classPath == null)? classFilePath : classPath;
 		isInitOK = false;
-		return init(iniFile,classPath);
+		return init(ini,cPath);
 	}
 
 	/**

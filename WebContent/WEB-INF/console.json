@@ -6,6 +6,9 @@
 		"editIni":{	
 			"_class":"com.k99k.khunter.acts.ConsoleEditIni"
 		},
+		"reload":{	
+			"_class":"com.k99k.khunter.acts.ConsoleReloadAction"
+		},
 		"kobj":{	
 			"_class":"com.k99k.khunter.acts.KObjAction"
 		},

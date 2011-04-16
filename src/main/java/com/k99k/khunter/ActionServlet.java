@@ -19,6 +19,7 @@ public final class ActionServlet extends HttpServlet {
 	
 	static final Logger log = Logger.getLogger(ActionServlet.class);
 	
+	private static String ini;
 
 //	static boolean isInited = false;
 	
@@ -28,13 +29,17 @@ public final class ActionServlet extends HttpServlet {
     public ActionServlet() {
         super();
     }
+    
+    public static final String getIni(){
+    	return ini;
+    }
 
 	/**
 	 * @see Servlet#init(ServletConfig)
 	 */
 	public void init(ServletConfig config) throws ServletException {
-		String iniPath = config.getInitParameter("ini");
-		boolean initOK = HTManager.init(iniPath);
+		ini = config.getInitParameter("ini");
+		boolean initOK = HTManager.init(ini);
 		if (!initOK) {
 			log.error("---------KHunter init failed!!!------------");
 		}

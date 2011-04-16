@@ -371,7 +371,6 @@ public class DaoAction extends Action {
 	 */
 	@Override
 	public void exit() {
-		super.exit();
 	}
 
 	/* (non-Javadoc)
@@ -387,7 +386,6 @@ public class DaoAction extends Action {
 	 */
 	@Override
 	public void init() {
-		super.init();
 	}
 	
 	

@@ -21,7 +21,7 @@ a.act(msg);
  * @author keel
  *
  */
-public class Action {
+public abstract class Action {
 	
 	/**
 	 * @param name 动作标记
@@ -97,22 +97,24 @@ public class Action {
 	/**
 	 * 处理退出时的操作,一般在ActionManager关闭时处理
 	 */
-	public void exit(){
-		//处理退出时的操作
-	}
+	public abstract void exit();
 	
 	/**
 	 * 处理初化化操作,注意初始化不要太复杂,时间过长
 	 */
-	public void init(){
-		//处理初化化操作
+	public abstract void init();
+	
+	/**
+	 * 重新载入
+	 */
+	public void reLoad(){
+		this.exit();
+		this.init();
 	}
 	
 	/**
 	 * 返回此Action所用到的配置文件路径
 	 * @return
 	 */
-	public String getIniPath(){
-		return null;
-	}
+	public abstract String getIniPath();
 }

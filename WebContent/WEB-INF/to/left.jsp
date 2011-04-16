@@ -4,21 +4,19 @@
 <li><a href="act?act=console&amp;right=state" >home</a></li>
 <li><a href="act?act=console&amp;right=exit" >logout</a></li>
 <li><a href="act?act=console&amp;right=changePwd" >changPwd</a></li>
-<li><a href="act?act=console&amp;right=restart" >restart</a></li>
-<li><a href="act?act=console&amp;right=reloadActions" >reloadActions</a></li>
-<li><a href="act?act=console&amp;right=reloadActions" >reloadDaos</a></li>
-<li><a href="act?act=console&amp;right=reloadActions" >reloadKObjs</a></li>
+<li><a href="act?act=console&amp;right=reload&amp;subact=show" >resload</a></li>
+<li><a href="act?act=console&amp;right=reload&amp;subact=confirm&amp;sub=allactions" >reloadActions</a></li>
+<li><a href="act?act=console&amp;right=reload&amp;subact=confirm&amp;sub=alldaos" >reloadDaos</a></li>
+<li><a href="act?act=console&amp;right=reload&amp;subact=confirm&amp;sub=allkobjs" >reloadKObjs</a></li>
 <li><a href="act?act=console&amp;right=editIni" >editIni</a></li>
 <li><a href="act?act=console&amp;right=test" >test</a></li>
 </ul>
 <div>Manage</div>
 <ul>
-<li><a href="act?act=console&amp;right=DataSources" >DataSources</a></li>
 <li><a href="act?act=console&amp;right=kobj" >KObject</a></li>
-<li><a href="act?act=console&amp;right=Actions" >Actions</a></li>
+<li><a href="act?act=console&amp;right=actions" >Actions</a></li>
 <li><a href="act?act=console&amp;right=dao" >DAOs</a></li>
-<li><a href="act?act=console&amp;right=Tasks" >Tasks</a></li>
-<li><a href="act?act=console&amp;right=IOs" >IOs</a></li>
+<li><a href="act?act=console&amp;right=ios" >IOs</a></li>
 </ul>
 <div>Config</div>
 <ul>
@@ -36,5 +34,5 @@
 </ul>
 <div>Statistics(统计)</div>
 <ul>
-<li><a href="act?act=console&amp;right=changeLogs" >changeLogs</a></li>
+<li><a href="act?act=console&amp;right=changelogs" >changeLogs</a></li>
 </ul>

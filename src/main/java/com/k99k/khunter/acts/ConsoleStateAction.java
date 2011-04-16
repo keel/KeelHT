@@ -30,4 +30,19 @@ public class ConsoleStateAction extends Action {
 		return super.act(msg);
 	}
 
+	@Override
+	public void exit() {
+		
+	}
+
+	@Override
+	public String getIniPath() {
+		return null;
+	}
+
+	@Override
+	public void init() {
+		
+	}
+
 }

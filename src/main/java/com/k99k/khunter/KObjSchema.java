@@ -140,8 +140,9 @@ public class KObjSchema {
 				}
 			}
 			//父column必须先定义
-			this.columnMap.put(col, k);
-			int setsub = this.setSubColumn(k);
+			KObjColumn kc = this.columnMap.put(col, k);
+			boolean isAdd = (kc==null) ? true :false;
+			int setsub = this.setSubColumn(k,isAdd);
 			if (setsub != 0) {
 				return setsub;
 			}
@@ -155,8 +156,9 @@ public class KObjSchema {
 	/**
 	 * 处理子Column的情况
 	 * @param kc KObjColumn
+	 * @param isAdd 
 	 */
-	private final int setSubColumn(KObjColumn kc){
+	private final int setSubColumn(KObjColumn kc,boolean isAdd){
 		String col = kc.getCol();
 		if (col.indexOf('.') > 0) {
 			//获取父Schema
@@ -180,7 +182,21 @@ public class KObjSchema {
 			}
 			
 		}else{
-			columnList.add(kc);
+			if (isAdd) {
+				columnList.add(kc);
+			}else{
+				int i = 0;
+				for (Iterator<KObjColumn> it = columnList.iterator(); it
+						.hasNext();) {
+					KObjColumn kcol = it.next();
+					if (kcol.getCol().equals(kc.getCol())) {
+						columnList.remove(i);
+						columnList.add(i, kc);
+						break;
+					}
+					i++;
+				}
+			}
 		}
 		return 0;
 	}
@@ -191,8 +207,8 @@ public class KObjSchema {
 	 * @param 0为成功
 	 */
 	public int setColumn(KObjColumn col){
-		this.columnMap.put(col.getCol(), col);
-		return this.setSubColumn(col);
+		KObjColumn k =this.columnMap.put(col.getCol(), col);
+		return this.setSubColumn(col,(k==null));
 	}
 	
 	public void removeColumn(String key){

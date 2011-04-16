@@ -8,7 +8,7 @@ btEdit:"EDIT",
 btCancel:"CANCEL",
 btAdd:"ADD",
 btDel:"DEL",
-selectEditor : "<select name=\"s\"><option value=\"true\">true</option> <option value=\"false\">false</option> </select>"
+selectEditor : "<select name=\"s\"><option value=\"false\">false</option><option value=\"true\">true</option></select>"
 };
 /*
 验证参数,并进行初始化,初始化结果体现在ep.initOK上
@@ -168,7 +168,7 @@ $.hotEditor.del = function(ep) {
 	ep.bt4.click(function() {
 		//ep.bt4.val("loading").attr("disabled","disabled");
 		ep.delParas = $.hotEditor.prepare($.hotEditor.gather(ep.t),ep.key,ep.delJsonToStr,ep.delJsonTyps,ep.delPreParas);
-		console.log(ep.delParas);
+		//console.log(ep.delParas);
 		if (confirm(ep.delConfirm) ) {
 			if (ep.delUrl && ep.delParas) {
 				if ($.hotEditor.ajax(ep,ep.delUrl,ep.delPreParas,function(){})) {
@@ -220,7 +220,7 @@ $.hotEditor.add = function (ep) {
 			continue;
 		}
 		var w = ep.tars[i].span.width()+20;
-		if (w<18) {w=50;};
+		if (w<50) {w=80;};
 		ep.ta.eds[i] = ep.ta.find("[name='"+ep.key[i]+"']").width(w).show();
 	};
 	ep.ta.preParas = (ep.addPreParas)? ep.addPreParas :ep.preParas;
@@ -258,7 +258,7 @@ $.hotEditor.add = function (ep) {
 			alert ("paras["+k +"] = "+paras[k]);
 		}
 		*/
-		//console.log(ep.ta.paras);
+		console.log(ep.ta.paras);
 		if (ep.ta.url && ep.ta.paras) {
 			if ($.hotEditor.ajax(ep,ep.ta.url,ep.ta.paras,ep.ta.appendNew)) {
 				
@@ -288,7 +288,7 @@ $.hotEditor.add = function (ep) {
 $.hotEditor.stateA = function(ep) {
 	for (var i=0; i < ep.len; i++) {
 		var w = ep.tars[i].span.width()+20;
-		if (w<18) {w=50;};
+		if (w<50) {w=80;};
 		ep.tars[i].span.hide();
 		ep.tars[i].ed.show().width(w);
 	}
@@ -446,7 +446,7 @@ $.hotEditor.parseType = function(type,obj){
 		if (!obj) {return ""};
 		var re = obj.toString();
 		var tag = re.charAt(0);
-		if (re.indexOf('@') == 1 && /[sibf]/.test(tag)) {return $.hotEditor.parseType(tag,re.substr(2))};
+		if (re.indexOf('@') == 1 && /[sibfml]/.test(tag)) {return $.hotEditor.parseType(tag,re.substr(2))};
 		return obj;
 	}else {
 		return obj;

@@ -4,9 +4,7 @@
 package com.k99k.khunter.acts;
 
 import com.k99k.khunter.Action;
-import com.k99k.khunter.ActionManager;
 import com.k99k.khunter.ActionMsg;
-import com.k99k.khunter.DaoInterface;
 import com.k99k.khunter.HTUser;
 import com.k99k.khunter.TaskManager;
 import com.k99k.khunter.dao.MongoUserDao;
@@ -108,6 +106,21 @@ public class LoginAction extends Action {
 	 */
 	public final void setUserDao(MongoUserDao userDao) {
 		this.userDao = userDao;
+	}
+
+	@Override
+	public void exit() {
+		this.userDao = null;
+	}
+
+	@Override
+	public String getIniPath() {
+		return null;
+	}
+
+	@Override
+	public void init() {
+		
 	}
 	
 	

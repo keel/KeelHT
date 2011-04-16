@@ -23,6 +23,17 @@ public final class StringUtil {
 	}
 	
 	/**
+	 * Object转为String,如果是null则转为指定的defaultStr
+	 * @param obj
+	 * @param defaultStr
+	 * @return
+	 */
+	public static final String toStrNotNull(Object obj,String defaultStr){
+		String s = (obj == null)?defaultStr:obj.toString();
+		return s;
+	}
+	
+	/**
 	 * Object转为非负整数int,若为null或其他,返回-1
 	 * @param obj
 	 * @return int

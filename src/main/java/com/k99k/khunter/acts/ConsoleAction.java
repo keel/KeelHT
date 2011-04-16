@@ -141,7 +141,7 @@ public class ConsoleAction extends Action {
 					Action action = (Action)o;
 					
 					HTManager.fetchProps(action, m);
-					//加入Action,无论是否已存在
+					//加入Action,无论是否已存在,以action的name作为jsp输出的默认right
 					consoleActMap.put(action.getName(), action);
 					log.info("- ConsoleAction added: "+action.getName());
 					try {
@@ -181,6 +181,12 @@ public class ConsoleAction extends Action {
 	@Override
 	public String getIniPath() {
 		return "console.json";
+	}
+
+	@Override
+	public void exit() {
+		adminMap.clear();
+		consoleActMap.clear();
 	}
 
 }
