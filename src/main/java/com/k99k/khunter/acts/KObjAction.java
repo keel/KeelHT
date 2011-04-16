@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import com.k99k.khunter.Action;
@@ -184,48 +183,10 @@ public class KObjAction extends Action{
 			msg.addData("print", rePrint);
 			return super.act(msg);	
 		}
-		//查找KObj
-		else if(subact.equals("query")){
-			String key  = httpmsg.getHttpReq().getParameter("schema_key");
-			String qjson  = httpmsg.getHttpReq().getParameter("query_json");
-			String rePrint = "para error";
-			//跳转到query.jsp
-			msg.addData("right", "query");
-			if (StringUtil.isStringWithLen(key, 2) && StringUtil.isStringWithLen(qjson, 2)) {
-				if (JSONTool.validateJsonString(qjson)) {
-					HashMap qm = JSONTool.readJsonString(qjson);
-					if (JSONTool.checkMapTypes(qm, new String[]{"query"}, new Class[]{HashMap.class})) {
-						HashMap query = (HashMap) qm.get("query");
-						HashMap fields = (JSONTool.checkMapTypes(qm, new String[]{"fields"}, new Class[]{HashMap.class}))?(HashMap)qm.get("fields"):null;
-						HashMap sortby = (JSONTool.checkMapTypes(qm, new String[]{"sortby"}, new Class[]{HashMap.class}))?(HashMap)qm.get("sortby"):null;
-						int skip = (qm.containsKey("skip") && StringUtil.isDigits(qm.get("skip").toString()))?Integer.parseInt(qm.get("skip").toString()):0;
-						int len = (qm.containsKey("len") && StringUtil.isDigits(qm.get("len").toString()))?Integer.parseInt(qm.get("len").toString()):0;
-						HashMap hint = (JSONTool.checkMapTypes(qm, new String[]{"hint"}, new Class[]{HashMap.class}))?(HashMap)qm.get("hint"):null;
-						DaoInterface dao = KObjManager.findKObjConfig(key).getDaoConfig().findDao();
-						if (dao != null) {
-							List re = dao.query(query, fields, sortby, skip, len, hint);
-							if (re != null) {
-								msg.addData("query_list", "ok:"+re);
-								return super.act(msg);	
-							}
-							rePrint = "dao.query failed.";
-						}
-						rePrint = "dao not found.";
-					}else{
-						rePrint = "query node error.";
-					}
-				}else{
-					rePrint = "json error";
-				}
-			}
-			//失败的情况
-			msg.addData("re", rePrint);
-			msg.addData("query_list", "");
-			return super.act(msg);	
-		}
 		//具体KObject的crud操作
 		else if(subact.equals("kobj_act")){
-			String kobj_act = httpmsg.getHttpReq().getParameter("kobj_act");
+			msg.addData("right", "kobj_crud");
+			String kobj_act = StringUtil.toStrNotNull(httpmsg.getHttpReq().getParameter("kobj_act"),"req");
 			String key  = httpmsg.getHttpReq().getParameter("schema_key");
 			String rePrint = "{\"re\":\"err\",\"d\":{}";
 			if (!StringUtil.isStringWithLen(key, 2) || !StringUtil.isStringWithLen(key, 2)) {
@@ -237,16 +198,24 @@ public class KObjAction extends Action{
 				msg.addData("print", "{\"re\":\"err\",\"d\":{\"schema_key\":\"not found.\"}}");
 				return super.act(msg);
 			}
+			msg.addData("key", key);
+			//请求页
+			if (kobj_act.equals("req")) {
+				String direct_act = (httpmsg.getHttpReq().getParameter("kobj_act")==null)?"query":"add";
+				msg.addData("direct_act", direct_act);
+				msg.addData("kc", kc);
+				return super.act(msg);
+			}
 			//查询kobj
-			if(kobj_act.equals("search")){
-				String kobj_q = httpmsg.getHttpReq().getParameter("kobj_queryjson");
-				String kobj_f = httpmsg.getHttpReq().getParameter("kobj_fieldsjson");
-				String kobj_sort = httpmsg.getHttpReq().getParameter("kobj_sortjson");
-				String kobj_skip = httpmsg.getHttpReq().getParameter("kobj_skip");
-				String kobj_len = httpmsg.getHttpReq().getParameter("kobj_len");
-				String kobj_hint = httpmsg.getHttpReq().getParameter("kobj_hint");
-				HashMap<String,Object> query = (StringUtil.isStringWithLen(kobj_q, 2) && JSONTool.validateJsonString(kobj_q)) ? JSONTool.readJsonString(kobj_q) : null;
-				if (query != null) {
+			else if(kobj_act.equals("search")){
+				try {
+					String kobj_q = httpmsg.getHttpReq().getParameter("kobj_queryjson");
+					String kobj_f = httpmsg.getHttpReq().getParameter("kobj_fieldsjson");
+					String kobj_sort = httpmsg.getHttpReq().getParameter("kobj_sortjson");
+					String kobj_skip = httpmsg.getHttpReq().getParameter("kobj_skip");
+					String kobj_len = httpmsg.getHttpReq().getParameter("kobj_len");
+					String kobj_hint = httpmsg.getHttpReq().getParameter("kobj_hint");
+					HashMap<String,Object> query = (StringUtil.isStringWithLen(kobj_q, 2) && JSONTool.validateJsonString(kobj_q)) ? JSONTool.readJsonString(kobj_q) : new HashMap();
 					HashMap<String,Object> fields = (StringUtil.isStringWithLen(kobj_f, 2) && JSONTool.validateJsonString(kobj_f)) ? JSONTool.readJsonString(kobj_f) : null;
 					HashMap<String,Object> sortBy = (StringUtil.isStringWithLen(kobj_sort, 2) && JSONTool.validateJsonString(kobj_sort)) ? JSONTool.readJsonString(kobj_sort) : null;
 					int skip = (StringUtil.isDigits(kobj_skip))?Integer.parseInt(kobj_skip):0;
@@ -257,8 +226,8 @@ public class KObjAction extends Action{
 					String d = JSONTool.writeJsonString(list);
 					msg.addData("print", "{\"re\":\"ok\",\"d\":{\"list\":"+d+"}}");
 					return super.act(msg);
-				}else{
-					rePrint = "{\"re\":\"err\",\"d\":{\"kobj_queryjson\":\"kobj_queryjson error\"}}";
+				}catch(Exception e){
+					rePrint = "{\"re\":\"err\",\"d\":{\"kobj_queryjson\":\"excpetion:"+e.getMessage()+"\"}}";
 				}
 				
 			}
