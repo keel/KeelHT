@@ -27,7 +27,7 @@ public class MongoDao implements DaoInterface{
 	/**
 	 * id生成器,默认初始值为1,增量为1
 	 */
-	final IDManager idm = new IDManager(1,1);
+	private IDManager idm;// = new IDManager(1,1);
 	
 	/**
 	 * 空BasicDBObject,备用
@@ -101,7 +101,9 @@ public class MongoDao implements DaoInterface{
 	 */
 	public boolean init(){
 		try {
+			idm = new IDManager(1,1);
 			idm.setId(initIDM(tableName));
+			log.info("========tableName:"+tableName + " idm id:"+ idm.getCurrentId());
 		} catch (Exception e) {
 			log.error("init error!", e);
 			return false;
@@ -148,7 +150,7 @@ public class MongoDao implements DaoInterface{
 	 * @return 未找到返回null
 	 */
 	public Map<String,Object> findOneMap(HashMap<String,Object> query){
-		BasicDBObject q = new BasicDBObject(query);
+		BasicDBObject q = (query==null)?new BasicDBObject():new BasicDBObject(query);
 		return this.findOneMap(q, null);
 	}
 	
@@ -161,8 +163,8 @@ public class MongoDao implements DaoInterface{
 	@SuppressWarnings("unchecked")
 	public Map<String,Object> findOneMap(HashMap<String,Object> query,HashMap<String, Object> fields){
 		try {
-			BasicDBObject q = new BasicDBObject(query);
-			BasicDBObject f = new BasicDBObject(fields);
+			BasicDBObject q = (query==null)?new BasicDBObject():new BasicDBObject(query);
+			BasicDBObject f = (fields==null)?null:new BasicDBObject(fields);
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
 			DBCursor cur = coll.find(q,f,0, 1);
@@ -178,7 +180,7 @@ public class MongoDao implements DaoInterface{
 	
 	/**
 	 * 通用的查找过程
-	 * @param query 必须有
+	 * @param query 必须有,为null则为默认查询
 	 * @param fields 全部则为null
 	 * @param sortBy 无则为null
 	 * @param skip 无则为0
@@ -189,10 +191,10 @@ public class MongoDao implements DaoInterface{
 	@SuppressWarnings("unchecked")
 	public List<Map<String,Object>> query(HashMap<String,Object> query,HashMap<String,Object> fields,HashMap<String,Object> sortBy,int skip,int len,HashMap<String,Object> hint){
 		try {
-			BasicDBObject q = new BasicDBObject(query);
-			BasicDBObject field = new BasicDBObject(fields);
-			BasicDBObject sort = new BasicDBObject(sortBy);
-			BasicDBObject hin = new BasicDBObject(hint);
+			BasicDBObject q = (query==null)?new BasicDBObject():new BasicDBObject(query);
+			BasicDBObject field = (fields==null)?null:new BasicDBObject(fields);
+			BasicDBObject sort = (sortBy==null)?null:new BasicDBObject(sortBy);
+			BasicDBObject hin = (hint==null)?null:new BasicDBObject(hint);
 			
 			int initSize = 20;
 			if (len > 0) {
@@ -229,8 +231,8 @@ public class MongoDao implements DaoInterface{
 	public int count(HashMap<String,Object> query,HashMap<String,Object> hint){
 		
 		try {
-			BasicDBObject q = new BasicDBObject(query);
-			BasicDBObject hin = new BasicDBObject(hint);
+			BasicDBObject q = (query==null)?new BasicDBObject():new BasicDBObject(query);
+			BasicDBObject hin = (hint==null)?null:new BasicDBObject(hint);
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
 			return coll.find(q).hint(hin).count();
@@ -249,7 +251,7 @@ public class MongoDao implements DaoInterface{
 	public int count(HashMap<String,Object> query){
 		
 		try {
-			BasicDBObject q = new BasicDBObject(query);
+			BasicDBObject q = (query==null)?new BasicDBObject():new BasicDBObject(query);
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
 			return coll.find(q).count();
@@ -351,7 +353,7 @@ public class MongoDao implements DaoInterface{
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
 			coll.update(q,new MongoWrapper(newObj),upset,false);
-		} catch (MongoException e) {
+		} catch (Exception e) {
 			log.error("update error!", e);
 			return false;
 		}
@@ -371,7 +373,7 @@ public class MongoDao implements DaoInterface{
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
 			coll.update(q,s,false,false);
-		} catch (MongoException e) {
+		} catch (Exception e) {
 			log.error("update error!", e);
 			return false;
 		}
@@ -393,7 +395,7 @@ public class MongoDao implements DaoInterface{
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
 			coll.update(q,s,upset,multi);
-		} catch (MongoException e) {
+		} catch (Exception e) {
 			log.error("update error!", e);
 			return false;
 		}
@@ -410,7 +412,7 @@ public class MongoDao implements DaoInterface{
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
 			coll.update(new BasicDBObject("_id",id),new BasicDBObject("$set",new BasicDBObject("state",-1)),false,false);
-		} catch (MongoException e) {
+		} catch (Exception e) {
 			log.error("delete error!", e);
 			return false;
 		}
@@ -429,7 +431,7 @@ public class MongoDao implements DaoInterface{
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
 			coll.update(q,new BasicDBObject("$set",new BasicDBObject("state",-1)),false,multi);
-		} catch (MongoException e) {
+		} catch (Exception e) {
 			log.error("delete error!", e);
 			return false;
 		}
@@ -448,7 +450,7 @@ public class MongoDao implements DaoInterface{
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
 			coll.remove(q);
-		} catch (MongoException e) {
+		} catch (Exception e) {
 			log.error("deleteForever error!", e);
 			return false;
 		}
@@ -465,7 +467,7 @@ public class MongoDao implements DaoInterface{
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
 			coll.remove(new BasicDBObject("_id",id));
-		} catch (MongoException e) {
+		} catch (Exception e) {
 			log.error("deleteForever error!", e);
 			return false;
 		}

@@ -59,12 +59,6 @@ $(function(){
 	//intro
 	//var p_intro = {msg:"#re"};
 	$.hotEditor.act(p_k,"#schema_intro");
-	//dao
-	var p_dao = {
-		editor:[$.hotEditor.textAreaEditor],
-		msg:"#re"
-	};
-	$.hotEditor.act(p_dao,"#schema_daojson");
 	//col
 	var colType = "<select name=\"s\"><option value=\"0\">String</option><option value=\"1\">Integer</option><option value=\"2\">HashMap</option><option value=\"3\">ArrayList</option><option value=\"4\">Long</option><option value=\"5\">Boolean</option><option value=\"6\">Date</option><option value=\"7\">Double</option></select>";
 	var p_cols = {

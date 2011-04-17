@@ -16,7 +16,10 @@ body{background-color: #e4e4e4;color:#000;}
 a { color:#0000ff; text-decoration:none; }
 	a:hover { color:#804040;text-decoration:underline; }
 	a:focus, input:focus {outline-style:none; outline-width:medium; }
-	
+table {border-spacing:1px;}
+th, td {padding:5px;}
+th { color:#fff;border-top:3px solid #00254A; background-color:#434B5D; }
+td { background:#fff; text-align:left;}
 #sideNav a { color:#FFF; text-decoration:none; }
 	#sideNav a:hover { color:#FFCC66;text-decoration:underline; }
 	#sideNav a:focus, input:focus {outline-style:none; outline-width:medium; }

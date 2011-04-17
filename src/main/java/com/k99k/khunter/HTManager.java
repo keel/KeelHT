@@ -211,6 +211,7 @@ public final class HTManager {
 		DaoManager.exit();
 		KObjManager.exit();
 		DataSourceManager.exit();
+		isInited = false;
 		log.info("================ [HTManager exited] ================");
 	}
 	

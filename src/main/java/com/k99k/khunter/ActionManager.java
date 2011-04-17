@@ -54,6 +54,8 @@ public final class ActionManager {
 			Action act = actionMap.get(it.next());
 			act.exit();
 		}
+		actionMap.clear();
+		isInitOK = false;
 		log.info("ActionManager exited.");
 	}
 	
@@ -134,7 +136,7 @@ public final class ActionManager {
 	 * @return 是否初始化成功
 	 */
 	public static boolean reInit(String iniFile,String classPath){
-		isInitOK = false;
+		exit();
 		return init(iniFile,classPath);
 	}
 	

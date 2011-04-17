@@ -79,11 +79,7 @@ public final class DaoManager {
 		if (dao == null) {
 			return null;
 		}
-		Object o = dao.clone();
-		if (o == null) {
-			return null;
-		}
-		return (DaoInterface)o;
+		return (DaoInterface)dao.clone();
 	}
 	
 	/**
@@ -181,10 +177,9 @@ public final class DaoManager {
 	 * @return 是否初始化成功
 	 */
 	public final static boolean reInit(String iniFile,String classPath){
-		daoMap.clear();
+		exit();
 		String ini = (iniFile == null)? iniFilePath : iniFile;
 		String cPath = (classPath == null)? classFilePath : classPath;
-		isInitOK = false;
 		return init(ini,cPath);
 	}
 
@@ -390,6 +385,9 @@ public final class DaoManager {
 	 * 退出DaoManager时的操作
 	 */
 	public static final void exit(){
+		daoMap.clear();
+		daoClasses.clear();
+		isInitOK = false;
 		log.info("DaoManager exited.");
 	}
 	

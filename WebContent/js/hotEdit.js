@@ -361,7 +361,7 @@ $.hotEditor.ajax = function(ep,url,paras,fillFunc) {
 				var re = $.parseJSON(data);
 				if (!re) {
 					ep.msg.text("err:parseJSON error");
-				}else if (re && re.re && re.re === "ok" && re.d ) {
+				}else if (re.re && re.re === "ok" && re.d ) {
 					//填充数据
 					if (!fillFunc) {
 						for (var i=0; i < ep.len; i++) {

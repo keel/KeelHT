@@ -57,6 +57,14 @@ public final class KFilter implements Filter {
 		// pass the request along the filter chain
 		chain.doFilter(request, response);
 	}
+	
+	public static final boolean reStart(){
+		KFilter.stop();
+		HTManager.exit();
+		boolean init = HTManager.init(ActionServlet.getIni());
+		KFilter.start();
+		return init;
+	}
 
 	/**
 	 * @see Filter#init(FilterConfig)

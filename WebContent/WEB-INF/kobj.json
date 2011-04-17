@@ -34,6 +34,22 @@
 					"len":4,
 					"type":1,
 					"intro":"intro of cc"
+				},
+				{
+					"col":"comms",
+					"def":{
+						
+					},
+					"len":5,
+					"type":2,
+					"intro":"intro of comms"
+				},
+				{
+					"col":"comms.say",
+					"def":"someone say",
+					"len":15,
+					"type":0,
+					"intro":"say something"
 				}
 			],
 			"intro":"intro of hello"

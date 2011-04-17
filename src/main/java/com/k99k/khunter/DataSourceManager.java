@@ -147,7 +147,7 @@ public final class DataSourceManager {
 	 * @return 是否初始化成功
 	 */
 	public static boolean reInit(String iniFile,String classPath){
-		isInitOK = false;
+		exit();
 		return init(iniFile,classPath);
 	}
 	
@@ -160,6 +160,7 @@ public final class DataSourceManager {
 			DataSourceInterface ds = dataSourceMap.get(it.next());
 			ds.exit();
 		}
+		isInitOK = false;
 		log.info("DataSourceManager exited.");
 	}
 

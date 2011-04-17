@@ -79,7 +79,7 @@ public class KObjDaoConfig {
 				}
 				
 				if(!DaoManager.addDao(newDao)){
-					ErrorCode.logError(KObjManager.log, 8, 24, "DaoManager.addDao failed.");
+					ErrorCode.logError(KObjManager.log, 8, 24, "newDao.init error or DaoManager.addDao failed.");
 					return null;
 				}
 			}

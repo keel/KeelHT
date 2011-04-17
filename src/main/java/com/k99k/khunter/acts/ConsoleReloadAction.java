@@ -143,11 +143,8 @@ public class ConsoleReloadAction extends Action {
 		}
 		//重启整个系统
 		else if (subact.equals("system")) {
-			KFilter.stop();
-			HTManager.exit();
-			boolean init = HTManager.init(ActionServlet.getIni());
+			boolean init = KFilter.reStart();
 			if (init) {
-				KFilter.start();
 				re = "ok";
 			}else{
 				re = "failed";

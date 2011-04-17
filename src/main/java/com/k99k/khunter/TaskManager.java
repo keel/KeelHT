@@ -134,6 +134,8 @@ public final class TaskManager {
 		singleExePool.shutdownNow();
 		ratePool.shutdownNow();
 		scheduledPool.shutdownNow();
+		isInitOK = false;
+		taskMap.clear();
 		log.info("TaskManager exited");
 	}
 	
@@ -355,7 +357,7 @@ public final class TaskManager {
 	 * @return 是否初始化成功
 	 */
 	public static boolean reInit(String iniFile,String classPath){
-		isInitOK = false;
+		exit();
 		return init(iniFile,classPath);
 	}
 	

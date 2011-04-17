@@ -33,7 +33,7 @@ public class KObject {
 	 */
 	public KObject(int maxProp) {
 		this.propMap = new HashMap<String,Object>(maxProp);
-		this.propMap.put("id", 0);
+		this.propMap.put("id", 0L);
 		this.propMap.put("state", 0);
 		this.propMap.put("level", 0);
 		this.propMap.put("info", "");
@@ -41,7 +41,7 @@ public class KObject {
 		this.propMap.put("version", 1);
 		this.propMap.put("name", "");
 		this.propMap.put("creatorName", "");
-		this.propMap.put("creatorId", 0);
+		this.propMap.put("creatorId", 0L);
 		this.propMap.put("url", "");
 		this.propMap.put("type", "");
 		
@@ -97,6 +97,46 @@ public class KObject {
 			long creatorId, String url,String type) {
 		this(id,state,level,info,createTime,version,name,creatorName,creatorId,url,type,50);
 	}
+	
+//	/**
+//	 * 获取除id之外的所有默认属性(10个)
+//	 * @return
+//	 */
+//	public static final String[] getDefaultPropsWithOutId(){
+//		String[] prop = new String[]{
+//			"state",
+//			"level",
+//			"info",
+//			"createTime",
+//			"version",
+//			"name",
+//			"creatorName",
+//			"creatorId",
+//			"url",
+//			"type"
+//		};
+//		return prop;
+//	}
+//	
+//	/**
+//	 * 获取除id之外的所有默认属性的类型
+//	 * @return
+//	 */
+//	public static final String[] getDefaultPropTypesWithOutId(){
+//		String[] prop = new String[]{
+//			"Integer",
+//			"Integer",
+//			"String",
+//			"Long",
+//			"Integer",
+//			"String",
+//			"String",
+//			"Long",
+//			"String",
+//			"String"
+//		};
+//		return prop;
+//	}
 	
 	/**
 	 * 唯一的属性Map

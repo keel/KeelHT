@@ -201,7 +201,9 @@ public class KObjAction extends Action{
 			msg.addData("key", key);
 			//请求页
 			if (kobj_act.equals("req")) {
-				String direct_act = (httpmsg.getHttpReq().getParameter("kobj_act")==null)?"query":"add";
+				String js = "<script type=\"text/javascript\" src=\"js/jquery.json-2.2.min.js\"></script><script type=\"text/javascript\" src=\"js/hotEdit.js\"></script>";
+				msg.addData("headerAdd", js);
+				String direct_act = (httpmsg.getHttpReq().getParameter("direct_act")==null)?"query":"add";
 				msg.addData("direct_act", direct_act);
 				msg.addData("kc", kc);
 				return super.act(msg);
@@ -261,8 +263,8 @@ public class KObjAction extends Action{
 						HashMap nk = JSONTool.readJsonString(kobj_json);
 						KObjSchema ks = kc.getKobjSchema();
 						DaoInterface dao = kc.getDaoConfig().findDao();
-						KObject newKObj = (StringUtil.isDigits(kobj_id))?dao.findOne(kobj_id):ks.createEmptyKObj();
-						if (ks.setPropFromMap(nk, newKObj) && dao.save(newKObj)) {
+						KObject newKObj = (StringUtil.isDigits(kobj_id))?dao.findOne(Long.parseLong(kobj_id)):ks.createEmptyKObj();
+						if (newKObj != null && ks.setPropFromMap(nk, newKObj) && dao.save(newKObj)) {
 							msg.addData("print", "{\"re\":\"ok\",\"d\":{\"id\":"+newKObj.getId()+"}}");
 							return super.act(msg);
 						}else{
@@ -276,7 +278,7 @@ public class KObjAction extends Action{
 				}
 			}
 			//失败的情况
-			msg.addData("re", rePrint);
+			msg.addData("print", rePrint);
 			return super.act(msg);
 		}
 		//新增KobjConfig

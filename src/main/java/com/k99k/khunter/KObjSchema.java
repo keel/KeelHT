@@ -424,18 +424,62 @@ public class KObjSchema {
 	 * @return 是否设置成功,验证不通过则返回false
 	 */
 	public  boolean setPropFromMap(HashMap<String,Object> kobjMap,KObject kobj){
+		
+		for (Iterator<String> it = kobjMap.keySet().iterator(); it.hasNext();) {
+			String k = it.next();
+			KObjColumn kc = this.columnMap.get(k);
+			if (kc != null) {
+				if(!kc.validateAndSet(kobjMap.get(k), kobj)){
+					return false;
+				}
+			}else if(kobj.containsProp(k)){
+				Object o = kobj.getProp(k);
+				Object newo = kobjMap.get(k);
+				String kType = o.getClass().getName();
+				String s = newo.toString();
+				if (kType.equals(String.class.getName())) {
+					kobj.setProp(k, s);
+				}else if(StringUtil.isDigits(s)){
+					if (kType.equals(Long.class.getName())) {
+						kobj.setProp(k, Long.parseLong(s));
+					}else{
+						kobj.setProp(k, Integer.parseInt(s));
+					}
+				}
+			}
+		}
+		/*
 		//逐个KObjColumn字段验证并设置
 		for (Iterator<KObjColumn> iterator = this.columnList.iterator(); iterator.hasNext();) {
 			KObjColumn kc = iterator.next();
 			String col = kc.getCol();
 			Object o = kobjMap.get(col);
 			if (o == null) {
-				return false;
+				continue;
 			}
 			if(!kc.validateAndSet(o, kobj)){
 				return false;
 			}
 		}
+		//设置KObject默认属性
+		String[] defaultProps = KObject.getDefaultPropsWithOutId();
+		String[] dTypes = KObject.getDefaultPropTypesWithOutId();
+		for (int i = 0,j=defaultProps.length; i < j; i++) {
+			Object o = kobjMap.get(defaultProps[i]);
+			if (o != null) {
+				String s = o.toString();
+				if (!dTypes[i].equals("String") && StringUtil.isDigits(s)) {
+					if (dTypes[i].equals("Long")) {
+						kobj.setProp(defaultProps[i], Long.parseLong(s));
+					}else{
+						kobj.setProp(defaultProps[i], Integer.parseInt(s));
+					}
+				}else{
+					kobj.setProp(defaultProps[i], s);
+				}
+			}
+		}
+		*/
 		return true;
 	}
 	/**
@@ -481,12 +525,19 @@ public class KObjSchema {
 	 * @return KObject
 	 */
 	public KObject createEmptyKObj(){
-		KObject kobj = new KObject();
-		
+		KObject kobj = this.createEmptyKObjNoId();
 		//通过Dao设置KObject的ID,其他参数为KObject默认值
 		DaoInterface dao = KObjManager.findKObjConfig(this.kobjName).getDaoConfig().findDao();
 		kobj.setId(dao.getIdm().nextId());
-		
+		return kobj;
+	}
+	
+	/**
+	 * 创建空ID的空对象,不涉及dao创建id的操作
+	 * @return
+	 */
+	public KObject createEmptyKObjNoId(){
+		KObject kobj = new KObject();
 		for (Iterator<KObjColumn> iterator = this.columnList.iterator(); iterator.hasNext();) {
 			KObjColumn kc = iterator.next();
 			String col = kc.getCol();
@@ -494,7 +545,6 @@ public class KObjSchema {
 		}
 		return kobj;
 	}
-	
 	
 	/**
 	 * 获取所有的索引
@@ -516,6 +566,16 @@ public class KObjSchema {
 			subToList(list,kc);
 		}
 		return list;
+	}
+	
+	/**
+	 * 获取所有的column的name,包括KObject自带的,但不包含子column对象
+	 * @return String[]
+	 */
+	public final String[] getAllColNames(){
+		KObject kobj = this.createEmptyKObjNoId();
+		String[] colarr = kobj.getPropMap().keySet().toArray(new String[0]);
+		return colarr;
 	}
 	
 	/**

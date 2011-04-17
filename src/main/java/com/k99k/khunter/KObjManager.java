@@ -351,9 +351,8 @@ public final class KObjManager {
 	 * @return 是否初始化成功
 	 */
 	public final static boolean reInit(String iniFile){
-		kobjMap.clear();
+		exit();
 		String ini = (iniFile == null)? iniFilePath : iniFile;
-		isInitOK = false;
 		return init(ini);
 	}
 
@@ -361,6 +360,8 @@ public final class KObjManager {
 	 * 退出KObjManager时的操作
 	 */
 	public static final void exit(){
+		kobjMap.clear();
+		isInitOK = false;
 		log.info("KObjManager exited.");
 	}
 	
