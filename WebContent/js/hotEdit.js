@@ -171,8 +171,8 @@ $.hotEditor.del = function(ep) {
 		//console.log(ep.delParas);
 		if (confirm(ep.delConfirm) ) {
 			if (ep.delUrl && ep.delParas) {
-				if ($.hotEditor.ajax(ep,ep.delUrl,ep.delPreParas,function(){})) {
-					ep.delRemove();
+				if ($.hotEditor.ajax(ep,ep.delUrl,ep.delParas,function(){ep.delRemove();})) {
+					
 				}
 			}else{
 				//不提交,直接去除
@@ -240,7 +240,8 @@ $.hotEditor.add = function (ep) {
 			}else{
 				for (var i=0; i < ep.len; i++) {
 					if (ep.editor[i]===$.hotEditor.HENull) {continue;};
-					var newD = (reVals[ep.key[i]])?reVals[ep.key[i]]:"";
+					var d = reVals[ep.key[i]];
+					var newD = (d == null)?"":((typeof(d) === 'object')?$.toJSON(d):d);
 					newT.find(ep.subs[i]).text(newD);
 				};
 			}
@@ -366,9 +367,10 @@ $.hotEditor.ajax = function(ep,url,paras,fillFunc) {
 					if (!fillFunc) {
 						for (var i=0; i < ep.len; i++) {
 							if (re.d[i] != $.hotEditor.HENull) {
-								var newD = (re.d[ep.key[i]])?re.d[ep.key[i]]:"";
+								var d = re.d[ep.key[i]];
+								var newD = (d == null)?"":((typeof(d) === 'object')?$.toJSON(d):d);
 								ep.tars[i].span.text(newD);
-								ep.tars[i].ed.val(newD);
+								ep.tars[i].ed.val(d);
 							};
 						};
 					}else{

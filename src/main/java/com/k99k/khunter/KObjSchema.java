@@ -212,7 +212,7 @@ public class KObjSchema {
 	}
 	
 	public void removeColumn(String key){
-		this.columnMap.remove(key);
+		this.columnList.remove(this.columnMap.remove(key));
 	}
 	
 	public boolean containsColumn(String key){

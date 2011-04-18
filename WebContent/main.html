@@ -85,10 +85,13 @@ var eParas1 = {
 	obj.s.xx = "aaa";
 	obj.s.click(obj,function() {
 		this.x = "bb";
-		alert(obj.s.xx);
+		//alert(obj.s.xx);
 	});
 	obj.a = "haha";
 	//alert(obj.s.xx);
+	var v = "[}]";
+	var t = (/(^\[[^\]]*\]$)|(^\{[^\}]*\}$)/.test(v.toString()));
+	alert(t);
 });
 
 </script>

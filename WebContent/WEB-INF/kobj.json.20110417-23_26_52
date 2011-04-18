@@ -34,38 +34,6 @@
 					"len":4,
 					"type":1,
 					"intro":"intro of cc"
-				},
-				{
-					"col":"comms",
-					"def":{
-						
-					},
-					"len":5,
-					"type":2,
-					"intro":"intro of comms"
-				},
-				{
-					"col":"comms.say",
-					"def":"someone say",
-					"len":15,
-					"type":0,
-					"intro":"say something"
-				},
-				{
-					"col":"arr",
-					"def":[
-						
-					],
-					"len":15,
-					"type":3,
-					"intro":"arr"
-				},
-				{
-					"col":"arr.*",
-					"def":"arr string",
-					"len":15,
-					"type":0,
-					"intro":"one of arr is string"
 				}
 			],
 			"intro":"intro of hello"

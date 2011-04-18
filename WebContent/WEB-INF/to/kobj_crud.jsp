@@ -18,6 +18,7 @@ String[] colArr = ks.getAllColNames();
 <div id="rightTop">
 <span class="weight">KObj [<%=kobj_key %>] actions: </span>
 <input type="button" id="act_query" value="Query" /> <input type="button" id="act_add" value="Add" /> 
+[<a href="act?act=console&right=kobj">Schema List</a> | <a href="act?act=console&right=kobj&subact=schema_find&schema_key=<%=kobj_key %>">Schema</a>]
 </div>
 <div id="query_form">
 <span class="weight">Query:</span> <input type="checkbox" id="q_custom_check" /><label for="q_custom_check">Custom query</label>
@@ -112,8 +113,8 @@ $(function(){
 	}
 	function clearRE(){
 		$("#re").text("");
-		$("#reTable").html("");
-		$("#reDiv").hide();
+		//$("#reTable").html("");
+		//$("#reDiv").hide();
 	}
 	$("#act_query").click(function(){
 		if(showAdd){
@@ -150,17 +151,19 @@ $(function(){
 		var json = "{\r\n";
 		$("#a_ins input").each(function(){
 			if($(this).val() != ""){
-				json = json + "\"" + $(this).attr("name")+"\":" + $(this).val()+",\r\n";
+				var v = $(this).val();
+				v = (isNaN(v) && (!(/(^\[[^\]]*\]$)|(^\{[^\}]*\}$)/.test(v.toString()))))?"\""+v+"\"":v;
+				json = json + "\"" + $(this).attr("name")+"\":" + v+",\r\n";
 			}
 		});
-		json = (json === "{") ? "" : json.substr(0,json.length-3)+"\r\n}" ;
+		json = (json === "{\r\n") ? "" : json.substr(0,json.length-3)+"\r\n}" ;
 		$("#a_area").val(json);
 		$("#a_area_div").show();
 		$("#a_submit").show();
 	});
 	$("#a_submit").click(function(){
 		var url = "act?act=console&right=kobj&subact=kobj_act&kobj_act=update&schema_key="+key;
-		if(isUpdate){
+		if(isUpdate && !isNaN($("#u_kobj_id").val())){
 			url = url+"&kobj_id="+$("#u_kobj_id").val();
 		}
 		var a = {kobj_json:$("#a_area").val()};
@@ -219,7 +222,7 @@ $(function(){
 				if(opt === ":"){
 					s = "{"+s+":"+$("#q_select_val").val()+"}";
 				}else{
-					s = "{"+s+":{\""+opt+"\":\""+$("#q_select_val").val()+"\"}}";
+					s = "{"+s+":{\""+opt+"\":"+$("#q_select_val").val()+"}}";
 				}
 			}else{s = "{}";}
 			q.kobj_queryjson = s;
@@ -268,8 +271,16 @@ $(function(){
 			if(re.d.list.length == 0){
 				$("#reDiv").show();$("#re").text("Nothing was found.");return;
 			}else{
-				//处理th
-				var hdata = re.d.list[0];
+				//处理th,取字段属性最多的为表头
+				var max = 0,maxii = 0;
+				for ( var i = 0; i < re.d.list.length; i++) {
+					var jj = 0;
+					for(k in re.d.list[i]){
+						jj++;
+					}
+					if(max < jj){max = jj;maxii=i;}
+				}
+				var hdata = re.d.list[maxii];
 				var cols = [];
 				var j = 0;
 				for(k in hdata){
@@ -282,7 +293,9 @@ $(function(){
 				for ( var i = 0; i < re.d.list.length; i++) {
 					var tr = $("<tr></tr>");
 					for ( var ii = 0; ii < cols.length; ii++) {
-						tr.append($("<td>"+re.d.list[i][cols[ii]]+"</td>"));
+						var d = re.d.list[i][cols[ii]];
+						d = (d == null) ? "" : ((typeof(d) === 'object')?$.toJSON(d):d);
+						tr.append($("<td>"+d+"</td>"));
 					}
 					$("#reTable").append(tr);
 				}

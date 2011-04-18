@@ -43,7 +43,7 @@ try{
 			.append(kobjName)
 			.append("'>schema</a> | <a href='act?act=console&amp;right=kobj&amp;subact=kobj_act&amp;schema_key=");
 			sb.append(kobjName);
-			sb.append("'>query KObject</a>  | <a href='act?act=console&amp;right=kobj&amp;subact=kobj_add&amp;schema_key=");
+			sb.append("'>query KObject</a>  | <a href='act?act=console&amp;right=kobj&amp;subact=kobj_act&amp;direct_act=add&amp;schema_key=");
 			sb.append(kobjName);
 			sb.append("'>add KObject</a> ] - ");
 			sb.append(kc.getIntro());

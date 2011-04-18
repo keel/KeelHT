@@ -18,8 +18,8 @@ if(kc == null){
 <span class="weight">KObj schema: <%=kc.getKobjName() %></span> 
 [ <a href="act?act=console&amp;right=editIni&amp;ini=kobj">edit json</a> | 
 <a href="act?act=console&amp;right=kobj">list</a> |  
-<a href="act?act=console&amp;right=kobj">query KObject</a> |
-<a href="act?act=console&amp;right=kobj">add KObject</a> | 
+<a href="act?act=console&amp;right=kobj&amp;subact=kobj_act&amp;schema_key=<%=kc.getKobjName() %>">query KObject</a> |
+<a href="act?act=console&amp;right=kobj&amp;subact=kobj_act&amp;direct_act=add&amp;schema_key=<%=kc.getKobjName() %>">add KObject</a> | 
 <a href="act?act=console&amp;right=kobj&amp;subact=ini_save">save INI</a> ] 
 </div>
 <div id="re"></div>

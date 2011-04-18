@@ -274,7 +274,7 @@ public class KObjColumn {
 		if (columnData.getClass().getName().equals(KOBJ_COLUMN_TYPES[this.type])) {
 			//验证子字段为HashMap时
 			if (this.type == 2) {
-				if (this.subColMap==null || (kobj.getProp(keyName) == null) || (!kobj.getProp(keyName).getClass().getName().equals(HashMap.class.getName()))) {
+				if (this.subColMap==null || (kobj.getProp(keyName) == null) || !(kobj.getProp(keyName) instanceof HashMap)) {
 					return false;
 				}
 				HashMap<String,Object> m = (HashMap<String,Object>)columnData;
@@ -292,7 +292,7 @@ public class KObjColumn {
 			}
 			//子字段为ArrayList时
 			else if (this.type == 3) {
-				if (this.subColForList == null || (kobj.getProp(keyName) == null) || (!kobj.getProp(keyName).getClass().getName().equals(ArrayList.class.getName()))) {
+				if (this.subColForList == null || (kobj.getProp(keyName) == null) || !(kobj.getProp(keyName) instanceof ArrayList)) {
 					return false;
 				}
 				ArrayList<Object> al = (ArrayList<Object>)columnData;

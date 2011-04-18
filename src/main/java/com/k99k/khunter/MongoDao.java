@@ -103,7 +103,7 @@ public class MongoDao implements DaoInterface{
 		try {
 			idm = new IDManager(1,1);
 			idm.setId(initIDM(tableName));
-			log.info("========tableName:"+tableName + " idm id:"+ idm.getCurrentId());
+			//log.info("========tableName:"+tableName + " idm id:"+ idm.getCurrentId());
 		} catch (Exception e) {
 			log.error("init error!", e);
 			return false;
