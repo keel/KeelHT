@@ -26,9 +26,8 @@ table {border-spacing:1px;}
 th, td {padding:5px;}
 th { color:#fff;border-top:3px solid #00254A; background-color:#434B5D; }
 td { background:#fff; text-align:left;}
-
-input{padding:5px 8px;background-color: #272D3B;color:#E1F6B2;}
-input[type="text"],input[type="password"]{background-color: #FFF;color:#000;border: 1px solid #003333;}
+input{padding:5px;}
+input[type="text"],input[type="password"]{background-color: #FFF;color:#000;border: 1px solid #003333;width:200px;}
 textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:500px;height:60px;padding:5px;}
 
 /* box */
@@ -115,6 +114,24 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:500px
 #home_footer{background-color: #1A1A1A; height:76px;}
 #home_main{float: left; position: relative; width: 590px; border-right: 1px solid #99DBF2; background: #fff;}
 #home_sideNav{float: right; width: 320px;padding:20px;}
+/*login*/
 #login{line-height:3em;}
 #login input{width:240px;}
 #login #login_submit{width:100px;margin:10px;}
+.topBox{width:100%;padding:15px;font-size: 16px; font-weight: bold;}
+.mainBox{padding:20px;background: #fff url('../images/btbg.png') no-repeat bottom;}
+#regForm{line-height:3em;}
+#regForm p{padding:0 20px;}
+.txt2{font-size:12px;color:#999;padding:0 10px;line-height:2em;}
+#rightBox{float:right;width:200px;padding:20px;border-left: 1px solid #99DBF2;}
+#regForm{width:510px;float:left;}
+#loginB{background:#fff;}
+.centerBT{padding:25px 40px;}
+.centerForm{width:360px;margin:25px auto;line-height:3em;}
+.centerForm p{padding:0 20px;}
+/*tab*/
+.indexh {border:1px solid #e8e8e8;border-bottom:2px solid #dbdfe0;height:40px;background:#f6f6f6;margin-bottom:5px;}
+.indexh .tabon {float:left;background:#fff;border:1px solid #dbdfe0;border-bottom:1px solid #fff;margin-left:10px;width:77px;height:26px;margin-top:8px;font-weight:bold;font-size:14px;text-align:center;padding-top:6px;_margin-bottom:-1px}
+.indexh .taboff {float:left;margin-left:10px;width:77px;height:26px;margin-top:8px;font-weight:normal;font-size:14px;text-align:center;padding-top:6px}
+.indexh .message {float:right;margin:10px 10px 0 0;color:#999;font-size:12px}
+
