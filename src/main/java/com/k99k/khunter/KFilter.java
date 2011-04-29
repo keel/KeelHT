@@ -145,7 +145,7 @@ public final class KFilter implements Filter {
 	public static final boolean reStart(){
 		KFilter.stop();
 		HTManager.exit();
-		boolean init = HTManager.init(ActionServlet.getIni());
+		boolean init = HTManager.init(KFilter.getIni());
 		KFilter.start();
 		return init;
 	}
