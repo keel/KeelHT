@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionManager;
 import com.k99k.khunter.ActionMsg;
+import com.k99k.khunter.KFilter;
 import com.k99k.khunter.HTManager;
 import com.k99k.khunter.HttpActionMsg;
 import com.k99k.khunter.KIoc;
@@ -52,14 +53,18 @@ public class ConsoleAction extends Action {
 	 */
 	@Override
 	public ActionMsg act(ActionMsg msg) {
-		msg.addData("jsp", "/WEB-INF/to/console.jsp");
 		HttpActionMsg httpmsg = (HttpActionMsg)msg;
-		String right = "state";
-		HttpSession se = httpmsg.getHttpReq().getSession();
-		if (httpmsg.getHttpReq().getParameter("right") != null) {
-			right = httpmsg.getHttpReq().getParameter("right");
-		}
 		
+//		String right = "state";
+		
+//		if (httpmsg.getHttpReq().getParameter("right") != null) {
+//			right = httpmsg.getHttpReq().getParameter("right");
+//		}
+		
+		//1级Action定位
+		String right = KFilter.actPath(msg, 2, "state");//(pathArr.length == 3) ? "state" : pathArr[2];
+		msg.addData("[jsp]", "/WEB-INF/to/console.jsp");
+		HttpSession se = httpmsg.getHttpReq().getSession();
 		if (right.equals("login")) {
 			//处理登录
 			String name = httpmsg.getHttpReq().getParameter("form_name");
@@ -69,11 +74,11 @@ public class ConsoleAction extends Action {
 				se.setAttribute("admin", name);
 				//msg.addData("right", "state");
 				//msg.addData("jspAttr", msg);
-				msg.removeData("jsp");
-				msg.addData("redirect", "act?act=console&right=state");
+				msg.removeData("[jsp]");
+				msg.addData("[redirect]", "/console/state");
 			}else{
 				//error
-				msg.addData("jsp", "/WEB-INF/to/login.jsp");
+				msg.addData("[jsp]", "/WEB-INF/to/login.jsp");
 			}
 		}
 		
@@ -81,13 +86,13 @@ public class ConsoleAction extends Action {
 		else if (right.equals("exit")) {
 			se.removeAttribute("admin");
 			se.invalidate();
-			msg.addData("jsp", "/WEB-INF/to/login.jsp");
+			msg.addData("[jsp]", "/WEB-INF/to/login.jsp");
 		}
 		else{
 			//验证登录
 			
 			if (se == null || se.getAttribute("admin")==null ) {
-				msg.addData("jsp", "/WEB-INF/to/login.jsp");
+				msg.addData("[jsp]", "/WEB-INF/to/login.jsp");
 			}else{
 				//处理其他管理动作
 				msg.addData("right", right);
@@ -100,7 +105,7 @@ public class ConsoleAction extends Action {
 //				else{
 //					log.error("Can't find in consoleActMap:"+right);
 //				}
-				msg.addData("jspAttr", msg);
+				msg.addData("[jspAttr]", msg);
 				msg.setNextAction(null);
 			}
 		}

@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*" %>
 <%
-Object o = request.getAttribute("jspAttr");
+Object o = request.getAttribute("[jspAttr]");
 HttpActionMsg data = null;
 if(o != null ){
 	data = (HttpActionMsg)o;
@@ -8,6 +8,7 @@ if(o != null ){
 	out.print("attr is null.");
 	return;
 }
+String prefix = KFilter.getPrefix();
 %>
 <div>准备保存的新ini:</div>
 <pre class="json" id="kobjmgr_ini">
@@ -25,7 +26,7 @@ $(function(){
 	//保存动作
 	$("#saveIni").click(function(){
 		var $saveBT = $(this);
-		var url = "act?act=console&right=kobj&subact=ini_save";
+		var url = "<%=prefix%>/console/kobj/ini_save";
 		var req = {update:true};
 		$saveBT.attr("disabled","disabled");
 		$.post(url, req, function(data) {

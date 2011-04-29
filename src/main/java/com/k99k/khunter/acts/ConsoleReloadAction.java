@@ -6,9 +6,8 @@ package com.k99k.khunter.acts;
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionManager;
 import com.k99k.khunter.ActionMsg;
-import com.k99k.khunter.ActionServlet;
+import com.k99k.khunter.KFilter;
 import com.k99k.khunter.DaoManager;
-import com.k99k.khunter.HTManager;
 import com.k99k.khunter.HttpActionMsg;
 import com.k99k.khunter.KFilter;
 import com.k99k.khunter.KObjManager;
@@ -35,10 +34,12 @@ public class ConsoleReloadAction extends Action {
 	public ActionMsg act(ActionMsg msg) {
 		HttpActionMsg httpmsg = (HttpActionMsg)msg;
 		//子命令
-		String subact = httpmsg.getHttpReq().getParameter("subact");
-		if (subact == null || subact.trim().length() <3) {
-			subact = "show";
-		}
+//		String subact = httpmsg.getHttpReq().getParameter("subact");
+//		if (subact == null || subact.trim().length() <3) {
+//			subact = "show";
+//		}
+		
+		String subact = KFilter.actPath(msg, 3, "show");//(pathArr.length == 4) ? "show" : pathArr[3];
 		msg.addData("subact", subact);
 		String re = "err";
 		//显示重启菜单

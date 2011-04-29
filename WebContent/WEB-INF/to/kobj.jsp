@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,com.k99k.tools.*,java.util.*" %>
 <%
-Object o = request.getAttribute("jspAttr");
+Object o = request.getAttribute("[jspAttr]");
 HttpActionMsg data = null;
 if(o != null ){
 	data = (HttpActionMsg)o;
@@ -8,17 +8,18 @@ if(o != null ){
 	out.print("attr is null.");
 	return;
 }
+String prefix = KFilter.getPrefix();
 %>
 <div id="rightTop">
-<span class="weight">KObj config: </span> [ <a href="act?act=console&amp;right=editIni&amp;ini=kobj">edit json</a> | 
-<a href="act?act=console&amp;right=kobj&amp;subact=schema_add">add schema</a>  | 
-<a href="act?act=console&amp;right=kobj&amp;subact=ini_save">save INI</a>]
-<form id="f_search" action="act?act=console&amp;right=kobj" method="post">
-<input type="text" id="search_key" name="search_key" /><input type="hidden" id="subact" name="subact" value="search" /><input type="submit" value="search" />
+<span class="weight">KObj config: </span> [ <a href="<%=prefix %>/console/editIni/?ini=kobj">edit json</a> | 
+<a href="<%=prefix %>/console/kobj/schema_add">add schema</a>  | 
+<a href="<%=prefix %>/console/kobj/ini_save">save INI</a>]
+<form id="f_search" action="<%=prefix%>/console/kobj/search" method="post">
+<input type="text" id="search_key" name="search_key" /><input type="submit" value="search" />
 </form>
 </div>
 <% 
-String subact = StringUtil.objToStrNotNull(data.getData("subact"));
+//String subact = StringUtil.objToStrNotNull(data.getData("subact"));
 //String save = StringUtil.objToStrNotNull(data.getData("save"));
 Object od = data.getData("list");
 if(od==null){
@@ -39,11 +40,17 @@ try{
 			sb.append("<p class='tb_list' ><span class='orangeBold'>");
 			sb.append(kobjName).append("</span> ");
 			//sb.append(kc.getIntro());
-			sb.append(" [ <a href='act?act=console&amp;right=kobj&amp;subact=schema_find&amp;schema_key=")
+			sb.append(" [ <a href='")
+			.append(prefix)
+			.append("/console/kobj/schema_find/?schema_key=")
 			.append(kobjName)
-			.append("'>schema</a> | <a href='act?act=console&amp;right=kobj&amp;subact=kobj_act&amp;schema_key=");
+			.append("'>schema</a> | <a href='")
+			.append(prefix)
+			.append("/console/kobj/kobj_act/?schema_key=");
 			sb.append(kobjName);
-			sb.append("'>query KObject</a>  | <a href='act?act=console&amp;right=kobj&amp;subact=kobj_act&amp;direct_act=add&amp;schema_key=");
+			sb.append("'>query KObject</a>  | <a href='")
+			.append(prefix)
+			.append("/console/kobj/kobj_act/?direct_act=add&amp;schema_key=");
 			sb.append(kobjName);
 			sb.append("'>add KObject</a> ] - ");
 			sb.append(kc.getIntro());

@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,com.k99k.tools.*" %>
 <%
-Object o = request.getAttribute("jspAttr");
+Object o = request.getAttribute("[jspAttr]");
 HttpActionMsg data = null;
 if(o != null ){
 	data = (HttpActionMsg)o;
@@ -8,6 +8,7 @@ if(o != null ){
 	out.print("attr is null.");
 	return;
 }
+String prefix = KFilter.getPrefix();
 %>
 <div id="rightTop" class="weight">Reload:</div>
 <% 
@@ -22,16 +23,15 @@ if(!re.equals("")){
 //确认
 else if(subact.equals("confirm")){
 %>
-<form id="confirmForm" action="act?act=console&amp;right=reload" method="post">
+<form id="confirmForm" action="<%=prefix%>/console/reload/<%=sub %>" method="post">
 Reload <%=sub %> <%=re_name %>  ? 
-<input type="hidden" name="subact" value="<%=sub %>" />
 <input type="hidden" name="reload_name" value="<%=re_name%>" />
-<p><input type="submit" value=" Yes " /> [ <a href="act?act=console&amp;right=reload&amp;subact=show">Cancel</a> ]</p>
+<p><input type="submit" value=" Yes " /> [ <a href="<%=prefix %>/console/reload/show">Cancel</a> ]</p>
 </form>
 <% }
 //显示reload菜单
 else{ %>
-<form id="reloadForm" action="act?act=console&amp;right=reload" method="post">
+<form id="reloadForm" action="<%=prefix%>/console/reload/confirm" method="post">
 <ul>
 <li class="hasReName"><input type="radio" name="sub" value="action" />action : <span></span></li>
 <li class="hasReName"><input type="radio" name="sub" value="dao" />dao : <span></span></li>
@@ -41,7 +41,6 @@ else{ %>
 <li><input type="radio" name="sub" value="allkobjs" />All Kobjs</li>
 <li><input type="radio" name="sub" value="system" />System</li>
 </ul>
-<input type="hidden" name="subact" value="confirm" />
 <input type="submit" value=" RELOAD " />
 </form>
 <script type="text/javascript">
@@ -59,6 +58,6 @@ $("#reloadForm input:radio").click(function(){
 <% }%>
 <hr />
 <p>
-&gt;&gt; <a href="act?act=console&amp;right=reload&amp;subact=stop">STOP all requert for maintenance</a><br />
-&gt;&gt; <a href="act?act=console&amp;right=reload&amp;subact=start&amp;keelcontrolsall=true">Come back from maintenance</a>
+&gt;&gt; <a href="<%=prefix %>/console/reload/stop">STOP all requert for maintenance</a><br />
+&gt;&gt; <a href="<%=prefix %>/console/reload/start/?keelcontrolsall=true">Come back from maintenance</a>
 </p>

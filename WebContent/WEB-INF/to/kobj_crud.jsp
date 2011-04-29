@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,com.k99k.tools.*,java.util.*" %>
 <%
-Object o = request.getAttribute("jspAttr");
+Object o = request.getAttribute("[jspAttr]");
 HttpActionMsg data = null;
 if(o != null ){
 	data = (HttpActionMsg)o;
@@ -8,6 +8,7 @@ if(o != null ){
 	out.print("attr is null.");
 	return;
 }
+String prefix = KFilter.getPrefix();
 String kobj_key = data.getData("key").toString();
 KObjConfig kc = (KObjConfig)data.getData("kc");
 KObjSchema ks = kc.getKobjSchema();
@@ -18,7 +19,7 @@ String[] colArr = ks.getAllColNames();
 <div id="rightTop">
 <span class="weight">KObj [<%=kobj_key %>] actions: </span>
 <input type="button" id="act_query" value="Query" /> <input type="button" id="act_add" value="Add" /> 
-[<a href="act?act=console&right=kobj">Schema List</a> | <a href="act?act=console&right=kobj&subact=schema_find&schema_key=<%=kobj_key %>">Schema</a>]
+[<a href="<%=prefix %>/console/kobj">Schema List</a> | <a href="<%=prefix %>/console/kobj/schema_find/?schema_key=<%=kobj_key %>">Schema</a>]
 </div>
 <div id="query_form">
 <span class="weight">Query:</span> <input type="checkbox" id="q_custom_check" /><label for="q_custom_check">Custom query</label>
@@ -162,7 +163,7 @@ $(function(){
 		$("#a_submit").show();
 	});
 	$("#a_submit").click(function(){
-		var url = "act?act=console&right=kobj&subact=kobj_act&kobj_act=update&schema_key="+key;
+		var url = "<%=prefix %>/console/kobj/kobj_act/?kobj_act=update&schema_key="+key;
 		if(isUpdate && !isNaN($("#u_kobj_id").val())){
 			url = url+"&kobj_id="+$("#u_kobj_id").val();
 		}
@@ -255,7 +256,7 @@ $(function(){
 	};
 	$("#q_submit").click(function(){
 		var q = q_prepare();
-		var url = "act?act=console&right=kobj&subact=kobj_act&kobj_act=search&schema_key="+key;
+		var url = "<%=prefix %>/console/kobj/kobj_act/?kobj_act=search&schema_key="+key;
 		//console.log(q);
 		$.post(url,q,function(data){
 			//$("#reDiv").text(data).show();

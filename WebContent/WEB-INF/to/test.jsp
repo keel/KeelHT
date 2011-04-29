@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*" %>
 <%
-Object o = request.getAttribute("jspAttr");
+Object o = request.getAttribute("[jspAttr]");
 HttpActionMsg data = null;
 if(o != null ){
 	data = (HttpActionMsg)o;
@@ -8,10 +8,11 @@ if(o != null ){
 	out.print("attr is null.");
 	return;
 }
+String prefix = KFilter.getPrefix();
 %>
 <form id="testForm" action="" method="post">
 <div>测试URL:
-<input type="text" id="testUrl" name="testUrl" value="act?act=console&right=test" />
+<input type="text" id="testUrl" name="testUrl" value="<%=prefix%>/console/test" />
 <span class="paraOneValue" id="testUrlShow"></span> - <input type="button" id="testUrlSet" value="set" />
 </div>
 <div>测试请求:
@@ -89,7 +90,7 @@ $("#testForm").submit(function(){
 	// stop form from submitting normally
 	event.preventDefault();
 	//check
-	if($("#testUrl").val() == 'act?act=console&right=test' || $("#json").attr('name')=='json'){
+	if($("#testUrl").val() == 'console/test' || $("#json").attr('name')=='json'){
 		alert("url or json is not ready.");
 		return false;
 	}

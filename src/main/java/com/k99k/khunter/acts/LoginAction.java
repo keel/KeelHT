@@ -84,10 +84,10 @@ public class LoginAction extends Action {
 		//输出
 		//--------------
 		//直接print
-		msg.addData("print",msg.toString());
+		msg.addData("[print]",msg.toString());
 		
 		//jsp方式输出
-//		msg.addData("jsp", "/WEB-INF/test.jsp");
+//		msg.addData("[jsp]", "/WEB-INF/test.jsp");
 //		msg.addData("jspAttr", user);
 		
 		

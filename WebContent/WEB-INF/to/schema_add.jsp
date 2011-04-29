@@ -1,11 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,com.k99k.tools.*,java.util.*" %>
+<%String prefix = KFilter.getPrefix(); %>
 <div id="rightTop">
 <span class="weight">KObj schema add</span> 
-[ <a href="act?act=console&amp;right=editIni&amp;ini=kobj">edit json</a> | 
-<a href="act?act=console&amp;right=kobj">list</a> |  
-<a href="act?act=console&amp;right=kobj">query KObject</a> |
-<a href="act?act=console&amp;right=kobj">add KObject</a> | 
-<a href="act?act=console&amp;right=kobj&amp;subact=ini_save">save INI</a> ] 
+[ <a href="<%=prefix %>/console/editIni/?ini=kobj">edit json</a> | 
+<a href="<%=prefix %>/console/kobj">list</a> |  
+<a href="<%=prefix %>/console/kobj">query KObject</a> |
+<a href="<%=prefix %>/console/kobj">add KObject</a> | 
+<a href="<%=prefix %>/console/kobj/ini_save">save INI</a> ] 
 </div>
 <div id="re"></div>
 <div class="weight">KObj name:</div>
@@ -176,7 +177,7 @@ $(function(){
 		if(data && kobjName){
 			var paras = {"schema_key":kobjName};
 			paras["schema_kcjson"] = $.toJSON(data);
-			$.post("act?act=console&right=kobj&subact=kc_add", paras ,function(re) {
+			$.post("<%=prefix%>/console/kobj/kc_add", paras ,function(re) {
 				//alert("success:"+data);
 				$("#re").text(re);
 			}).error(function() {return alert("post error!");});

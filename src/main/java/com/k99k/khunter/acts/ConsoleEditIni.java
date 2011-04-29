@@ -5,6 +5,7 @@ package com.k99k.khunter.acts;
 
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
+import com.k99k.khunter.KFilter;
 import com.k99k.khunter.ErrorCode;
 import com.k99k.khunter.HTManager;
 import com.k99k.khunter.HttpActionMsg;
@@ -33,10 +34,7 @@ public class ConsoleEditIni extends Action {
 	public ActionMsg act(ActionMsg msg) {
 		HttpActionMsg httpmsg = (HttpActionMsg)msg;
 		//子命令
-		String subact = httpmsg.getHttpReq().getParameter("subact");
-		if (subact == null || subact.trim().length() <3) {
-			subact = "load";
-		}
+		String subact = KFilter.actPath(msg, 3, "load");//(pathArr.length == 4) ? "load" : pathArr[3];
 		msg.addData("subact", subact);
 		//载入
 		String iniFile = HTManager.getIniFilePath();

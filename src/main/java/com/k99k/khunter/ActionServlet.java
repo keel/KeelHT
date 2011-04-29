@@ -20,6 +20,8 @@ public final class ActionServlet extends HttpServlet {
 	static final Logger log = Logger.getLogger(ActionServlet.class);
 	
 	private static String ini;
+	
+	private static int rootNum = 0;
 
 //	static boolean isInited = false;
 	
@@ -39,6 +41,7 @@ public final class ActionServlet extends HttpServlet {
 	 */
 	public void init(ServletConfig config) throws ServletException {
 		ini = config.getInitParameter("ini");
+		rootNum = Integer.parseInt(config.getInitParameter("rootNum"));
 		boolean initOK = HTManager.init(ini);
 		if (!initOK) {
 			log.error("---------KHunter init failed!!!------------");
@@ -89,50 +92,75 @@ public final class ActionServlet extends HttpServlet {
 		setCharset("utf-8",req,resp);
 		try {
 			//由act参数定位Action,此参数在Filter中验证
-			String actName = req.getParameter("act");
-			//TODO act参数移向Filter验证
-			if (actName == null) {
-				resp.getWriter().print("404 - 1");
-				return;
-			}
+//			String actName = req.getParameter("act");
+			String requrl = req.getRequestURL().toString();
+			//pathArr[0]为域名，pathArr[1]为第一个路径,后面继续为路径,最后面为参数
+			String[] pathArr = requrl.substring(requrl.indexOf("//")+2).split("\\/");
+//			if (actName == null) {
+//				resp.setStatus(404);
+//				resp.getWriter().print("404 - 1");
+//				return;
+//			}
+			int rn = 1+rootNum;
+			String actName = (pathArr.length <= rn) ? "" : pathArr[rn];
 			ActionMsg msg = new HttpActionMsg(actName, req, resp);
 			Action action = ActionManager.findAction(actName);
 			if (action == null) {
+				resp.setStatus(404);
 				resp.getWriter().print("404 - 2");
 				return;
 			}
+			msg.addData("[pathArr]", pathArr);
 			//执行action
 			msg = action.act(msg);
 			//是否打印
-			if (msg.getData("print") != null) {
-				resp.getWriter().print(msg.getData("print"));
+			if (msg.getData("[print]") != null) {
+				resp.getWriter().print(msg.getData("[print]"));
 				return;
 			}
 			//是否发向JSP
-			else if (msg.getData("jsp") != null) {
-				String to = (String) msg.getData("jsp");
-				Object o = msg.getData("jspAttr");
+			else if (msg.getData("[jsp]") != null) {
+				String to = (String) msg.getData("[jsp]");
+				Object o = msg.getData("[jspAttr]");
 				if (o != null) {
-					req.setAttribute("jspAttr", o);
+					req.setAttribute("[jspAttr]", o);
 				}
 				RequestDispatcher rd = req.getRequestDispatcher(to);
 				rd.forward(req, resp);
 				return;
 			}
 			//是否跳转
-			else if (msg.getData("redirect") != null) {
-				String redirect = (String) msg.getData("redirect");
+			else if (msg.getData("[redirect]") != null) {
+				String redirect = (String) msg.getData("[redirect]");
 				resp.sendRedirect(redirect);
 				return;
 			}else{
-				resp.getWriter().print(msg.getData("404 - 3"));
+				resp.setStatus(404);
+				resp.getWriter().print("404 - 3");
 			}
 		} catch (Exception e) {
 			log.error("Action servlet error!", e);
+			resp.setStatus(404);
 			resp.getWriter().print("500 - System error! please contact administrator.");
 			return;
 		}
 
 	}
 
+//	/**
+//	 * 从msg的[pathArr]中定位子Action的actName
+//	 * @param msg
+//	 * @param pathNum
+//	 * @param defaultStr
+//	 * @return subact 子Action的actName
+//	 */
+//	public static final String actPath(ActionMsg msg,int pathNum,String defaultStr){
+//		//FIXME 测试时多计算了Servlet
+//		pathNum = pathNum+rootNum;
+//		String[] pathArr = (String[]) msg.getData("[pathArr]");
+//		String subact = (pathArr.length <= (pathNum+1)) ? defaultStr : pathArr[pathNum];
+//		return subact;
+//	}
+	
+	
 }

@@ -17,7 +17,6 @@ public class WBLogin extends Action {
 	 */
 	public WBLogin(String name) {
 		super(name);
-		// TODO Auto-generated constructor stub
 	}
 
 	/* (non-Javadoc)

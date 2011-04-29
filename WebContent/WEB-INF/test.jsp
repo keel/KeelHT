@@ -7,7 +7,7 @@
 </head>
 <body>
 <%
-Object o = request.getAttribute("jspAttr");
+Object o = request.getAttribute("[jspAttr]");
 if(o != null ){
 	HTUser user = (HTUser)o;
 	out.print(user.getName() + " , " + user.getImei() + " , " + user.getEmail());

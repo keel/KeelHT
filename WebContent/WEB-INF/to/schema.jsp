@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,com.k99k.tools.*,java.util.*" %>
 <%
-Object o = request.getAttribute("jspAttr");
+Object o = request.getAttribute("[jspAttr]");
 HttpActionMsg data = null;
 if(o != null ){
 	data = (HttpActionMsg)o;
@@ -8,6 +8,7 @@ if(o != null ){
 	out.print("attr is null.");
 	return;
 }
+String prefix = KFilter.getPrefix();
 KObjConfig kc = (KObjConfig)data.getData("schema_find");
 if(kc == null){
 	out.print("KObjConfig is null.");
@@ -16,11 +17,11 @@ if(kc == null){
 %>
 <div id="rightTop">
 <span class="weight">KObj schema: <%=kc.getKobjName() %></span> 
-[ <a href="act?act=console&amp;right=editIni&amp;ini=kobj">edit json</a> | 
-<a href="act?act=console&amp;right=kobj">list</a> |  
-<a href="act?act=console&amp;right=kobj&amp;subact=kobj_act&amp;schema_key=<%=kc.getKobjName() %>">query KObject</a> |
-<a href="act?act=console&amp;right=kobj&amp;subact=kobj_act&amp;direct_act=add&amp;schema_key=<%=kc.getKobjName() %>">add KObject</a> | 
-<a href="act?act=console&amp;right=kobj&amp;subact=ini_save">save INI</a> ] 
+[ <a href="<%=prefix %>/console/editIni/?ini=kobj">edit json</a> | 
+<a href="<%=prefix %>/console/kobj">list</a> |  
+<a href="<%=prefix %>/console/kobj/kobj_act/?schema_key=<%=kc.getKobjName() %>">query KObject</a> |
+<a href="<%=prefix %>/console/kobj/kobj_act/?direct_act=add&amp;schema_key=<%=kc.getKobjName() %>">add KObject</a> | 
+<a href="<%=prefix %>/console/kobj/ini_save">save INI</a> ] 
 </div>
 <div id="re"></div>
 <div class="weight">Intro:</div>
@@ -91,7 +92,7 @@ $(function(){
 	//intro
 	var p_intro = {
 		preParas : {schema_key:"<%= kc.getKobjName()%>",schema_part:"intro"},
-		url:"act?act=console&right=kobj&subact=schema_update",
+		url:"<%=prefix%>/console/kobj/schema_update",
 		key:["schema_intro"],
 		msg:"#re"
 	};
@@ -100,7 +101,7 @@ $(function(){
 	var p_dao = {
 		key : ["schema_daojson"],
 		preParas:{schema_key:"<%= kc.getKobjName()%>",schema_part:"dao"},
-		url:"act?act=console&right=kobj&subact=schema_update",
+		url:"<%=prefix%>/console/kobj/schema_update",
 		editor:[$.hotEditor.textAreaEditor],
 		msg:"#re"
 	};
@@ -111,7 +112,7 @@ $(function(){
 		preParas:{schema_key:"<%= kc.getKobjName()%>",schema_part:"col_edit"},
 		subs:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)","td:eq(5)"],
 		key : ["col","def","type","intro","len","validator"],
-		url:"act?act=console&right=kobj&subact=schema_update",
+		url:"<%=prefix%>/console/kobj/schema_update",
 		editor : [$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,colType,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor],
 		bts : "td:eq(6)",
 		jsonTyps:["s","a","i","s","i","s"],
@@ -128,7 +129,7 @@ $(function(){
 	var p_indexes = {
 		preParas:{schema_key:"<%= kc.getKobjName()%>",schema_part:"index_edit"},
 		subs:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)"],
-		url:"act?act=console&right=kobj&subact=schema_update",
+		url:"<%=prefix%>/console/kobj/schema_update",
 		key : ["col","asc","intro","type","unique"],
 		editor : [$.hotEditor.inputTextEditor,$.hotEditor.selectEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.selectEditor],
 		bts : "td:eq(5)",
