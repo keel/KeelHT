@@ -12,7 +12,7 @@ import javax.crypto.Cipher;
 
 /**
  * 
- * 使用DES加密与解密,可对String类型进行加密与解密,密文可使用String存储.
+ * 使用AES加密与解密,可对String类型进行加密与解密,密文可使用String存储.
  * 
  */
 

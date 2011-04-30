@@ -18,7 +18,7 @@ package com.k99k.tools.encrypter;
 
 /**
 * A Base64 encoder/decoder.
-* 修改过的base64算法,为避免需要URLEncode，所以进行了以下改变:<br />
+* 修改过的base64算法,为避免需要URLEncode，所以进行了以下改变:
  <pre>
  + -> .
  / -> @
@@ -253,7 +253,7 @@ public static byte[] decode (char[] in, int iOff, int iLen) {
       if (op<oLen) out[op++] = (byte)o2; }
    return out; }
 
-// Dummy constructor.
-private Base64Coder() {}
+	// Dummy constructor.
+	private Base64Coder() {}
 
-} // end class Base64Coder
+}
