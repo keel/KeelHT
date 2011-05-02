@@ -3,6 +3,7 @@
  */
 package com.k99k.khunter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -73,12 +74,13 @@ public final class ActionManager {
 				String ini = KIoc.readTxtInUTF8(iniFile);
 				Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
 				//先定位到json的actions属性
-				Map<String, ?> actionsMap = (Map<String, ?>) root.get(ActionManager.getName());
+				//Map<String, ?> actionsMap = (Map<String, ?>) root.get(ActionManager.getName());
+				ArrayList<Map<String,?>> actList = (ArrayList<Map<String, ?>>) root.get(ActionManager.getName());
 				//循环加入Action
 				int i = 0;
-				for (Iterator<String> iter = actionsMap.keySet().iterator(); iter.hasNext();) {
-					String actionName = iter.next();
-					Map<String, ?> m = (Map<String, ?>) actionsMap.get(actionName);
+				for (Iterator<Map<String, ?>> it = actList.iterator(); it.hasNext();) {
+					Map<String, ?> m = it.next();
+					String actionName = m.get("_actName").toString();
 					//读取必要的属性，如果少则报错并继续下一个
 					if (m.containsKey("_class")) {
 						String _class = (String) m.get("_class");
@@ -113,7 +115,42 @@ public final class ActionManager {
 					i++;
 				}
 				
-				
+//				for (Iterator<String> iter = actionsMap.keySet().iterator(); iter.hasNext();) {
+//					String actionName = iter.next();
+//					Map<String, ?> m = (Map<String, ?>) actionsMap.get(actionName);
+//					//读取必要的属性，如果少则报错并继续下一个
+//					if (m.containsKey("_class")) {
+//						String _class = (String) m.get("_class");
+//						
+//						/*
+//						//type默认为normal //--直接在属性中加入
+//						//String _type = (m.containsKey("_type"))?"normal":(String) m.get("_type");
+//						*/
+//						
+//						Object o = KIoc.loadClassInstance("file:/"+classPath, _class, new Object[]{actionName});
+//						if (o == null) {
+//							log.error("loadClassInstance error! _class:"+_class+" _name:"+actionName);
+//							continue;
+//						}
+//						Action action = (Action)o;
+//						
+//						HTManager.fetchProps(action, m);
+//						//加入Action,无论是否已存在
+//						actionMap.put(action.getName(), action);
+//						log.info("Action added: "+action.getName());
+//						try {
+//							//Action初始化
+//							action.init();
+//						} catch (Exception e) {
+//							log.error("Action init Error:"+action.getName(), e);
+//							continue;
+//						}
+//					}else{
+//						log.error("Action init Error! miss one or more key props. Position:"+i);
+//						continue;
+//					}
+//					i++;
+//				}
 				
 			} catch (Exception e) {
 				log.error("ActionManager init Error!", e);

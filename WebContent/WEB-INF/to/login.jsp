@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,com.k99k.tools.*" session="false" %>
 <%
+String sPrefix = KFilter.getStaticPrefix();
 String prefix = KFilter.getPrefix();
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -7,7 +8,7 @@ String prefix = KFilter.getPrefix();
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>KHT console</title>
-<link rel="stylesheet" type="text/css" href="<%=prefix %>/css/style.css" />
+<link rel="stylesheet" type="text/css" href="<%=sPrefix %>/css/style.css" />
 </head>
 <body>
 

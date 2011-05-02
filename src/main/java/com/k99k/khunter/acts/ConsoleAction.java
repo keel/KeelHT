@@ -34,7 +34,7 @@ public class ConsoleAction extends Action {
 	public ConsoleAction(String name) {
 		super(name);
 	}
-	static final Logger log = Logger.getLogger(ActionManager.class);
+	static final Logger log = Logger.getLogger(ConsoleAction.class);
 	
 	
 	/**
@@ -123,7 +123,7 @@ public class ConsoleAction extends Action {
 			String ini = KIoc.readTxtInUTF8(HTManager.getIniPath()+getIniPath());
 			Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
 			//先定位到json的actions属性
-			Map<String, ?> actionsMap = (Map<String, ?>) root.get(ActionManager.getName());
+			Map<String, ?> actionsMap = (Map<String, ?>) root.get("actions");
 			//循环加入Action
 			int i = 0;
 			for (Iterator<String> iter = actionsMap.keySet().iterator(); iter.hasNext();) {

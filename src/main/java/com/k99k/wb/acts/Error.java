@@ -15,5 +15,9 @@ public class Error {
 	 */
 	public Error() {
 	}
+	
+	public static final String err404(){
+		return "err:404";
+	}
 
 }

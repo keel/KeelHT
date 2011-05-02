@@ -36,8 +36,23 @@ public final class KFilter implements Filter {
 	private static int rootNum = 0;
 	
 	private static String staticPrefix = "";
+	private static String actPrefix = "";
+	
+	/**
+	 * 如果存在以*为name的Action，则此Action为默认Action,可匹配所有未匹配到的Action请求
+	 */
+	private boolean hasDefaultAction = false;
+	
+	/**
+	 * 默认Action,名为*,可匹配所有未匹配到的Action请求
+	 */
+	private Action defaultAction = null;
 	
 	public static String getPrefix(){
+		return actPrefix;
+	}
+    
+	public static String getStaticPrefix(){
 		return staticPrefix;
 	}
     
@@ -80,6 +95,8 @@ public final class KFilter implements Filter {
 			chain.doFilter(request, response);
 			return;
 		}
+		
+		
 		if (isStop) {
 			//FIXME 穿透控制,注意这里一定要加ip控制
 			if (req.getParameter("keelcontrolsall") == null) {
@@ -99,9 +116,16 @@ public final class KFilter implements Filter {
 			ActionMsg msg = new HttpActionMsg(actName, req, resp);
 			Action action = ActionManager.findAction(actName);
 			if (action == null) {
-				resp.setStatus(404);
-				resp.getWriter().print("404 - 2");
-				return;
+				//如果存在以*为name的Action，则此Action为默认Action,可匹配所有未匹配到的Action请求
+				if (hasDefaultAction) {
+					//加入actName,以便defaultAction使用
+					msg.addData("[actName]", actName);
+					action = this.defaultAction;
+				}else{
+					resp.setStatus(404);
+					resp.getWriter().print("404 - 2");
+					return;
+				}
 			}
 			msg.addData("[pathArr]", pathArr);
 			//msg.addData("[prefix]", staticPrefix);
@@ -157,6 +181,7 @@ public final class KFilter implements Filter {
 		ini = fConfig.getInitParameter("ini");
 		rootNum = Integer.parseInt(fConfig.getInitParameter("rootNum"));
 		staticPrefix = fConfig.getInitParameter("staticPrefix");
+		actPrefix = fConfig.getInitParameter("actPrefix");
 		//处理静态内容(非Action请求)的过滤
 		String[] statics = fConfig.getInitParameter("statics").split(",");
 		for (int i = 0; i < statics.length; i++) {
@@ -165,7 +190,12 @@ public final class KFilter implements Filter {
 		boolean initOK = HTManager.init(ini);
 		if (!initOK) {
 			log.error("---------KHunter init failed!!!------------");
+		}else{
+			defaultAction = ActionManager.findAction("*");
+			this.hasDefaultAction = (defaultAction != null);
+			log.info("defaultAction:"+hasDefaultAction);
 		}
+		
 	}
 	
 	/**

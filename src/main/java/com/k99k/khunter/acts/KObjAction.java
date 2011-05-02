@@ -40,8 +40,8 @@ public class KObjAction extends Action{
 	
 	public static final int ERR_CODE1 = 15;
 	
-	private static final String JS_HOTEDITER = "<script type=\"text/javascript\" src=\""+KFilter.getPrefix()+"/js/jquery.json-2.2.min.js\"></script><script type=\"text/javascript\" src=\""+KFilter.getPrefix()+"/js/hotEdit.js\"></script>";
-	private static final String JS_SNIPPET = "<link rel=\"stylesheet\" type=\"text/css\" href=\""+KFilter.getPrefix()+"/css/jquery.snippet.min.css\" /><script type=\"text/javascript\" src=\""+KFilter.getPrefix()+"/js/jquery.snippet.min.js\"></script>";
+	private static final String JS_HOTEDITER = "<script type=\"text/javascript\" src=\""+KFilter.getStaticPrefix()+"/js/jquery.json-2.2.min.js\"></script><script type=\"text/javascript\" src=\""+KFilter.getPrefix()+"/js/hotEdit.js\"></script>";
+	private static final String JS_SNIPPET = "<link rel=\"stylesheet\" type=\"text/css\" href=\""+KFilter.getStaticPrefix()+"/css/jquery.snippet.min.css\" /><script type=\"text/javascript\" src=\""+KFilter.getPrefix()+"/js/jquery.snippet.min.js\"></script>";
 	
 	/**
 	 * 保存配置,实际上是KObjManager的配置
