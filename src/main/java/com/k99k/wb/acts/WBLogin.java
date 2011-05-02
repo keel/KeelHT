@@ -76,6 +76,7 @@ public class WBLogin extends Action {
 				if (httpmsg.getHttpReq().getParameter("uCookie") != null) {
 					WBUrl.setCookie("wbu", Base64Coder.encodeString(uName), httpmsg.getHttpResp());
 				}
+				return;
 			}
 		}
 		JOut.err(401, httpmsg);
@@ -86,9 +87,9 @@ public class WBLogin extends Action {
 		if (uName != null) {
 			JOut.txtOut(logOutStrArr, new String[]{uName,"Logged out."}, httpmsg);
 			WBUrl.removeCookie("wbu", httpmsg.getHttpResp());
-		}else{
-			JOut.err(401, httpmsg);
+			return;
 		}
+		JOut.err(401, httpmsg);
 	}
 
 	/* (non-Javadoc)
