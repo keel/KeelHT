@@ -97,11 +97,10 @@ public class WBUrl extends Action {
 	
 	/**
 	 * 删除cookie
-	 * @param cookies
 	 * @param cookieName
 	 * @param resp
 	 */
-	public final static void removeCookie(Cookie[] cookies,String cookieName,HttpServletResponse resp){
+	public final static void removeCookie(String cookieName,HttpServletResponse resp){
 		Cookie c = new Cookie(cookieName, "");
 		c.setMaxAge(0);// 有效时间为0则系统会自动删除过期的cookie
 		c.setPath("/");
