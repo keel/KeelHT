@@ -10,11 +10,10 @@ String prefix = KFilter.getPrefix();
 <title>江苏网微博</title>
 <link rel="stylesheet" type="text/css" href="<%=sPrefix %>/css/style_wb.css" />
 <script src="<%=sPrefix %>/js/jquery.js" type="text/javascript"></script>
-<script src="<%=sPrefix %>/js/jquery.json-2.2.min.js" type="text/javascript"></script>
-<script src="<%=sPrefix %>/js/hotEdit.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(function(){
-
+	//检查
+	
 });
 </script>
 
@@ -36,11 +35,11 @@ $(function(){
 		<div class="mainBox">
 			<form class="centerForm" name="loginForm" action="#" method="post">
 				<p><label for="uName">用户名：</label><span class="txt2">最多 6 个汉字或 12 个字符</span><br /><input type="text" name="uName" value="" id="uName"/></p>
-				<p><label for="uName">密码：</label><span class="txt2">请正确填写密码</span><br /><input type="text" name="uName" value="" id="uName"/></p>
+				<p><label for="uPwd">密码：</label><span class="txt2">请正确填写密码</span><br /><input type="password" name="uPwd" value="" id="uPwd"/></p>
 				<p>
-        <input type="checkbox" name="rememberMe" id="rememberMe"  value="on" /><label class="txt2" for="rememberMe">下次自动登录        </label>
+        <input type="checkbox" name="uCookie" id="uCookie"  value="true" /><label class="txt2" for="uCookie">下次自动登录        </label>
     </p>
-			<div class="centerBT"><input type="submit" value=" 立即登录 " /></div>
+			<div class="centerBT"><input type="button" value=" 立即登录 " /></div>
 			</form>
 <div class="clear"></div>
 		</div>

@@ -132,7 +132,7 @@ public class WBUrl extends Action {
 	 */
 	@Override
 	public String getIniPath() {
-		return "wbUrl.json";
+		return "wb.json";
 	}
 
 	/* (non-Javadoc)

@@ -64,6 +64,10 @@ public class WBLogin extends Action {
 		return super.act(msg);
 	}
 
+	/**
+	 * 登录,需要uName,uPwd,uCookie
+	 * @param httpmsg HttpActionMsg
+	 */
 	public static final void login(HttpActionMsg httpmsg){
 		String uName = httpmsg.getHttpReq().getParameter("uName");
 		String uPwd = httpmsg.getHttpReq().getParameter("uPwd");
@@ -82,6 +86,10 @@ public class WBLogin extends Action {
 		JOut.err(401, httpmsg);
 	}
 
+	/**
+	 * 注销,需要uName
+	 * @param httpmsg HttpActionMsg
+	 */
 	public static final void logout(HttpActionMsg httpmsg){
 		String uName = httpmsg.getHttpReq().getParameter("uName");
 		if (uName != null) {
@@ -90,6 +98,28 @@ public class WBLogin extends Action {
 			return;
 		}
 		JOut.err(401, httpmsg);
+	}
+	
+	/**
+	 * 鉴权,使用basic认证方式在http header实现的鉴权
+	 * @param httpmsg HttpActionMsg
+	 * @return KObject 成功则返回wbUser对象,为null表示失败
+	 */
+	public static final KObject basicAuth(HttpActionMsg httpmsg){
+		try {
+			String authStr = httpmsg.getHttpReq().getHeader("Authorization");
+			String enc = authStr.split(" ")[1];
+			String[] u_p = Base64Coder.decodeString(enc).split(":");
+			KObject user = WBUser.findWBUser(u_p[0]);
+			if (user != null && user.getProp("pwd").toString().equals(u_p[1])) {
+				httpmsg.addData("wbUser", user);
+				return user;
+			}
+		} catch (Exception e) {
+			log.error("auth error:", e);
+			return null;
+		}
+		return null;
 	}
 
 	/* (non-Javadoc)

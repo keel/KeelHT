@@ -11,7 +11,6 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.MongoException;
 
 /**
  * 基于mongoDB的基础DAO
