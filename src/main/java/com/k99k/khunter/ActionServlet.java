@@ -121,10 +121,11 @@ public final class ActionServlet extends HttpServlet {
 			//是否发向JSP
 			else if (msg.getData("[jsp]") != null) {
 				String to = (String) msg.getData("[jsp]");
-				Object o = msg.getData("[jspAttr]");
-				if (o != null) {
-					req.setAttribute("[jspAttr]", o);
-				}
+//				Object o = msg.getData("[jspAttr]");
+//				if (o != null) {
+//					req.setAttribute("[jspAttr]", o);
+//				}
+				req.setAttribute("[jspAttr]", msg);
 				RequestDispatcher rd = req.getRequestDispatcher(to);
 				rd.forward(req, resp);
 				return;

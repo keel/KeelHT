@@ -135,6 +135,7 @@ public class MongoDao implements DaoInterface{
 	 * @param name KObject的name
 	 * @return
 	 */
+	@Override
 	public KObject findOne(String name){
 		Map<String, Object> m = this.findOneMap(new BasicDBObject("name", name),null);
 		if (m != null) {
@@ -159,6 +160,7 @@ public class MongoDao implements DaoInterface{
 	 * @param fields
 	 * @return
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public Map<String,Object> findOneMap(HashMap<String,Object> query,HashMap<String, Object> fields){
 		try {
@@ -177,6 +179,24 @@ public class MongoDao implements DaoInterface{
 		}
 	}
 	
+	
+	@Override
+	public boolean checkName(String name) {
+		try {
+			DBCollection coll = this.dataSource.getColl(tableName);
+			DBCursor cur = coll.find(new BasicDBObject("name", name),new BasicDBObject("_id", 1));
+			if (cur.hasNext()) {
+				return true;
+			}
+		} catch (Exception e) {
+			log.error("removeIndex error!", e);
+			return false;
+		}
+		return false;
+	}
+
+
+
 	/**
 	 * 通用的查找过程
 	 * @param query 必须有,为null则为默认查询
@@ -524,6 +544,7 @@ public class MongoDao implements DaoInterface{
 		return true;
 	}
 
+	
 
 
 	/**

@@ -253,6 +253,8 @@ public class KObjAction extends Action{
 			//add or update KObj
 			else if (kobj_act.equals("update")) {
 				String kobj_json = httpmsg.getHttpReq().getParameter("kobj_json");
+				String act_add = httpmsg.getHttpReq().getParameter("act_add");
+				boolean isAdd = (act_add != null);
 				//如果有kobj_id参数则为更新,无则为添加
 				String kobj_id = httpmsg.getHttpReq().getParameter("kobj_id");
 				if (StringUtil.isStringWithLen(key, 2) && StringUtil.isStringWithLen(kobj_json, 2)) {
@@ -261,7 +263,15 @@ public class KObjAction extends Action{
 						KObjSchema ks = kc.getKobjSchema();
 						DaoInterface dao = kc.getDaoConfig().findDao();
 						KObject newKObj = (StringUtil.isDigits(kobj_id))?dao.findOne(Long.parseLong(kobj_id)):ks.createEmptyKObj();
-						if (newKObj != null && ks.setPropFromMap(nk, newKObj) && dao.save(newKObj)) {
+						boolean re = false;
+						if (newKObj != null) {
+							if (isAdd) {
+								re = ks.setPropFromMapForCreate(nk, newKObj) && dao.save(newKObj);
+							}else{
+								re = ks.setPropFromMap(nk, newKObj) && dao.save(newKObj);
+							}
+						}
+						if(re){
 							msg.addData("[print]", "{\"re\":\"ok\",\"d\":{\"id\":"+newKObj.getId()+"}}");
 							return super.act(msg);
 						}else{

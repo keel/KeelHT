@@ -24,6 +24,17 @@ public class JOut {
 		httpmsg.getHttpResp().setStatus(errCode);
 		httpmsg.addData("[print]", String.valueOf(errCode));
 	}
+	
+	/**
+	 * 将错误码置为http状态码,并返回错误消息
+	 * @param errCode 错误码
+	 * @param msg 错误消息
+	 * @param httpmsg
+	 */
+	public static final void err(int errCode,String msg,HttpActionMsg httpmsg){
+		httpmsg.getHttpResp().setStatus(errCode);
+		httpmsg.addData("[print]", msg);
+	}
 
 	/**
 	 * 直接输出String,状态码不设,为默认的200

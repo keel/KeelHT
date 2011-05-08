@@ -39,8 +39,8 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:90%;h
 /* #header{background:url("../imgs/homepage01.jpg") no-repeat scroll left top transparent;height:145px;width:778px;}*/
 #header{ color:#FFF; height:100px;background-color: #272D3B;}
 #header h1{ color:#FFF; padding:25px;font-size: 220%;font-weight:normal;}
-
-
+.red{color:red;}
+.weight{font-weight: bold;}
 #sideNav{width:180px;float:left;padding:10px;color:#BEBEBE;background-color: #101010;}
 #mainContent{padding:10px 20px 0 220px;}
 #mainContent p{padding:10px;}

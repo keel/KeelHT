@@ -74,11 +74,17 @@ public class WBLogin extends Action {
 		if (uName != null && uPwd != null && uName.toString().trim().length()>3 && uPwd.toString().trim().length()>=6) {
 			KObject user = WBUser.findWBUser(uName);
 			if (user != null && user.getProp("pwd").toString().equals(uPwd)) {
-				//验证成功
-				JOut.txtOut("ok", httpmsg);
+				//验证成功,返回uName
+				JOut.txtOut(uName, httpmsg);
 				//加入cookie
-				if (httpmsg.getHttpReq().getParameter("uCookie") != null) {
-					WBUrl.setCookie("wbu", Base64Coder.encodeString(uName), httpmsg.getHttpResp());
+				String cookie = httpmsg.getHttpReq().getParameter("uCookie");
+				if (cookie != null && cookie.equals("true")) {
+					//保存cookie
+					WBUrl.setCookie("wbu", Base64Coder.encodeString(uName+":"+uPwd+":"+System.currentTimeMillis()), httpmsg.getHttpResp());
+					WBUrl.setCookie("al", "true", httpmsg.getHttpResp());
+				}else{
+					//仅持续20分钟
+					WBUrl.setCookie("wbu", Base64Coder.encodeString(uName+":"+uPwd+":"+System.currentTimeMillis()),60*20, httpmsg.getHttpResp());
 				}
 				return;
 			}
@@ -95,6 +101,7 @@ public class WBLogin extends Action {
 		if (uName != null) {
 			JOut.txtOut(logOutStrArr, new String[]{uName,"Logged out."}, httpmsg);
 			WBUrl.removeCookie("wbu", httpmsg.getHttpResp());
+			WBUrl.removeCookie("al", httpmsg.getHttpResp());
 			return;
 		}
 		JOut.err(401, httpmsg);
@@ -110,14 +117,53 @@ public class WBLogin extends Action {
 			String authStr = httpmsg.getHttpReq().getHeader("Authorization");
 			String enc = authStr.split(" ")[1];
 			String[] u_p = Base64Coder.decodeString(enc).split(":");
-			KObject user = WBUser.findWBUser(u_p[0]);
-			if (user != null && user.getProp("pwd").toString().equals(u_p[1])) {
+			KObject user = auth(u_p[0],u_p[1]);
+			if (user != null) {
 				httpmsg.addData("wbUser", user);
 				return user;
 			}
 		} catch (Exception e) {
 			log.error("auth error:", e);
 			return null;
+		}
+		return null;
+	}
+	
+	/**
+	 * 鉴权,利用cookie中的用户信息
+	 * @param httpmsg HttpActionMsg
+	 * @return KObject 成功则返回wbUser对象,为null表示失败
+	 */
+	public static final KObject cookieAuth(HttpActionMsg httpmsg){
+		try {
+			String reqUserStr = WBUrl.getCookieValue(httpmsg.getHttpReq().getCookies(),"wbu","");
+			if (reqUserStr.equals("")) {
+				return null;
+			}
+			String[] u_p = Base64Coder.decodeString(reqUserStr).split(":");
+			KObject user = auth(u_p[0],u_p[1]);
+			if (user != null) {
+				httpmsg.addData("wbUser", user);
+				return user;
+			}
+		} catch (Exception e) {
+			log.error("auth error:", e);
+			return null;
+		}
+		return null;
+		
+	}
+	
+	/**
+	 * 鉴权用户名和密码,返回KObject user对象
+	 * @param uName
+	 * @param uPwd
+	 * @return KObject 成功则返回wbUser对象,为null表示失败
+	 */
+	public static final KObject auth(String uName,String uPwd){
+		KObject user = WBUser.findWBUser(uName);
+		if (user != null && user.getProp("pwd").toString().equals(uPwd)) {
+			return user;
 		}
 		return null;
 	}

@@ -231,9 +231,15 @@ public final class ActionManager {
 			String ini = KIoc.readTxtInUTF8(iniFilePath);
 			Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
 			//先定位到json的actions属性
-			Map<String, ?> actionsMap = (Map<String, ?>) root.get(ActionManager.getName());
-			Map<String, ?> m = (Map<String, ?>) actionsMap.get(act);
-			if (!m.containsKey("_class")) {
+			ArrayList<Map<String,?>> actList = (ArrayList<Map<String,?>>) root.get(ActionManager.getName());
+			Map<String, ?> m = null;
+			for (Iterator<Map<String, ?>> it = actList.iterator(); it.hasNext();) {
+				Map<String, ?> map = it.next();
+				if (act.equals(map.get("_actName"))) {
+					m = map;
+				}
+			}
+			if (m == null || !m.containsKey("_class")) {
 				log.error("Action init Error! miss key prop:_class");
 				return false;
 			}
@@ -246,8 +252,8 @@ public final class ActionManager {
 			}
 			Action action = (Action)o;
 			HTManager.fetchProps(action, m);
-			Action old = (Action)actionMap.get(act);
-			old = action;
+//			Action old = (Action)actionMap.get(act);
+//			old = action;
 			actionMap.put(act, action);
 			action.init();
 		} catch (Exception e) {

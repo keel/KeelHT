@@ -14,11 +14,11 @@ KObjConfig kc = (KObjConfig)data.getData("kc");
 KObjSchema ks = kc.getKobjSchema();
 //直接命令,为query或add
 String direct_act = data.getData("direct_act").toString();
-String[] colArr = ks.getAllColNames();
+String[] colArr = ks.getAllColNamesWithRequiredTag();
 %>
 <div id="rightTop">
 <span class="weight">KObj [<%=kobj_key %>] actions: </span>
-<input type="button" id="act_query" value="Query" /> <input type="button" id="act_add" value="Add" /> 
+<input type="button" id="act_query" value="Query" /> <input type="button" id="act_add" value="Add/Update" /> 
 [<a href="<%=prefix %>/console/kobj">Schema List</a> | <a href="<%=prefix %>/console/kobj/schema_find/?schema_key=<%=kobj_key %>">Schema</a>]
 </div>
 <div id="query_form">
@@ -28,7 +28,13 @@ String[] colArr = ks.getAllColNames();
 <%
 StringBuilder sb = new StringBuilder();
 for(int i = 0;i<colArr.length;i++){
-	sb.append("<option value='").append(colArr[i]).append("'>").append(colArr[i]).append("</option>");
+	String s = colArr[i];
+	if(s.startsWith("*")){
+		s = colArr[i].substring(1);
+		sb.append("<option value='").append(s).append("'>").append(s).append("</option><span class='red weight'>*</span>");
+		continue;
+	};
+	sb.append("<option value='").append(s).append("'>").append(s).append("</option>");
 }
 String colSelect = sb.toString();
 out.print(colSelect);
@@ -48,7 +54,13 @@ out.print(colSelect);
 <%
 sb = new StringBuilder();
 for(int i = 0;i<colArr.length;i++){
-	sb.append("<input type=\"checkbox\" id=\"q_field").append(i).append("\" name=\"q_field\" value=\"").append(colArr[i]).append("\" /><label for=\"q_field").append(i).append("\">").append(colArr[i]).append("</label> ");
+	String s = colArr[i];
+	if(s.startsWith("*")){
+		s = s.substring(1);
+		sb.append("<input type=\"checkbox\" id=\"q_field").append(i).append("\" name=\"q_field\" checked=\"checked\" value=\"").append(s).append("\" /><label for=\"q_field").append(i).append("\" class=\"red weight\">").append(s).append("</label> ");
+		continue;
+	}
+	sb.append("<input type=\"checkbox\" id=\"q_field").append(i).append("\" name=\"q_field\" value=\"").append(s).append("\" /><label for=\"q_field").append(i).append("\">").append(s).append("</label> ");
 }
 String colCheckBox = sb.toString();
 out.print(colCheckBox);
@@ -79,7 +91,13 @@ out.print(indexesCheckBox);
 <%
 sb = new StringBuilder();
 for(int i = 0;i<colArr.length;i++){
-	sb.append("<label for=\"a_field").append(i).append("\">").append(colArr[i]).append(": </label> <input type=\"text\" id=\"a_field").append(i).append("\" name=\"").append(colArr[i]).append("\" value=\"\" /><br />");
+	String s = colArr[i];
+	if(s.startsWith("*")){
+		s = s.substring(1);
+		sb.append("<label class=\"red weight\" for=\"a_field").append(i).append("\">").append(s).append(": </label> <input type=\"text\" id=\"a_field").append(i).append("\" name=\"").append(s).append("\" value=\"\" /><br />");
+		continue;
+	}
+	sb.append("<label for=\"a_field").append(i).append("\">").append(s).append(": </label> <input type=\"text\" id=\"a_field").append(i).append("\" name=\"").append(s).append("\" value=\"\" /><br />");
 }
 String coladd = sb.toString();
 out.print(coladd);
@@ -132,21 +150,23 @@ $(function(){
 		}
 	});
 	$("#reDiv").hide();
-	//update-----------------
+	//update prepare-----------------
 	var isUpdate = false;
 	$("#u_kobj_id").hide();
 	$("#u_c").click(function(){
 		if(this.checked){
 			$("#u_kobj_id").show();
 			isUpdate = true;
+			$("#a_submit").val(" UPDATE KObj ");
 			$("#au_tag").text("Update kobj id:");
 		}else{
 			$("#u_kobj_id").hide();
 			isUpdate = false;
+			$("#a_submit").val(" ADD KObj ");
 			$("#au_tag").text("Add a new kobj:");
 		}
 	});
-	//add------------------------
+	//add or update------------------------
 	$("#a_area_div").hide();$("#a_submit").hide();
 	$("#a_json").click(function(){
 		var json = "{\r\n";
@@ -166,6 +186,8 @@ $(function(){
 		var url = "<%=prefix %>/console/kobj/kobj_act/?kobj_act=update&schema_key="+key;
 		if(isUpdate && !isNaN($("#u_kobj_id").val())){
 			url = url+"&kobj_id="+$("#u_kobj_id").val();
+		}else{
+			url = url+"&act_add=true";
 		}
 		var a = {kobj_json:$("#a_area").val()};
 		console.log(a);

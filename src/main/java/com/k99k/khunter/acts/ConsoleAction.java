@@ -105,7 +105,7 @@ public class ConsoleAction extends Action {
 //				else{
 //					log.error("Can't find in consoleActMap:"+right);
 //				}
-				msg.addData("[jspAttr]", msg);
+				//msg.addData("[jspAttr]", msg);
 				msg.setNextAction(null);
 			}
 		}

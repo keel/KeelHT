@@ -74,7 +74,7 @@ public final class StringUtil {
 	}
 
 	/**
-	 * 判断String是否达到指定长度
+	 * 判断String是否达到指定长度(>=len)
 	 * @param str
 	 * @param len
 	 * @return

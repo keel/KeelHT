@@ -3,6 +3,7 @@
  */
 package com.k99k.wb.acts;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -15,6 +16,7 @@ import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.HTManager;
 import com.k99k.khunter.HttpActionMsg;
 import com.k99k.khunter.KIoc;
+import com.k99k.khunter.KObject;
 import com.k99k.tools.JSONTool;
 import com.k99k.tools.encrypter.Base64Coder;
 
@@ -50,17 +52,42 @@ public class WBUrl extends Action {
 		String actName = httpmsg.getData("[actName]").toString();
 		//从cookie获取自己的名称
 		String reqUserStr = getCookieValue(httpmsg.getHttpReq().getCookies(),"wbu","");
-		//如果有此cookie值则用base64解密值
-		reqUserStr = (reqUserStr.equals(""))?"":Base64Coder.decodeString(reqUserStr);
-		boolean isSelf = reqUserStr.equals(actName);
-		//TODO 如果是自己则转向自己的inbox
-		if (isSelf) {
-			
+		String auto = getCookieValue(httpmsg.getHttpReq().getCookies(),"al","false");
+		boolean hasName = (!reqUserStr.equals(""));
+		if (actName.equals("")) {
+			if (hasName && auto.equals("true")) {
+				
+				String[] u_p = Base64Coder.decodeString(reqUserStr).split(":");
+				if (u_p.length >= 2) {
+					httpmsg.addData("[redirect]", "/"+u_p[0]);
+					return super.act(msg);
+				}
+			}
+			httpmsg.addData("[jsp]", "/WEB-INF/wb/home.jsp");
 			return super.act(msg);
 		}
-		//TODO 显示该用户的sent
-		
-		
+		if (hasName) {
+			String[] u_p = Base64Coder.decodeString(reqUserStr).split(":");
+			if (u_p.length >= 2 && u_p[0].equals(actName)) {
+				//转向自己的inbox,验证cookie
+				KObject wbUser = WBLogin.auth(u_p[0], u_p[1]);
+				if (wbUser != null) {
+					//转向自己的inbox
+					httpmsg.addData("wbUser", wbUser);
+					httpmsg.addData("[jsp]", "/WEB-INF/wb/inbox.jsp");
+					return super.act(msg);
+				}
+			}
+		}
+		//TODO 是否在客户端发起验证请求？
+		//如存在此用户则显示该用户的sent
+		if (WBUser.checkWBUserName(actName)) {
+			httpmsg.addData("wbUser", WBUser.findWBUser(actName));
+			httpmsg.addData("[jsp]", "/WEB-INF/wb/sent.jsp");
+		}else{
+			//404
+			JOut.err(404, httpmsg);
+		}
 		return super.act(msg);
 	}
 
@@ -73,6 +100,9 @@ public class WBUrl extends Action {
 	 */
 	public final static String getCookieValue(Cookie[] cookies, String cookieName,
 			String defaultValue) {
+		if (cookies == null) {
+			return defaultValue;
+		}
 		for (int i = 0; i < cookies.length; i++) {
 			Cookie cookie = cookies[i];
 			if (cookieName.equals(cookie.getName()))
@@ -88,6 +118,17 @@ public class WBUrl extends Action {
 	 * @param resp
 	 */
 	public final static void setCookie(String cookieName,String cookieVal,HttpServletResponse resp){
+		setCookie(cookieName,cookieVal,cookieTime,resp);
+	}
+	
+	/**
+	 * 设置cookie
+	 * @param cookieName
+	 * @param cookieVal
+	 * @param cookieTime cookie保持时间
+	 * @param resp
+	 */
+	public final static void setCookie(String cookieName,String cookieVal,int cookieTime,HttpServletResponse resp){
 		Cookie c = new Cookie(cookieName, cookieVal);// cookie值名对
 		c.setMaxAge(cookieTime);// 有效期一年
 		c.setPath("/"); // 路径
@@ -107,6 +148,24 @@ public class WBUrl extends Action {
 		resp.addCookie(c);
 	}
 
+	
+	/**
+	 * 处理req.getParameter得到的参数
+	 * @param httpmsg HttpActionMsg
+	 * @param paraNames 表单中的参数名数组
+	 * @param kobjPropNames 真正用于操作的字段属性名数组
+	 * @return 处理后的HashMap
+	 */
+	public final static HashMap<String,Object> parseParas(HttpActionMsg httpmsg,String[] paraNames,String[] kobjPropNames){
+		HashMap<String,Object> paraMap = new HashMap<String, Object>();
+		for (int i = 0; i < paraNames.length; i++) {
+			String s = httpmsg.getHttpReq().getParameter(paraNames[i]);
+			if (s != null) {
+				paraMap.put(kobjPropNames[i], s.trim());
+			}
+		}
+		return paraMap;
+	}
 
 
 	/* (non-Javadoc)

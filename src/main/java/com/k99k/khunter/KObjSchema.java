@@ -40,7 +40,19 @@ public class KObjSchema {
 	 */
 	private final HashMap<String,KObjIndex> indexMap = new HashMap<String, KObjIndex>();
 	
+	
+	
+	/**
+	 * 必要字段的map
+	 */
+	private final HashMap<String,String> requiredColMap = new HashMap<String, String>();
+	
 	private int columnSize = 0;
+	
+	/**
+	 * 必要字段的总数
+	 */
+	private int requiredColNums = 0;
 	
 	/**
 	 * 初始化Schema,注意父column定义必须先于子column,无数据库操作
@@ -61,7 +73,8 @@ public class KObjSchema {
 			i++;
 		}
 		this.columnSize = this.columnList.size();
-		
+		//处理必要字段数量
+		this.requiredColNums = this.requiredColMap.size();
 		//---------------------------
 		//初始化index
 		i = 0;
@@ -77,16 +90,6 @@ public class KObjSchema {
 		return true;
 	}
 	
-	/**
-	 * FIXME 更新操作
-	 * @param opType
-	 * @return
-	 */
-	public int updateSchema(int opType,Object obj){
-		
-		
-		return 0;
-	}
 
 	/**
 	 * 用HashMap生成一个KObjColumn并进行新增或更新
@@ -99,7 +102,7 @@ public class KObjSchema {
 				return 1;
 			}
 			//验证Column的key和value类型
-			if(!JSONTool.checkMapTypes(colMap,new String[]{"col","def","type","intro","len"},new Class[]{String.class,Object.class,Long.class,String.class,Long.class})){
+			if(!JSONTool.checkMapTypes(colMap,new String[]{"col","def","type","intro","len","required"},new Class[]{String.class,Object.class,Long.class,String.class,Long.class,Boolean.class})){
 				//ErrorCode.logError(log, 8,1, "kobjColumn:"+i);
 				return 1;
 			}
@@ -109,6 +112,7 @@ public class KObjSchema {
 			int type = Integer.parseInt(colMap.get("type").toString());
 			String intro = (String) colMap.get("intro");
 			int len = Integer.parseInt(colMap.get("len").toString());
+			boolean required = (Boolean) colMap.get("required");
 			//int类型将进行Long转换处理
 			if (type == 1) {
 				if (!StringUtil.isDigits(def.toString())) {
@@ -122,7 +126,8 @@ public class KObjSchema {
 				ErrorCode.logError(log, 8,2, " type:"+type+" default:"+def);
 				return 2;
 			}
-			KObjColumn  k = new KObjColumn(col,def,type,intro,len);	
+			KObjColumn  k = new KObjColumn(col,def,type,intro,len,required);	
+			
 			//设置验证器
 			if (colMap.containsKey("validator")) {
 				Object o = colMap.get("validator");
@@ -142,6 +147,23 @@ public class KObjSchema {
 			//父column必须先定义
 			KObjColumn kc = this.columnMap.put(col, k);
 			boolean isAdd = (kc==null) ? true :false;
+			if (!isAdd) {
+				//处理必填字段
+				if (kc.isRequired() && !required) {
+					this.requiredColMap.remove(col);
+					this.requiredColNums--;
+				}
+				else if (required && !kc.isRequired()) {
+					this.requiredColMap.put(col, col);
+					this.requiredColNums++;
+				}
+			}else{
+				if (required) {
+					this.requiredColMap.put(col, col);
+					this.requiredColNums++;
+				}
+			}
+			
 			int setsub = this.setSubColumn(k,isAdd);
 			if (setsub != 0) {
 				return setsub;
@@ -151,6 +173,31 @@ public class KObjSchema {
 		}
 		
 		return 0;
+	}
+	
+	/**
+	 * 获取必填字段map的clone
+	 * @return HashMap<colName,colName>
+	 */
+	@SuppressWarnings("unchecked")
+	public final HashMap<String,String> getRequiredCols(){
+		return (HashMap<String,String>)this.requiredColMap.clone();
+	}
+	
+	/**
+	 * 获取必填字段总数
+	 * @return
+	 */
+	public final int getRequiredColNums(){
+		return this.requiredColNums;
+	}
+	
+	/**
+	 * 获取字段数,不含KObject内部属性
+	 * @return
+	 */
+	public final int getColSize(){
+		return this.columnSize;
 	}
 	
 	/**
@@ -208,11 +255,24 @@ public class KObjSchema {
 	 */
 	public int setColumn(KObjColumn col){
 		KObjColumn k =this.columnMap.put(col.getCol(), col);
+		if (k.isRequired() && !col.isRequired()) {
+			this.requiredColMap.remove(k.getCol());
+			this.requiredColNums--;
+		}
+		else if (col.isRequired() && !k.isRequired()) {
+			this.requiredColMap.put(col.getCol(), col.getCol());
+			this.requiredColNums++;
+		}
 		return this.setSubColumn(col,(k==null));
 	}
 	
 	public void removeColumn(String key){
-		this.columnList.remove(this.columnMap.remove(key));
+		KObjColumn col = this.columnMap.remove(key);
+		if (col.isRequired()) {
+			this.requiredColMap.remove(col.getCol());
+			this.requiredColNums--;
+		}
+		this.columnList.remove(col);
 	}
 	
 	public boolean containsColumn(String key){
@@ -390,41 +450,64 @@ public class KObjSchema {
 		return k.validateColumn(value);
 	}
 	
+	
 	/**
-	 * 验证整个KObj的jsonData
+	 * 验证整个KObj的完整jsonData
 	 * @param kobjMap HashMap<String,Object>
 	 * @return
 	 */
 	public  boolean validate(HashMap<String,Object> kobjMap){
 		//逐个KObjColumn字段验证
-		for (Iterator<KObjColumn> iterator = this.columnList.iterator(); iterator.hasNext();) {
-			KObjColumn kc = iterator.next();
-			String col = kc.getCol();
-			Object o = kobjMap.get(col);
-			if (o == null) {
-				return false;
-			}
-			if(!kc.validateColumn(o)){
-				return false;
+//		for (Iterator<KObjColumn> iterator = this.columnList.iterator(); iterator.hasNext();) {
+//			KObjColumn kc = iterator.next();
+//			String col = kc.getCol();
+//			Object o = kobjMap.get(col);
+//			if (o == null) {
+//				if (kc.isRequired()) {
+//					return false;
+//				}
+//				continue;
+//			}
+//			if(!kc.validateColumn(o)){
+//				return false;
+//			}
+//		}
+		//字段数量判断
+//		if (kobjMap.size() != this.columnSize) {
+//			return false;
+//		}
+		
+		int rNum = 0;
+		for (Iterator<String> it = kobjMap.keySet().iterator(); it.hasNext();) {
+			String k = it.next();
+			Object o = kobjMap.get(k);
+			KObjColumn kc = this.columnMap.get(k);
+			if (kc != null) {
+				if(!kc.validateColumn(o)){
+					return false;
+				}
+				if (kc.isRequired()) {
+					rNum++;
+				}
 			}
 		}
-		//字段数量判断
-		if (kobjMap.size() != this.columnSize) {
+		//如果有必填字段未处理,返回false
+		if (rNum != this.requiredColNums) {
 			return false;
 		}
+		
 		return true;
 	}
 	
 	
 	/**
-	 * 验证并设置属性,支持子对象设置,注意返回失败仍可能有部分属性设置已完成
+	 * 验证并设置属性,支持子对象设置,必要字段必须要全部有数据,注意返回失败仍可能有部分属性设置已完成
 	 * FIXME 实现KObject.clone()方法，在失败时返回原对象
 	 * @param kobjMap HashMap<String,Object>
 	 * @param kobj 可为空对象或已有属性的对象，注意map中的数据会覆盖原属性
 	 * @return 是否设置成功,验证不通过则返回false
 	 */
 	public  boolean setPropFromMap(HashMap<String,Object> kobjMap,KObject kobj){
-		
 		for (Iterator<String> it = kobjMap.keySet().iterator(); it.hasNext();) {
 			String k = it.next();
 			KObjColumn kc = this.columnMap.get(k);
@@ -432,7 +515,9 @@ public class KObjSchema {
 				if(!kc.validateAndSet(kobjMap.get(k), kobj)){
 					return false;
 				}
-			}else if(kobj.containsProp(k)){
+			}
+			//设置KObject内部属性,仅有String,long和int三种类型
+			else if(kobj.containsProp(k)){
 				Object o = kobj.getProp(k);
 				Object newo = kobjMap.get(k);
 				String kType = o.getClass().getName();
@@ -448,38 +533,55 @@ public class KObjSchema {
 				}
 			}
 		}
-		/*
-		//逐个KObjColumn字段验证并设置
-		for (Iterator<KObjColumn> iterator = this.columnList.iterator(); iterator.hasNext();) {
-			KObjColumn kc = iterator.next();
-			String col = kc.getCol();
-			Object o = kobjMap.get(col);
-			if (o == null) {
-				continue;
-			}
-			if(!kc.validateAndSet(o, kobj)){
-				return false;
-			}
-		}
-		//设置KObject默认属性
-		String[] defaultProps = KObject.getDefaultPropsWithOutId();
-		String[] dTypes = KObject.getDefaultPropTypesWithOutId();
-		for (int i = 0,j=defaultProps.length; i < j; i++) {
-			Object o = kobjMap.get(defaultProps[i]);
-			if (o != null) {
-				String s = o.toString();
-				if (!dTypes[i].equals("String") && StringUtil.isDigits(s)) {
-					if (dTypes[i].equals("Long")) {
-						kobj.setProp(defaultProps[i], Long.parseLong(s));
-					}else{
-						kobj.setProp(defaultProps[i], Integer.parseInt(s));
-					}
-				}else{
-					kobj.setProp(defaultProps[i], s);
+		return true;
+	}
+	
+	/**
+	 * 用于创建对象,验证并设置属性,支持子对象设置,必要字段必须要全部有数据,注意返回失败仍可能有部分属性设置已完成
+	 * FIXME 实现KObject.clone()方法，在失败时返回原对象
+	 * @param kobjMap HashMap<String,Object>
+	 * @param kobj 可为空对象或已有属性的对象，注意map中的数据会覆盖原属性
+	 * @return 是否设置成功,验证不通过则返回false
+	 */
+	public  boolean setPropFromMapForCreate(HashMap<String,Object> kobjMap,KObject kobj){
+		//HashMap<String,String> requiredCols = this.getRequiredCols();
+		//必要字段计数
+		int rNum = 0;
+		for (Iterator<String> it = kobjMap.keySet().iterator(); it.hasNext();) {
+			String k = it.next();
+			KObjColumn kc = this.columnMap.get(k);
+			if (kc != null) {
+				if(!kc.validateAndSet(kobjMap.get(k), kobj)){
+					return false;
 				}
+				if (kc.isRequired()) {
+					//requiredCols.remove(k);
+					rNum++;
+				}
+				
+			}
+			//设置KObject内部属性,仅有String,long和int三种类型
+			else if(kobj.containsProp(k)){
+				Object o = kobj.getProp(k);
+				Object newo = kobjMap.get(k);
+				String kType = o.getClass().getName();
+				String s = newo.toString();
+				if (kType.equals(String.class.getName())) {
+					kobj.setProp(k, s);
+				}else if(StringUtil.isDigits(s)){
+					if (kType.equals(Long.class.getName())) {
+						kobj.setProp(k, Long.parseLong(s));
+					}else{
+						kobj.setProp(k, Integer.parseInt(s));
+					}
+				}
+				//requiredCols.remove(k);
 			}
 		}
-		*/
+		//如果有必填字段未处理,返回false
+		if (rNum != this.requiredColNums) {
+			return false;
+		}
 		return true;
 	}
 	/**
@@ -579,6 +681,26 @@ public class KObjSchema {
 	}
 	
 	/**
+	 * 获取所有的column的name,包括KObject自带的,不包含子column对象,必选的name前面加*字符标记
+	 * @return
+	 */
+	public final String[] getAllColNamesWithRequiredTag(){
+		KObject kobj = this.createEmptyKObjNoId();
+		String[] colarr = new String[kobj.getPropMap().size()];
+		int i = 0;
+		for (Iterator<String> it = kobj.getPropMap().keySet().iterator(); it.hasNext();) {
+			String prop = it.next();
+			if (this.requiredColMap.containsKey(prop)) {
+				colarr[i] = "*"+prop;
+				i++;
+				continue;
+			}
+			colarr[i] = prop;
+			i++;
+		}
+		return colarr;
+	}
+	/**
 	 * 获取某个索引
 	 * @param colOfIndex
 	 * @return
@@ -646,6 +768,11 @@ public class KObjSchema {
 			indexes.add(ki.toMap());
 		}
 		map.put("indexes", indexes);
+		ArrayList<String> requiredCols  = new ArrayList<String>();
+		for (Iterator<String> it = this.requiredColMap.keySet().iterator(); it.hasNext();) {
+			String r = it.next();
+			requiredCols.add(r);
+		}
 		return map;
 	}
 

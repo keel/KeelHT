@@ -1,12 +1,17 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,com.k99k.tools.*" session="false" %>
+<%
+String sPrefix = KFilter.getStaticPrefix();
+String prefix = KFilter.getPrefix();
+%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>江苏网微博</title>
-<link rel="stylesheet" type="text/css" href="../css/style_wb.css" />
-<script src="../js/jquery.js" type="text/javascript"></script>
-<script src="../js/jquery.json-2.2.min.js" type="text/javascript"></script>
-<script src="../js/hotEdit.js" type="text/javascript"></script>
+<link href="<%=sPrefix %>/css/style_wb.css" rel="stylesheet" type="text/css" />
+<script src="<%=sPrefix %>/js/jquery.js" type="text/javascript"></script>
+<script src="<%=sPrefix %>/js/jquery.json-2.2.min.js" type="text/javascript"></script>
+<script src="<%=sPrefix %>/js/hotEdit.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(function(){
 
@@ -45,7 +50,7 @@ $(function(){
 
 	<div id="mainContent">
 		<div id="sendBox">
-			<div id="sendBox_title">来，说点什么吧</div>
+			<div id="sendBox_title">来，说点什么吧- sent</div>
 			<div id="sendAreaDiv">
 				<textarea name="sendArea"></textarea>
 			</div>
@@ -69,7 +74,7 @@ $(function(){
 			<div id="newsBox"><a href="#">有2条新消息,点击查看</a></div>
 			<ul id="msgList" class="ul_inline">
 				<li>
-					<div class="userPic"><a href="/vivizhang2010"> <img src="../images/user001.jpg" title="" /></a></div>
+					<div class="userPic"><a href="/vivizhang2010"> <img src="<%=sPrefix %>/images/user001.jpg" title="" /></a></div>
 						
 					<div class="msgBox">
 						<div class="userName" ><a href="/vivizhang2010" title="饭小团(@vivizhang2010)" >饭小团</a>转播:&nbsp;</div>
@@ -82,7 +87,7 @@ $(function(){
 						
 								<div class="mediaWrap">
 									<div class="picBox">
-										<div class="tools"><a href="#" class="btnBack">向左转</a> | <a href="#" class="btnPrev">向右转</a><a href="#" class="btnOriginal"  target="_blank">查看原图</a></div><a href="#" target="_blank" class="pic"><img alt="[图片]" src="../images/460.jpg" style="display: inline; "></a></div>			
+										<div class="tools"><a href="#" class="btnBack">向左转</a> | <a href="#" class="btnPrev">向右转</a><a href="#" class="btnOriginal"  target="_blank">查看原图</a></div><a href="#" target="_blank" class="pic"><img alt="[图片]" src="<%=sPrefix %>/images/460.jpg" style="display: inline; "></a></div>			
 	        						</div>
 
 								<div class="pubInfo"><span class="fleft">            <a class="time" target="_blank" href="/p/t/39552051902918" rel="1303395437" from="3" title="2011年4月21日 22:17">14分钟前</a> 来自网页 <a class="zfNum" href="/p/t/39552051902918" target="_blank">查看转播和评论(<b class="relayNum">37</b>)</a>          </span>  </div>
@@ -105,7 +110,7 @@ $(function(){
 					</div>
 				</li>
 				<li>
-					<div class="userPic"><a href="/vivizhang2010"> <img src="../images/user001.jpg" title="" /></a></div>
+					<div class="userPic"><a href="/vivizhang2010"> <img src="<%=sPrefix %>/images/user001.jpg" title="" /></a></div>
 						
 					<div class="msgBox">
 						<div class="userName" ><a href="/vivizhang2010" title="饭小团(@vivizhang2010)" >饭小团</a>转播:&nbsp;</div>
@@ -130,7 +135,7 @@ $(function(){
 		<div id="userInfo">
 			<div id="userHead">
 				<div class="fleft">
-				<a href="#"><img border="0" src="../images/user001.jpg" /></a></div>
+				<a href="#"><img border="0" src="<%=sPrefix %>/images/user001.jpg" /></a></div>
 				<div id="userNameLocal" class="fright">
 					<a href="#">SIke</a><br />
 					江苏 南京
@@ -170,12 +175,12 @@ $(function(){
 			</div>
 			<div class="imgList">
 			<ul id="user_proposal" class="ul_imgList">
-				<li><a href="#" ><img src="../images/50.jpg" ></a><br /><a title="马伊琍(@马伊琍)" href="#" target="_blank">马伊琍</a><br /><a href="#" class="f_link">+收听</a></li>
-				<li><a href="#" ><img src="../images/50.jpg" ></a><br /><a title="马伊琍(@马伊琍)" href="#" target="_blank">马伊琍</a><br /><a href="#" class="f_link">+收听</a></li>
-				<li><a href="#" ><img src="../images/50.jpg" ></a><br /><a title="马伊琍(@马伊琍)" href="#" target="_blank">马伊琍</a><br /><a href="#" class="f_link">+收听</a></li>
-				<li><a href="#" ><img src="../images/50.jpg" ></a><br /><a title="马伊琍(@马伊琍)" href="#" target="_blank">马伊琍</a><br /><a href="#" class="f_link">+收听</a></li>
-				<li><a href="#" ><img src="../images/50.jpg" ></a><br /><a title="马伊琍(@马伊琍)" href="#" target="_blank">马伊琍</a><br /><a href="#" class="f_link">+收听</a></li>
-				<li><a href="#" ><img src="../images/50.jpg" ></a><br /><a title="马伊琍(@马伊琍)" href="#" target="_blank">马伊琍</a><br /><a href="#" class="f_link">+收听</a></li>
+				<li><a href="#" ><img src="<%=sPrefix %>/images/50.jpg" ></a><br /><a title="马伊琍(@马伊琍)" href="#" target="_blank">马伊琍</a><br /><a href="#" class="f_link">+收听</a></li>
+				<li><a href="#" ><img src="<%=sPrefix %>/images/50.jpg" ></a><br /><a title="马伊琍(@马伊琍)" href="#" target="_blank">马伊琍</a><br /><a href="#" class="f_link">+收听</a></li>
+				<li><a href="#" ><img src="<%=sPrefix %>/images/50.jpg" ></a><br /><a title="马伊琍(@马伊琍)" href="#" target="_blank">马伊琍</a><br /><a href="#" class="f_link">+收听</a></li>
+				<li><a href="#" ><img src="<%=sPrefix %>/images/50.jpg" ></a><br /><a title="马伊琍(@马伊琍)" href="#" target="_blank">马伊琍</a><br /><a href="#" class="f_link">+收听</a></li>
+				<li><a href="#" ><img src="<%=sPrefix %>/images/50.jpg" ></a><br /><a title="马伊琍(@马伊琍)" href="#" target="_blank">马伊琍</a><br /><a href="#" class="f_link">+收听</a></li>
+				<li><a href="#" ><img src="<%=sPrefix %>/images/50.jpg" ></a><br /><a title="马伊琍(@马伊琍)" href="#" target="_blank">马伊琍</a><br /><a href="#" class="f_link">+收听</a></li>
 			</ul>
 			</div>
 <div class="clear"></div>

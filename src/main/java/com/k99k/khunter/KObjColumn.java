@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 /**
  * KObj的一列
@@ -26,6 +25,11 @@ public class KObjColumn {
 	private String intro;
 	
 	private int len;
+	
+	/**
+	 * 是否必须,默认为非必须 
+	 */
+	private boolean required = false;
 	
 	private KObjColumnValidate validator;
 	
@@ -56,12 +60,13 @@ public class KObjColumn {
 	 * @param intro 说明
 	 * @param len 长度
 	 */
-	public KObjColumn(String col, Object def, int type, String intro, int len) {
+	public KObjColumn(String col, Object def, int type, String intro, int len,boolean required) {
 		super();
 		this.col = col;
 		this.def = def;
 		this.intro = intro;
 		this.len = len;
+		this.required = required;
 		setType(type);
 		initKeyName();
 	}
@@ -532,6 +537,22 @@ public class KObjColumn {
 	}
 
 	/**
+	 * @return the required
+	 */
+	public final boolean isRequired() {
+		return required;
+	}
+
+
+	/**
+	 * @param required the required to set
+	 */
+	public final void setRequired(boolean required) {
+		this.required = required;
+	}
+
+
+	/**
 	 * toMap用于生成配置文件
 	 * @return
 	 */
@@ -542,6 +563,7 @@ public class KObjColumn {
 		m.put("intro", this.intro);
 		m.put("type", this.type);
 		m.put("len", this.len);
+		m.put("required", this.required);
 		if (this.validator != null) {
 			m.put("validator", this.validator.toString());
 		}

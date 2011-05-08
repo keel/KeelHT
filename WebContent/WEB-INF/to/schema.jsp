@@ -30,19 +30,21 @@ if(kc == null){
 <div id="schema_daojson"><%=JSONTool.writeJsonString(kc.getDaoConfig().toMap())%></div>
 <div class="weight">Columns: - <span id="schema_col_add"></span></div>
 <table id="schema_columns">
-<tr><th>column</th><th>default</th><th>type</th><th>intro</th><th>len</th><th>validator</th><th>EDIT</th></tr>
+<tr><th>column</th><th>required</th><th>default</th><th>type</th><th>intro</th><th>len</th><th>validator</th><th>EDIT</th></tr>
 <%
 KObjSchema ks = kc.getKobjSchema();
 HashMap<String,KObjColumn> cols = ks.getKObjColumns();
 ArrayList<KObjColumn> colList = ks.getColList();
 StringBuilder sb = new StringBuilder();
 if(colList.size() <= 0){
-	sb.append("<tr><td>col</td><td>default</td><td>type</td><td>intro</td><td>0</td><td></td><td></td></tr>\r\n");
+	sb.append("<tr><td>col</td><td>false</td><td>default</td><td>type</td><td>intro</td><td>0</td><td></td><td></td></tr>\r\n");
 }else{
 	for (Iterator<KObjColumn> iterator = colList.iterator(); iterator.hasNext();) {
 		KObjColumn col = iterator.next();
 		sb.append("<tr><td>");
 		sb.append(col.getCol());
+		sb.append("</td><td>");
+		sb.append(col.isRequired());
 		sb.append("</td><td>");
 		sb.append(col.getDef());
 		sb.append("</td><td>");
@@ -110,12 +112,12 @@ $(function(){
 	var colType = "<select name=\"s\"><option value=\"0\">String</option><option value=\"1\">Integer</option><option value=\"2\">HashMap</option><option value=\"3\">ArrayList</option><option value=\"4\">Long</option><option value=\"5\">Boolean</option><option value=\"6\">Date</option><option value=\"7\">Double</option></select>";
 	var p_cols = {
 		preParas:{schema_key:"<%= kc.getKobjName()%>",schema_part:"col_edit"},
-		subs:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)","td:eq(5)"],
-		key : ["col","def","type","intro","len","validator"],
+		subs:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)","td:eq(5)","td:eq(6)"],
+		key : ["col","required","def","type","intro","len","validator"],
 		url:"<%=prefix%>/console/kobj/schema_update",
-		editor : [$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,colType,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor],
-		bts : "td:eq(6)",
-		jsonTyps:["s","a","i","s","i","s"],
+		editor : [$.hotEditor.inputTextEditor,$.hotEditor.selectEditor,$.hotEditor.inputTextEditor,colType,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor,$.hotEditor.inputTextEditor],
+		bts : "td:eq(7)",
+		jsonTyps:["s","b","a","i","s","i","s"],
 		jsonToStr:"schema_coljson",
 		msg:"#re"
 		,addTarget:">"

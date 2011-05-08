@@ -1,5 +1,8 @@
 {
 	"wbLogin":{
 		"logout":"{\"request\":\"/###/end_session.json\", \"error\": \"###\"}"
+	},
+	"wbReg":{
+		"reg":"{\"uName\":\"###\"}"
 	}
 }

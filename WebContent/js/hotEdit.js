@@ -259,7 +259,7 @@ $.hotEditor.add = function (ep) {
 			alert ("paras["+k +"] = "+paras[k]);
 		}
 		*/
-		console.log(ep.ta.paras);
+		//console.log(ep.ta.paras);
 		if (ep.ta.url && ep.ta.paras) {
 			if ($.hotEditor.ajax(ep,ep.ta.url,ep.ta.paras,ep.ta.appendNew)) {
 				
