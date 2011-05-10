@@ -3,12 +3,14 @@
  */
 package com.k99k.tools;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -124,4 +126,21 @@ public final class IO {
         return true;
     } 
 
+	/**
+	 * 复制单个文件,如原文件存在则直接覆盖
+	 * @param in InputStream
+	 * @param out FileOutputStream
+	 * @return
+	 * @throws IOException 
+	 */
+	public static final boolean copy(InputStream in, FileOutputStream out) throws IOException {  
+        byte[] bt = new byte[1024*5];  
+        int count;  
+        while ((count = in.read(bt)) > 0) {  
+            out.write(bt, 0, count);  
+        }  
+        in.close();  
+        out.close();  
+        return true;
+    } 
 }

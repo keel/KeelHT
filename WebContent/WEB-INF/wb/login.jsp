@@ -24,7 +24,7 @@ $.validator.dealAjax = {
 	err:function(){
 		alert('登录失败!用户名和密码未通过验证.');
 	}
-}
+};
 
 //开始验证
 $('#loginForm').validate({
