@@ -31,7 +31,7 @@ public class WBSetting extends Action {
 		
 		//显示login入口
 		if (subact.equals("avatar")) {
-			msg.addData("[redirect]", "/upload/avatar.jsp");
+			msg.addData("[jsp]", "/WEB-INF/wb/avatar.jsp");
 			return super.act(msg);
 		}
 		

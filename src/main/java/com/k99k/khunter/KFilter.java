@@ -153,7 +153,13 @@ public final class KFilter implements Filter {
 				String redirect = KFilter.getPrefix()+(String) msg.getData("[redirect]");
 				resp.sendRedirect(redirect);
 				return;
-			}else{
+			}
+			//继续走chain
+//			else if(msg.getData("[chain]") != null){
+//				chain.doFilter(request, response);
+//				return;
+//			}
+			else{
 				resp.setStatus(404);
 				resp.getWriter().print("404 - 3");
 				return;

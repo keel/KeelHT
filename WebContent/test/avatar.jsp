@@ -2,20 +2,26 @@
 <%!//编辑页面中包含 camera.swf 的 HTML 代码
 String sPrefix = KFilter.getStaticPrefix();
 String prefix = KFilter.getPrefix();
-//##注意在本页个性后需要根据目前图片的尾号重新定义picCC的值##!!!!
-int picCC = 1;
+
+
+/*
+ *  注意在本页修改后，一定要根据目前图片的尾号重新定义picCC的值!!!!!!
+ */
+int picCC = 10;
+
+
 	public String renderHtml(String id, String basePath) {
 		// 把需要回传的自定义参数都组装在 input 里
 		//$input = urlencode( "uid={$uid}" );
-		String u = basePath + "/upload/avatar.jsp";
+		String u = basePath + "/settings/avatar/";
 		String uc_api = null;
 		try{
 		uc_api = URLEncoder.encode(u,"utf-8");
 		}catch(Exception e){
 		}
-		String urlCameraFlash = "camera.swf?nt=1&inajax=1&appid=1&input=1&uploadSize=1000&ucapi="
+		String urlCameraFlash = prefix+"/js/camera.swf?nt=1&inajax=1&appid=1&input=1&uploadSize=1000&ucapi="
 				+ uc_api;
-		urlCameraFlash = "<script src=\"common.js?B6k\" type=\"text/javascript\"></script><script type=\"text/javascript\">document.write(AC_FL_RunContent(\"width\",\"450\",\"height\",\"253\",\"scale\",\"exactfit\",\"src\",\""
+		urlCameraFlash = "<script src=\""+prefix+"/js/common.js?B6k\" type=\"text/javascript\"></script><script type=\"text/javascript\">document.write(AC_FL_RunContent(\"width\",\"450\",\"height\",\"253\",\"scale\",\"exactfit\",\"src\",\""
 				+ urlCameraFlash
 				+ "\",\"id\",\"mycamera\",\"name\",\"mycamera\",\"quality\",\"high\",\"bgcolor\",\"#000000\",\"wmode\",\"transparent\",\"menu\",\"false\",\"swLiveConnect\",\"true\",\"allowScriptAccess\",\"always\"));</script>";
 
@@ -229,10 +235,10 @@ out.print(renderHtml("5", basePath));
 		        ServletInputStream  sis = null;
 			try {
 				//UUID.randomUUID().toString();
-		    	String filename = "/images/upload/"+UUID.randomUUID().toString()+".jpg";
+		    	String filename = UUID.randomUUID().toString()+".jpg";
 		    	//System.out.println("filename:"+filename);
 				 sis = request.getInputStream();
-				 String toFile = this.getServletContext().getRealPath("/") + (filename.substring(1));
+				 String toFile = this.getServletContext().getRealPath("/") + "/images/upload/temppic/"+filename;
 				 
 		            fos = new FileOutputStream(new File(toFile));
 		            
@@ -252,7 +258,7 @@ out.print(renderHtml("5", basePath));
 		        //System.out.println("toFile:"+toFile); 
 		        //System.out.println("basePath+filename:"+basePath+filename); 
 				out.clear();	
-				out.print(basePath+filename);
+				out.print(basePath+"/images/upload/temppic/"+filename);
 			} catch (Exception ex) {
 				//ex.printStackTrace();
 				System.out.println("exception:"+ex.getMessage()); 
