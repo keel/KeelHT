@@ -4,5 +4,10 @@
 	},
 	"wbReg":{
 		"reg":"{\"uName\":\"###\"}"
+	},
+	"wbSettings":{
+		"basic":"{\"uName\":\"###\"}",
+		"changepwd":"{\"uName\":\"###\"}",
+		"checkmail":"{\"uName\":\"###\"}"
 	}
 }

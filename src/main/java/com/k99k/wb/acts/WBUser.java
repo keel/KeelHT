@@ -102,6 +102,16 @@ public class WBUser extends Action {
 	}
 	
 	/**
+	 * 保存用户的属性
+	 * TODO 后期仅更新用户的属性字段,不直接保存
+	 * @param user
+	 * @return
+	 */
+	public static final boolean saveUserProp(KObject user){
+		return wbUserDao.save(user);
+	}
+	
+	/**
 	 * 新用户注册
 	 * @param uName 4个或以上字符串
 	 * @param uPwd 6个或以上字符串

@@ -3,7 +3,6 @@ package com.k99k.khunter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -92,6 +91,15 @@ public final class KFilter implements Filter {
 		String actName = (pathArr.length <= rn) ? "" : pathArr[rn];
 		//TODO 过滤静态请求,此处如果配合前端的web server过滤可省去
 		if (staticPath.containsKey(actName)) {
+//			String encoding = req.getHeader("Accept-Encoding");
+//			if (encoding != null && encoding.indexOf("gzip") != -1){
+//				HttpServletResponseWrapper wrapper = new GZIPServletResponseWrapper(resp);
+//			    chain.doFilter(req, wrapper);
+//			    wrapper.getOutputStream().close();
+//			}else{
+//				chain.doFilter(request, response);
+//			}
+			
 			chain.doFilter(request, response);
 			return;
 		}
@@ -233,4 +241,74 @@ public final class KFilter implements Filter {
 		String subact = (pathArr.length <= pathNum) ? defaultStr : pathArr[pathNum];
 		return subact;
 	}
+	
+//	 class GZIPServletResponseWrapper extends HttpServletResponseWrapper {
+//			private GZIPOutputStream gzipStream;
+//			private ServletOutputStream servletOutputStream;
+//			private PrintWriter printWriter;
+//
+//			GZIPServletResponseWrapper(HttpServletResponse resp) throws IOException {
+//			    super(resp);
+//			}
+//			
+//			public ServletOutputStream getOutputStream() throws IOException {
+//			    if (servletOutputStream == null) {
+//				servletOutputStream = createOutputStream();
+//			    }
+//			    return servletOutputStream;
+//			}
+//
+//			public PrintWriter getWriter() throws IOException {
+//			    if (printWriter == null) {
+//				printWriter = new PrintWriter(new OutputStreamWriter(
+//						getOutputStream(),
+//						getCharacterEncoding())) {  // This is important for I18N
+//		                    // Workaround for Tomcat bug where flush is NOT called when JSP output finished
+//				    public void write(char[] cb, int off, int len) {
+//					super.write(cb, off, len);
+//					super.flush();
+//				    }
+//				};
+//			    }
+//			    return printWriter;
+//			}
+//
+//			private ServletOutputStream createOutputStream() throws IOException {
+//			    ServletResponse resp = this.getResponse();
+//			    gzipStream = new GZIPOutputStream(resp.getOutputStream());
+//			    addHeader("Content-Encoding", "gzip");
+//			    addHeader("Vary", "Accept-Encoding");
+//			    return new ServletOutputStream() {
+//				/* The first three methods must be overwritten */
+//				@Override
+//				public void write(int b) throws IOException {
+//				    gzipStream.write(b);		
+//				}
+//
+//				@Override
+//				public void flush() throws IOException {
+//				    gzipStream.flush();
+//				}
+//
+//				@Override
+//				public void close() throws IOException {
+//				    gzipStream.close();
+//				}
+//
+//				/*
+//				 * These two are not absolutely needed. They are here simply
+//				 * because they were overriden by GZIPOutputStream.
+//				 */
+//				@Override
+//				public void write(byte[] b) throws IOException {
+//				    gzipStream.write(b);
+//				}
+//
+//				@Override
+//				public void write(byte[] b, int off, int len) throws IOException {
+//				    gzipStream.write(b, off, len);
+//				}
+//			    };
+//			}
+//		    }
 }

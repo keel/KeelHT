@@ -1,15 +1,15 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,java.net.URLEncoder,java.io.*" session="false" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,java.net.URLEncoder,java.io.*,com.k99k.wb.acts.*" session="false" %>
 <%!//编辑页面中包含 camera.swf 的 HTML 代码
 String sPrefix = KFilter.getStaticPrefix();
 String prefix = KFilter.getPrefix();
-	public String renderHtml(String id,String basePath) {
+	public String renderHtml(String id,String basePath,String userName) {
 		String u = basePath + "/upload/avatarUpload.jsp";
 		String uc_api = null;
 		try{
 		uc_api = URLEncoder.encode(u,"utf-8");
 		}catch(Exception e){
 		}
-		String urlCameraFlash = prefix+"/js/camera.swf?nt=1&inajax=1&appid=1&input=1&uploadSize=1000&ucapi="
+		String urlCameraFlash = prefix+"/js/camera.swf?nt=1&inajax=1&appid=1&input="+userName+"&uploadSize=500&ucapi="
 				+ uc_api;
 		urlCameraFlash = "<script src=\""+prefix+"/js/common.js?B6k\" type=\"text/javascript\"></script><script type=\"text/javascript\">document.write(AC_FL_RunContent(\"width\",\"450\",\"height\",\"253\",\"scale\",\"exactfit\",\"src\",\""
 				+ urlCameraFlash
@@ -18,13 +18,17 @@ String prefix = KFilter.getPrefix();
 		return urlCameraFlash;
 	}
 	%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>江苏网微博</title>
-<link rel="stylesheet" type="text/css" href="<%=sPrefix %>/css/style_wb.css" />
-<script src="<%=sPrefix %>/js/jquery.js" type="text/javascript"></script>
+<%
+Object o = request.getAttribute("[jspAttr]");
+HttpActionMsg data = null;
+if(o != null ){
+	data = (HttpActionMsg)o;
+}else{
+	out.print("attr is null.");
+	return;
+}
+KObject user = (KObject)data.getData("wbUser");
+out.println(WBJSPCacheOut.out("header1")); %>
 <script src="<%=sPrefix %>/js/jquery.validate.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/jquery.city_date.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -67,115 +71,35 @@ $('#settingForm').validate({
 
 });
 function updateavatar(){
-	alert("OK!");
+	$("#avatar_u").attr("src","<%=sPrefix+"/images/upload/"+user.getName()+"_2.jpg?t="+System.currentTimeMillis()%>");
 }
 </script>
-
-
-</head>
-<body>
-<div id="header">
-	<h1 id="logo"><a href="#">中国江苏网</a></h1>
-	<div id="topNav">
-		<a href="#">广播大厅</a>
-		<a href="#">排行榜</a>
-		<a href="#">找朋友</a>
-		<a href="#">邀请</a>
-		<a href="#">sike</a>
-		<a href="#">模板</a> 
-		<a href="#">设置</a> 
-		<a href="#">私信</a> 
-		<a href="#">退出</a>
-		
-	</div>
-
-   	<div id="topMenu">
-		<a href="#">我的首页</a> | <a href="#">我的微博</a> | <a href="#">关系</a>
-    </div>
-	<div id="searchr">
-	<select id="search_select"><option value="talk">广播</option><option value="user">用户</option></select>
-	<input type="text"  name="q" value="请输入关键字"  />
-	<input type="button"  value="搜 索"  />
-	</div>
-</div>
-
-<div id="wrapper">
-
-	<div id="mainContent">
+<% out.println(WBJSPCacheOut.out("@head_main")); %>
 		<div class="indexh">
-			<div class="taboff"><a href="#">基本设置</a></div>
-			<div class="tabon"><a href="#">修改头像</a></div>
-			<div class="taboff"><a href="#">修改密码</a></div>
-			<div class="taboff"><a href="#">邮箱验证</a></div>
-			<div class="taboff"><a href="#">个性模板</a></div>
+			<div class="taboff"><a href="<%=prefix %>/settings/basic">基本设置</a></div>
+			<div class="tabon">修改头像</div>
+			<div class="taboff"><a href="<%=prefix %>/settings/changepwd">修改密码</a></div>
+			<div class="taboff"><a href="<%=prefix %>/settings/checkmail">邮箱验证</a></div>
+			<div class="taboff">个性模板</div>
 		</div>
 		<div class="mainBox">
 			<div id="pic_big" class="tCenter">
 				<img src="<%=sPrefix %>/images/avatar_pic1.jpg" />
 			</div>
 			<div class="tCenter">
+			<div>
+			<div style="float:left;width:150px;padding:20px 0 20px 40px;"><img src="<%=sPrefix+"/images/upload/"+user.getName()+"_2.jpg" %>" alt="<%=user.getName() %>" id="avatar_u" style="border:1px solid #999999;padding:1px;width:120px;height:120px"></div>
+			<div style="float:right;width:330px;padding:30px 10px;text-align:left;"><div class="bold">上传并设置新头像</div><div>请选择一个新照片进行上传编辑。
+头像保存后，如果头像不能立即显示，请刷新本页面。</div></div>
+			<div class="clear"></div>
+			</div>
 <%
 String basePath = request.getScheme() + "://"
 + request.getServerName() + ":" + request.getServerPort()
 + request.getContextPath();
 //System.out.println(basePath);
-out.print(renderHtml("5",basePath));
+out.print(renderHtml("5",basePath,user.getName()));
 %>
 			</div>
 		</div>
-	</div>
-	
-	
-	<div id="sideNav">
-		<div id="userInfo">
-			<div id="userHead">
-				<div class="fleft">
-				<a href="#"><img border="0" src="<%=sPrefix %>/images/user001.jpg" /></a></div>
-				<div id="userNameLocal" class="fright">
-					<a href="#">SIke</a><br />
-					江苏 南京
-				</div>
-<div class="clear"></div>
-			</div>
-			<ul id="userNums" class="ul_inline">
-				<li>
-					<span class="uNumNum">3</span><br /><a href="#">关注</a>
-				</li>
-				<li>
-					<span class="uNumNum">3</span><br /><a href="#">粉丝</a>
-				</li>
-				<li>
-					<span class="uNumNum">4</span><br /><a href="#">微博</a>
-				</li>
-
-			</ul>
-			<div id="badgeBox">
-				badgeBox
-			</div>
-		</div>
-		<div id="sideMenu">
-			<ul class="ul_inline">
-				<li class="sm_c"><a href="#"><span class="ico_mypub">icon</span> 我的主页</a></li>
-				<li class="sm_m"><a href="#"><span class="ico_mypub">icon</span> 我的广播</a></li>
-				<li class="sm_m"><a href="#"><span class="ico_mypub">icon</span> 提到我的</a></li>
-				<li class="sm_m"><a href="#"><span class="ico_mypub">icon</span> 我的收藏</a></li>
-				<li class="sm_m"><a href="#"><span class="ico_mypub">icon</span> 私信</a></li>
-			</ul>
-<div class="clear"></div>
-		</div>
-		
-
-	</div>
-
-<div class="clear"></div>
-
-</div>
-
-<div id="footer">
-	<div id="copyright">
-		Copyright:&copy;2010-2012 KEEL.SIKE All rights reserved. 
-	</div>
-</div>
-
-</body>
-</html>
+<% out.println(WBJSPCacheOut.out("@foot")); %>

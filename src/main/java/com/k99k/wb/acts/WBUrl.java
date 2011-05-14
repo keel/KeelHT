@@ -55,8 +55,7 @@ public class WBUrl extends Action {
 		String auto = getCookieValue(httpmsg.getHttpReq().getCookies(),"al","false");
 		boolean hasName = (!reqUserStr.equals(""));
 		if (actName.equals("")) {
-			if (hasName && auto.equals("true")) {
-				
+			if (hasName) {
 				String[] u_p = Base64Coder.decodeString(reqUserStr).split(":");
 				if (u_p.length >= 2) {
 					httpmsg.addData("[redirect]", "/"+u_p[0]);

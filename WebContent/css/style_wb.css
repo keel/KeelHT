@@ -103,8 +103,11 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px
 #footer{background-color: #1A1A1A; height:76px;position: relative;width: 800px;margin: 0 auto;}
 #copyright{text-align:center;color:#E8E8E8;padding:20px}
 .error{color:red;font-size:12px;}
-
-
+.fancyMsgBox{border: 1px solid green;background: #EAF8FD;padding:20px;}
+.fancyMsgBox2 {border: 1px solid #ffa2aa;padding:10px 0 10px 37px;background: #fae8e8 url(../images/msg_red.png) 10px 13px no-repeat;}
+.fancyMsgBox1 {border:1px solid #6cd858;padding:10px 0 10px 37px;background: #e3ffde url(../images/msg_green.png) 10px 13px no-repeat;}
+.fancyMsgBox3 {border:1px solid #d6d61f;padding:10px 0 10px 37px;background: #ffffd3 url(../images/msg_yellow.png) 10px 13px no-repeat;}
+.fancyMsgBox4 {border:1px solid #b4dbe8;padding:10px 0 10px 37px;background: #e3f2f7 url(../images/msg_blue.png) 10px 13px no-repeat;}
 /* home */
 #somebody{float:left;width:360px;padding:10px;}
 #sometopics{float:right;width:190px;padding:10px;}

@@ -75,6 +75,10 @@
 			"_class":"com.k99k.wb.acts.WBUser"
 		},
 		{
+			"_actName":"jc",	
+			"_class":"com.k99k.wb.acts.WBJSPCacheOut"
+		},
+		{
 			"_actName":"*",	
 			"_class":"com.k99k.wb.acts.WBUrl"
 		},

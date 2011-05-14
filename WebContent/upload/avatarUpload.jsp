@@ -98,10 +98,16 @@ int picCC = 10;
 			String avatar2 = request.getParameter("avatar2");//中
 			String avatar3 = request.getParameter("avatar3");//小
 			out.clear();
-			String pa = this.getServletContext().getRealPath("/images/upload")+"/avatar";
-			boolean re = saveFile(pa+picCC+"_1.jpg", getFlashDataDecode(avatar1));
-			re =  saveFile(pa+picCC+"_2.jpg", getFlashDataDecode(avatar2));
-			re =  saveFile(pa+picCC+"_3.jpg", getFlashDataDecode(avatar3));
+			//利用input参数传用户名
+			String input = request.getParameter("input");
+			//System.out.println("input:"+input); 
+			String pa = this.getServletContext().getRealPath("/images/upload")+"/";
+			//boolean re = saveFile(pa+picCC+"_1.jpg", getFlashDataDecode(avatar1));
+			//re =  saveFile(pa+picCC+"_2.jpg", getFlashDataDecode(avatar2));
+			//re =  saveFile(pa+picCC+"_3.jpg", getFlashDataDecode(avatar3));
+			boolean re = saveFile(pa+input+"_1.jpg", getFlashDataDecode(avatar1));
+			re =  saveFile(pa+input+"_2.jpg", getFlashDataDecode(avatar2));
+			re =  saveFile(pa+input+"_3.jpg", getFlashDataDecode(avatar3));
 			picCC++;
 			if (re) {
 				out.print("<?xml version=\"1.0\" ?><root><face success=\"1\"/></root>");

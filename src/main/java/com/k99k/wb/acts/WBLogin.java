@@ -137,6 +137,7 @@ public class WBLogin extends Action {
 	public static final KObject cookieAuth(HttpActionMsg httpmsg){
 		try {
 			String reqUserStr = WBUrl.getCookieValue(httpmsg.getHttpReq().getCookies(),"wbu","");
+			String alStr = WBUrl.getCookieValue(httpmsg.getHttpReq().getCookies(),"al","");
 			if (reqUserStr.equals("")) {
 				return null;
 			}
@@ -144,6 +145,10 @@ public class WBLogin extends Action {
 			KObject user = auth(u_p[0],u_p[1]);
 			if (user != null) {
 				httpmsg.addData("wbUser", user);
+				//未保存自动登录时,延长cookie时间
+				if (alStr.equals("")) {
+					WBUrl.setCookie("wbu", Base64Coder.encodeString(u_p[0]+":"+u_p[1]+":"+System.currentTimeMillis()),60*20, httpmsg.getHttpResp());
+				}
 				return user;
 			}
 		} catch (Exception e) {

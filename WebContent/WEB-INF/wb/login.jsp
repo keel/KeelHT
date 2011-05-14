@@ -1,15 +1,9 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,com.k99k.tools.*" session="false" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,com.k99k.tools.*,com.k99k.wb.acts.*" session="false" %>
 <%
 String sPrefix = KFilter.getStaticPrefix();
 String prefix = KFilter.getPrefix();
+out.println(WBJSPCacheOut.out("header1"));
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>江苏网微博</title>
-<link rel="stylesheet" type="text/css" href="<%=sPrefix %>/css/style_wb.css" />
-<script src="<%=sPrefix %>/js/jquery.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/jquery.validate.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(function(){
@@ -47,17 +41,7 @@ $('#loginForm').validate({
 
 
 </script>
-
-
-</head>
-<body>
-<div id="header" class="wrapper">
-	<h1 id="logo"><a href="#">中国江苏网</a></h1>
-</div>
-
-<div id="wrapper" class="wrapper">
-
-	<div id="loginB">
+<% out.println(WBJSPCacheOut.out("header2_noSide")); %>
 		<div class="indexh">
 			<div class="taboff"><a href="#">快速注册</a></div>
 			<div class="tabon">登陆微博</div>
@@ -74,17 +58,4 @@ $('#loginForm').validate({
 			</form>
 <div class="clear"></div>
 		</div>
-	</div>
-
-<div class="clear"></div>
-
-</div>
-
-<div id="footer">
-	<div id="copyright">
-		Copyright:&copy;2010-2012 KEEL.SIKE All rights reserved. 
-	</div>
-</div>
-
-</body>
-</html>
+<% out.println(WBJSPCacheOut.out("footer_noSide")); %>

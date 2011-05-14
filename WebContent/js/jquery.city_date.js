@@ -44,7 +44,7 @@ $.cnCity = {
     ["澳门"],
     ["海外"]
 ],
-	cnCity:function(target){
+	cnCity:function(target,preVal){
 	var select1 = $("<select name=\"cnLocal1\" id=\"cnLocal1\"></select>");
 	var select2 = $("<select name=\"cnLocal2\" id=\"cnLocal2\"><option value=''>选择城市</option></select>");
 	for (var i=0; i < this.province.length; i++) {
@@ -62,10 +62,13 @@ $.cnCity = {
 			};
 		}
 	});
+	if(preVal){var arr = preVal.split("-");
+		if(arr.length==2){
+		select1.val(arr[0]);select1.change();select2.val(arr[1]);}}
 	$(target).append(select1).append(select2);
 	}
 };
-$.cnBirth = function(fromYear,toYear,target){
+$.cnBirth = function(fromYear,toYear,target,preVal){
 	var y = $("<select name=\"cnYear\" id=\"cnYear\"></select>");
 	var yy = toYear - fromYear +1;
 	for (var i=0; i < yy; i++) {
@@ -80,5 +83,8 @@ $.cnBirth = function(fromYear,toYear,target){
 	for (var i=1; i < 32; i++) {
 		$("<option value='"+i+"'>"+i+"日</option>").appendTo(d);
 	};	
+	if(preVal){var arr = preVal.split("-");
+		if(arr.length==3 ){
+		y.val(arr[0]);m.val(arr[1]);d.val(arr[2]);}}
 	$(target).append(y).append(m).append(d);
 };

@@ -1,0 +1,21 @@
+{
+	"jspCache":[
+		{"name":"header1","txt":"jc/head1.txt","type":"str","intro":"包含默认的style_wb.css"},
+		{"name":"header0","txt":"jc/head0.txt","type":"str","intro":"无任何css和js的header"},
+		{"name":"header2","txt":"jc/head2.txt","type":"str","intro":"顶部导航等"},
+		{"name":"header2_noSide","txt":"jc/head2_noSide.txt","type":"str"},
+		
+		{"name":"sideNav","txt":"jc/sideNav.txt","type":"str","intro":"右边部分"},
+		{"name":"sideNav_inbox","txt":"jc/sideNav_inbox.txt","type":"str","intro":"inbox页的右边部分"},
+		{"name":"mainTop","txt":"jc/mainTop.txt","type":"str"},
+		{"name":"mainBottom","txt":"jc/mainBottom.txt","type":"str"},
+		
+		{"name":"footer","txt":"jc/footer.txt","type":"str"},
+		{"name":"footer_noSide","txt":"jc/footer_noSide.txt","type":"str"},
+		
+		{"name":"@head_main","txt":["header2","mainTop"],"type":"array"},
+		{"name":"@foot","txt":["mainBottom","sideNav","footer"],"type":"array"},
+		{"name":"@foot_inbox","txt":["mainBottom","sideNav_inbox","footer"],"type":"array"}
+	],
+	"jspCahe intro":"txt的路径为HTManager.getIniPath()后面的路径;当name为其他jc的组合时,type为array,名称最好加上@以示区别;"
+}

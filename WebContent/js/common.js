@@ -68,7 +68,7 @@ function AC_FL_RunContent() {
 			str += '></embed>';
 		}
 	} else {
-		str = '��������Ҫ Adobe Flash Player 9.0.124 ���߰汾<br /><a href="http://www.adobe.com/go/getflashplayer/" target="_blank"><img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="���� Flash Player" /></a>';
+		str = 'Adobe Flash Player 9.0.124<br /><a href="http://www.adobe.com/go/getflashplayer/" target="_blank"><img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Flash Player" /></a>';
 	}
 	return str;
 }

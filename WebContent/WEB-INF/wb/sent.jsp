@@ -1,15 +1,9 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,com.k99k.tools.*" session="false" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,com.k99k.tools.*,com.k99k.wb.acts.*" session="false" %>
 <%
 String sPrefix = KFilter.getStaticPrefix();
 String prefix = KFilter.getPrefix();
+out.println(WBJSPCacheOut.out("header1"));
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>江苏网微博</title>
-<link href="<%=sPrefix %>/css/style_wb.css" rel="stylesheet" type="text/css" />
-<script src="<%=sPrefix %>/js/jquery.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/jquery.json-2.2.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/hotEdit.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -17,38 +11,7 @@ $(function(){
 
 });
 </script>
-
-
-</head>
-<body>
-<div id="header">
-	<h1 id="logo"><a href="#">中国江苏网</a></h1>
-	<div id="topNav">
-		<a href="#">广播大厅</a>
-		<a href="#">排行榜</a>
-		<a href="#">找朋友</a>
-		<a href="#">邀请</a>
-		<a href="#">sike</a>
-		<a href="#">模板</a> 
-		<a href="#">设置</a> 
-		<a href="#">私信</a> 
-		<a href="#">退出</a>
-		
-	</div>
-
-   	<div id="topMenu">
-		<a href="#">我的首页</a> | <a href="#">我的微博</a> | <a href="#">关系</a>
-    </div>
-	<div id="searchr">
-	<select id="search_select"><option value="talk">广播</option><option value="user">用户</option></select>
-	<input type="text" id="searchr-input" name="q" value="请输入关键字" onfocus="this.value=''" onkeydown="if(event.keyCode==13){dosearch()}">
-	<input type="button" id="searchr-submit" value="搜 索" onclick="dosearch();">
-	</div>
-</div>
-
-<div id="wrapper">
-
-	<div id="mainContent">
+<% out.println(WBJSPCacheOut.out("@head_main")); %>
 		<div id="sendBox">
 			<div id="sendBox_title">来，说点什么吧- sent</div>
 			<div id="sendAreaDiv">
@@ -128,87 +91,4 @@ $(function(){
 <div class="clear"></div>
 		</div>
 
-	</div>
-	
-	
-	<div id="sideNav">
-		<div id="userInfo">
-			<div id="userHead">
-				<div class="fleft">
-				<a href="#"><img border="0" src="<%=sPrefix %>/images/user001.jpg" /></a></div>
-				<div id="userNameLocal" class="fright">
-					<a href="#">SIke</a><br />
-					江苏 南京
-				</div>
-<div class="clear"></div>
-			</div>
-			<ul id="userNums" class="ul_inline">
-				<li>
-					<span class="uNumNum">3<span><br /><a href="#">关注</a>
-				</li>
-				<li>
-					<span class="uNumNum">3<span><br /><a href="#">粉丝</a>
-				</li>
-				<li>
-					<span class="uNumNum">4<span><br /><a href="#">微博</a>
-				</li>
-
-			</ul>
-			<div id="badgeBox">
-				badgeBox
-			</div>
-		</div>
-		<div id="sideMenu">
-			<ul class="ul_inline">
-				<li class="sm_c"><a href="#"><sapn class="ico_mypub">icon</span> 我的主页</a></li>
-				<li class="sm_m"><a href="#"><sapn class="ico_mypub">icon</span> 我的广播</a></li>
-				<li class="sm_m"><a href="#"><sapn class="ico_mypub">icon</span> 提到我的</a></li>
-				<li class="sm_m"><a href="#"><sapn class="ico_mypub">icon</span> 我的收藏</a></li>
-				<li class="sm_m"><a href="#"><sapn class="ico_mypub">icon</span> 私信</a></li>
-			</ul>
-<div class="clear"></div>
-		</div>
-		
-		<div id="proposal" class="SC">
-			<div id="propo">
-				<span  class="sideTitle">推荐好友：</span> &gt;&gt; <a href="#" >换一换</a>
-			</div>
-			<div class="imgList">
-			<ul id="user_proposal" class="ul_imgList">
-				<li><a href="#" ><img src="<%=sPrefix %>/images/50.jpg" ></a><br /><a title="马伊琍(@马伊琍)" href="#" target="_blank">马伊琍</a><br /><a href="#" class="f_link">+收听</a></li>
-				<li><a href="#" ><img src="<%=sPrefix %>/images/50.jpg" ></a><br /><a title="马伊琍(@马伊琍)" href="#" target="_blank">马伊琍</a><br /><a href="#" class="f_link">+收听</a></li>
-				<li><a href="#" ><img src="<%=sPrefix %>/images/50.jpg" ></a><br /><a title="马伊琍(@马伊琍)" href="#" target="_blank">马伊琍</a><br /><a href="#" class="f_link">+收听</a></li>
-				<li><a href="#" ><img src="<%=sPrefix %>/images/50.jpg" ></a><br /><a title="马伊琍(@马伊琍)" href="#" target="_blank">马伊琍</a><br /><a href="#" class="f_link">+收听</a></li>
-				<li><a href="#" ><img src="<%=sPrefix %>/images/50.jpg" ></a><br /><a title="马伊琍(@马伊琍)" href="#" target="_blank">马伊琍</a><br /><a href="#" class="f_link">+收听</a></li>
-				<li><a href="#" ><img src="<%=sPrefix %>/images/50.jpg" ></a><br /><a title="马伊琍(@马伊琍)" href="#" target="_blank">马伊琍</a><br /><a href="#" class="f_link">+收听</a></li>
-			</ul>
-			</div>
-<div class="clear"></div>
-		</div>
-		
-		<div id="hotTopics" class="SC">
-			<div class="sideTitle">
-				热门话题：
-			</div>
-			<ul>
-				<li><a href="#">热门话题目题目</a><span class="num">(32423422)</span></li>
-				<li><a href="#">热门话题目</a><span class="num">(32423422)</span></li>
-				<li><a href="#">热门话题目</a><span class="num">(32423422)</span></li>
-			</ul>
-<div class="clear"></div>
-		</div>
-
-	</div>
-
-<div class="clear"></div>
-
-</div>
-
-<div id="footer">
-	<div id="copyright">
-		Copyright:&copy;2010-2012 KEEL.SIKE All rights reserved. 
-	</div>
-</div>
-
-</body>
-</html>
+<% out.println(WBJSPCacheOut.out("@foot_inbox")); %>

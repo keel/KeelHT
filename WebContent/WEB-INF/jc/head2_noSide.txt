@@ -1,0 +1,7 @@
+</head>
+<body>
+<div id="header" class="wrapper">
+	<h1 id="logo"><a href="#">中国江苏网</a></h1>
+</div>
+<div id="wrapper" class="wrapper">
+	<div id="loginB">
