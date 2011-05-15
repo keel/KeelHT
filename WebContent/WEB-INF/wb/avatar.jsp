@@ -71,7 +71,9 @@ $('#settingForm').validate({
 
 });
 function updateavatar(){
-	$("#avatar_u").attr("src","<%=sPrefix+"/images/upload/"+user.getName()+"_2.jpg?t="+System.currentTimeMillis()%>");
+	var r = new Date();
+	var src = "<%=sPrefix+"/images/upload/"+user.getName()+"_2.jpg?t="%>"+r;
+	$("#avatar_u").attr("src",src);
 }
 </script>
 <% out.println(WBJSPCacheOut.out("@head_main")); %>

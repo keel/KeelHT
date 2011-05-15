@@ -27,7 +27,7 @@ $(function(){
 		},
 		err:function(){
 			$.fancybox(
-			'<p class="fancyMsgBox2" >密码修改失败!请检查输入的内容.</p>',
+			'<p class="fancyMsgBox2" >密码修改失败!请确认原密码输入正确.</p>',
 			{	'autoDimensions'	: false,
 				'width'         	: 300,
 				'height'        	: 'auto',
@@ -67,21 +67,20 @@ $(function(){
 			<div class="tabon">修改密码</div>
 			<div class="taboff"><a href="<%=prefix %>/settings/checkmail">邮箱验证</a></div>
 			<div class="taboff">个性模板</div>
-			
 		</div>
 		<div class="mainBox">
 			<form class="centerForm" name="settingForm" id="settingForm" action="<%=prefix %>/settings/changepwd/set" method="post">
 				<div>
 				<label for="orgPwd">原始密码：</label><br>
-				<input type="password" name="orgPwd" value="" id="orgPwd">
+				<input type="password" name="orgPwd" value="" id="orgPwd" />
 				</div>
 				<div>
 				<label for="newPwd">新的密码：</label><br>
-				<input type="password" name="newPwd" value="" id="newPwd">
+				<input type="password" name="newPwd" value="" id="newPwd" />
 				</div>
 				<div>
 				<label for="newPwd2">确认密码：</label><br>
-				<input type="password" name="newPwd2" value="" id="newPwd2">
+				<input type="password" name="newPwd2" value="" id="newPwd2" />
 				</div>
 				<div>
 				<input type="submit" name="submitBT" value=" 确认修改 " id="submitBT"/>

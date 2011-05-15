@@ -2,5 +2,19 @@
 	"cookies":{
 		"cookieTime":1209600,
 		"cookieTimeInfo":"两周"
+	},
+	"sendMail":{
+		"server":"smtp.126.com",
+		"sender":"keelsike@126.com",
+		"port":25,
+		"user":"keelsike",
+		"pwd":"crystalthing",
+		"sleep":1000
+	},
+	"wbSettings":{
+		"mailContent":"尊敬的###,请点击下面的链接激活您的帐号，谢谢！\r\n http://localhost:8080/KHunter/settings/checkmail/check?key=### \r\n\r\n\r\n ###",
+		"mailTitle":"邮箱验证",
+		"mailVerifyOK":"邮箱验证成功,[<a herf=''>点击返回首页</a>].",
+		"mailVerifyFail":"邮箱验证失败."
 	}
 }

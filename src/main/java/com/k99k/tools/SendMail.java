@@ -168,7 +168,7 @@ public class SendMail implements Runnable {
 	@Override
 	public void run() {
 		while (runFlag) {
-			for (Iterator<String[]> it = this.sendList.iterator(); it.hasNext();) {
+			for (Iterator<String[]> it = this.sendList.iterator(); it.hasNext() && runFlag;) {
 				String[] task = it.next();
 				if (task.length == 3) {
 					this.sendMail(task[0], task[1], task[2]);

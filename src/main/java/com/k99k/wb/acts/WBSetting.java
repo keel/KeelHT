@@ -3,7 +3,6 @@
  */
 package com.k99k.wb.acts;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -17,6 +16,7 @@ import com.k99k.khunter.KIoc;
 import com.k99k.khunter.KObject;
 import com.k99k.tools.JSONTool;
 import com.k99k.tools.StringUtil;
+import com.k99k.tools.encrypter.Encrypter;
 
 /**
  * @author keel
@@ -31,11 +31,11 @@ public class WBSetting extends Action {
 		super(name);
 	}
 	static final Logger log = Logger.getLogger(WBSetting.class);
-	private static String[] basicReStr;
-	private static String[] changepwdReStr;
-	private static String[] checkmailReStr;
-
-
+//	private static String[] basicReStr;
+//	private static String[] changepwdReStr;
+//	private static String[] checkmailReStr;
+	private static String[] mailContentReStr;
+	
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#act(com.k99k.khunter.ActionMsg)
 	 */
@@ -60,12 +60,15 @@ public class WBSetting extends Action {
 		else if (subact.equals("avatar")) {
 			msg.addData("[jsp]", "/WEB-INF/wb/avatar.jsp");
 			return super.act(msg);
-		}else if(subact.equals("changepwd")){
+		}
+		//修改密码
+		else if(subact.equals("changepwd")){
 			changepwd(httpmsg,isSet,user);
 			return super.act(msg);
-		}else if(subact.equals("checkmail")){
-			
-			msg.addData("[jsp]", "/WEB-INF/wb/checkmail.jsp");
+		}
+		//邮箱修改与验证
+		else if(subact.equals("checkmail")){
+			checkmail(httpmsg,isSet,user);
 			return super.act(msg);
 		}
 		
@@ -141,6 +144,81 @@ public class WBSetting extends Action {
 		}
 		
 	}
+	
+	private static Encrypter enc;// = new Encrypter();
+	
+	private static String mailTitle = "邮箱验证";
+	private static String mailVerifyOK = "邮箱验证成功.";
+	private static String mailVerifyFail = "邮箱验证失败.";
+	/**
+	 * 处理邮箱验证请求
+	 * @param httpmsg
+	 * @param isSet
+	 * @param user
+	 */
+	static final void checkmail(HttpActionMsg httpmsg,String isSet,KObject user){
+		
+		if (isSet.equals("show")) {
+			httpmsg.addData("[jsp]", "/WEB-INF/wb/checkmail.jsp");
+			return;
+		}
+		//发送验证邮件
+		else if (isSet.equals("verify")) {
+			try {
+				String mail = user.getProp("email").toString();
+				String emailcheck = enc.encrypt(user.getName()+"|"+mail+"|"+System.currentTimeMillis());
+				user.setProp("emailcheck", emailcheck);
+				if(WBUser.saveUserProp(user)){
+					WBEmail.addTask(mail, mailTitle, JOut.templetOut(mailContentReStr,new String[]{user.getName(),emailcheck,StringUtil.getFormatDateString("yyyy-MM-dd")}));
+					httpmsg.addData("[print]", "ok");
+					return;
+				}else{
+					JOut.err(500, httpmsg);
+					return;
+				}
+			} catch (Exception e) {
+				log.error("checkmail encrypt failed.", e);
+				JOut.err(500, httpmsg);
+				return;
+			}
+		}
+		//修改邮箱
+		else if(isSet.equals("modify")){
+			String email = httpmsg.getHttpReq().getParameter("newEmail");
+			if (StringUtil.isStringWithLen(email, 4)) {
+				user.setProp("email", email);
+				user.setState(0);
+				if (WBUser.saveUserProp(user)) {
+					httpmsg.addData("[print]",email);
+					return;
+				}else{
+					JOut.err(500, httpmsg);
+					return;
+				}
+			}else{
+				JOut.err(400, httpmsg);
+				return;
+			}
+		}
+		//进行验证操作
+		else if(isSet.equals("check")){
+			String verify = httpmsg.getHttpReq().getParameter("key");
+			if (verify.equals(user.getProp("emailcheck"))) {
+				user.setState(1);
+				if (WBUser.saveUserProp(user)) {
+					//验证成功
+					httpmsg.addData("[print]",mailVerifyOK);
+					return;
+				}
+				
+			}
+			httpmsg.addData("[print]",mailVerifyFail);
+			return;
+		}else{
+			httpmsg.addData("[jsp]", "/WEB-INF/wb/checkmail.jsp");
+			return;
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#exit()
@@ -155,7 +233,7 @@ public class WBSetting extends Action {
 	 */
 	@Override
 	public String getIniPath() {
-		return "wbOutTemplet.json";
+		return "wb.json";
 	}
 
 	/* (non-Javadoc)
@@ -168,12 +246,14 @@ public class WBSetting extends Action {
 			String ini = KIoc.readTxtInUTF8(HTManager.getIniPath()+getIniPath());
 			Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
 			//先定位到json的cookies属性
+			enc = new Encrypter();
 			Map<String, ?> m = (Map<String, ?>) root.get("wbSettings");
-			basicReStr = m.get("basic").toString().split("###");
-			basicReStr = m.get("changepwd").toString().split("###");
-			basicReStr = m.get("checkmail").toString().split("###");
+			mailContentReStr = m.get("mailContent").toString().split("###");
+			mailVerifyOK = m.get("mailVerifyOK").toString();
+			mailTitle = m.get("mailTitle").toString();
+			mailVerifyFail = m.get("mailVerifyFail").toString();
 		} catch (Exception e) {
-			log.error("WBLogin init Error!", e);
+			log.error("WBSetting init Error!", e);
 		}
 	}
 
