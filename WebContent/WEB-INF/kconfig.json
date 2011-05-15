@@ -97,6 +97,10 @@
 		{
 			"_actName":"email",	
 			"_class":"com.k99k.wb.acts.WBEmail"
+		},
+		{
+			"_actName":"findpwd",
+			"_class":"com.k99k.wb.acts.WBFindPwd"
 		}
 	],
 	"actionsInfo":"以_开头的key不会作为Action属性应用在setProp中。_actName为action的唯一名,对应到url和ActionManager的map中;_actName为*表示为默认Action,匹配所有无法匹配到actName的请求;actions作为数组将按配置中的顺序载入;",

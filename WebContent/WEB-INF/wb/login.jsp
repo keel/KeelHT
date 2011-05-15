@@ -43,12 +43,12 @@ $('#loginForm').validate({
 </script>
 <% out.println(WBJSPCacheOut.out("header2_noSide")); %>
 		<div class="indexh">
-			<div class="taboff"><a href="#">快速注册</a></div>
+			<div class="taboff"><a href="<%=prefix %>/reg">快速注册</a></div>
 			<div class="tabon">登陆微博</div>
-			<div class="taboff"><a href="#">忘记密码</a></div>
+			<div class="taboff"><a href="<%=prefix %>/findpwd">忘记密码</a></div>
 		</div>
 		<div class="mainBox">
-			<form class="centerForm" id="loginForm" name="loginForm" action="<%=sPrefix %>/login/login" method="post">
+			<form class="centerForm" id="loginForm" name="loginForm" action="<%=prefix %>/login/login" method="post">
 				<p><label for="uName">用户名：</label><span class="txt2">4-15个英文字符、数字或下划线</span><br /><input type="text" name="uName" value="" id="uName"/></p>
 				<p><label for="uPwd">密码：</label><span class="txt2">请正确填写密码</span><br /><input type="password" name="uPwd" value="" id="uPwd"/></p>
 				<p>

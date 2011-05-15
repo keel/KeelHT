@@ -1,25 +1,23 @@
 </head>
 <body>
 <div id="header">
-	<h1 id="logo"><a href="#">中国江苏网</a></h1>
+	<h1 id="logo"><a href="#@prefix@#">中国江苏网</a></h1>
 	<div id="topNav">
 		<a href="#">广播大厅</a>
 		<a href="#">排行榜</a>
 		<a href="#">找朋友</a>
-		<a href="#">邀请</a>
-		<a href="#" id="wbUserName">sike</a>
+		<a href="#@prefix@#/mine" id="wbUserUrl"></a>
 		<a href="#">模板</a> 
 		<a href="#@prefix@#/settings">设置</a> 
-		<a href="#">私信</a> 
+		<a href="#@prefix@#/dmsgs">私信</a> 
 		<a href="#" id="logoutBT">退出</a>
-		
 	</div>
 
    	<div id="topMenu">
-		<a href="#">我的首页</a> | <a href="#">我的微博</a> | <a href="#">关系</a>
+		<a href="#@prefix@#">我的首页</a> | <a href="#@prefix@#/mine">我的微博</a> | <a href="#@prefix@#/friends">关系</a>
     </div>
 	<div id="searchr">
-	<select id="search_select"><option value="talk">广播</option><option value="user">用户</option></select>
+	<select id="search_select"><option value="wb">微播</option><option value="user">用户</option></select>
 	<input type="text"  name="q" value="请输入关键字"  />
 	<input type="button"  value="搜 索"  />
 	</div>

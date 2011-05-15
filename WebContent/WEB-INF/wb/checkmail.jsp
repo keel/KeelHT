@@ -24,8 +24,11 @@ $(function(){
 	$.validator.dealAjax = {
 		bt:$("#submitBT"),
 		ok:function(data){
-			$("#orgEmail").val(data);
-			$.fancybox(
+		$("#orgEmail").val(data);
+		$("#u_mail").html(data);
+		$("#newEmail").val("");
+		$("#veri").show();
+		$.fancybox(
 			'<p class="fancyMsgBox1" >新邮箱已保存!</p>',
 			{	'autoDimensions'	: false,
 				'width'         	: 300,
@@ -95,11 +98,9 @@ $(function(){
 		</div>
 		<div class="mainBox">
 			<div>
-			<%if(user.getState() == 0){%>
-			<div style="width:450px;border:1px solid #CCC;background:#eee;padding:20px;">您的 Email 还未通过验证，请到<%=uEmail %> 查收验证信，并点击其中的链接完成验证； 如果没有收到，可以重发验证信。
+			<div id="veri" style="width:450px;border:1px solid #CCC;background:#eee;padding:20px;<%if(user.getState() != 0){ out.print("display: none;");}%>">您的 Email 还未通过验证，请到 <span id="u_mail" class="bold"><%=uEmail %></span> 查收验证信，并点击其中的链接完成验证； 如果没有收到，可以重发验证信。
 			<br /><input type="button" value="发送验证邮件" id="verifyMail" />
 			</div>
-			<%} %>
 			</div>
 			<form class="centerForm" name="settingForm" id="settingForm" action="<%=prefix %>/settings/checkmail/modify" method="post">
 				<div>

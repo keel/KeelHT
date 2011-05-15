@@ -52,7 +52,7 @@ public class WBUrl extends Action {
 		String actName = httpmsg.getData("[actName]").toString();
 		//从cookie获取自己的名称
 		String reqUserStr = getCookieValue(httpmsg.getHttpReq().getCookies(),"wbu","");
-		String auto = getCookieValue(httpmsg.getHttpReq().getCookies(),"al","false");
+		//String auto = getCookieValue(httpmsg.getHttpReq().getCookies(),"al","false");
 		boolean hasName = (!reqUserStr.equals(""));
 		if (actName.equals("")) {
 			if (hasName) {

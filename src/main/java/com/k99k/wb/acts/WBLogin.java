@@ -63,6 +63,7 @@ public class WBLogin extends Action {
 		
 		return super.act(msg);
 	}
+	
 
 	/**
 	 * 登录,需要uName,uPwd,uCookie

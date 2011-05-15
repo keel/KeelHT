@@ -18,7 +18,14 @@ out.println(WBJSPCacheOut.out("header1"));
 <script src="<%=sPrefix %>/js/hotEdit.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(function(){
-
+	$("#wbUserUrl").empty().append("<%=uName%>");
+	$("#r_follow_num").empty().append("<%=user.getProp("followers_count")%>");
+	$("#r_fans_num").empty().append("<%=user.getProp("friends_count")%>");
+	$("#r_uname").empty().append("<%=uName%>");
+	$("#r_mgs_num").empty().append("<%=user.getProp("statuses_count")%>");
+	$("#r_icon_1").empty().append("<img src='<%=sPrefix+"/images/upload/"+uName+"_2.jpg"%>' height='60' width='60' />");
+	$("#r_location").empty().append("<%=user.getProp("location")%>");
+	
 	
 	$("#logoutBT").click(function(){
 		event.preventDefault();

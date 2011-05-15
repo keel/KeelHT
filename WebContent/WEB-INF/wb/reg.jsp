@@ -59,8 +59,8 @@ $('#regForm').validate({
 		<div id="mainBox" class="mainBox">
 			<form id="regForm" name="regForm" action="<%=sPrefix %>/reg/reg" method="post">
 				<p><label for="uName">用户名：</label><span class="txt2">帐户名长度最多 6 个汉字或 12 个字符</span><br /><input type="text" name="uName" value="" id="uName"/><span class="red bold"> *</span></p>
-				<p><label for="uPwd">注册密码：</label><span class="txt2">密码长度4-20位，字母区分大小写</span><br /><input type="text" name="uPwd" value="" id="uPwd"/><span class="red bold"> *</span></p>
-				<p><label for="uPwd2">确认密码：</label><span class="txt2">请再次输入一次注册密码，以确保正确</span><br /><input type="text" name="uPwd2" value="" id="uPwd2"/><span class="red bold"> *</span></p>
+				<p><label for="uPwd">注册密码：</label><span class="txt2">密码长度4-20位，字母区分大小写</span><br /><input type="password" name="uPwd" value="" id="uPwd"/><span class="red bold"> *</span></p>
+				<p><label for="uPwd2">确认密码：</label><span class="txt2">请再次输入一次注册密码，以确保正确</span><br /><input type="password" name="uPwd2" value="" id="uPwd2"/><span class="red bold"> *</span></p>
 				<p><label for="email">电子邮箱：</label><span class="txt2">电子邮箱是找回密码的途径，请正确填写</span><br /><input type="text" name="email" value="" id="email"/><span class="red bold"> *</span></p>
 			<p><input type="submit" id="submitBT" value=" 立即注册 " /></p>
 			</form>
@@ -69,7 +69,7 @@ $('#regForm').validate({
 					已有账号？请直接登陆：
 				</div>
 				<div class="centerBT">
-					<input type="button" value=" 登录微博 " />
+					<input type="button" value=" 登录微博 " onclick="javascript:window.location='<%=prefix %>/login';" />
 				</div>
 				<div class="SC">
 					<ul>

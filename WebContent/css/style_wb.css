@@ -65,7 +65,7 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px
 .red{color:red;}
 .bold{font-weight: bold;}
 .txtRight{text-align: right;}
-.ul_inline{float:left;list-style: none;width:100%;padding:0;margin:0;}
+.ul_inline{float:left;list-style: none;width:100%;padding:10px 0;margin:0;}
 #msgList li{float:left;padding: 12px 0;margin:0;width:100%; border-bottom: 1px dashed #D8D8D8; background: #fff;}
 .userPic{float:left;padding: 0 0 12px 12px;}
 .msgBox{float: right; width: 470px; padding-right: 12px; word-wrap: break-word;}
@@ -80,7 +80,7 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px
 .fright{float:right;}
 .tCenter{text-align: center;}
 #userInfo{position: relative; padding: 16px 0 4px 11px;}
-#userNameLocal{width:130px;}
+#userNameLocal{width:120px;}
 #userNums li{border-right: 1px solid #2B4A78; float: left; padding:5px 2px;min-width:50px;_width: 50px;text-align: center; white-space: nowrap;}
 #badgeBox{padding:5px;}
 .sm_c a,.sm_m a{display: block; width:140px;padding:8px 30px; border-top: 1px dotted #2B4A78;}
