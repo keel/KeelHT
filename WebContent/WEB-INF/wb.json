@@ -16,5 +16,9 @@
 		"mailTitle":"邮箱验证",
 		"mailVerifyOK":"邮箱验证成功,[<a herf=''>点击返回首页</a>].",
 		"mailVerifyFail":"邮箱验证失败."
+	},
+	"wbTalk":{
+		"keywords":"江泽民,胡锦涛"
+	
 	}
 }

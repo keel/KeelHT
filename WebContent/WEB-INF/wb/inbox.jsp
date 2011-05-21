@@ -33,21 +33,34 @@ $(function(){
 			window.location="<%=sPrefix %>";
 		});
 	});
+
+	$("#talk").keyup(function(){
+		var cc = 140-$(this).val().length;
+		if(cc >= 0){
+			$("#countTxt").text(cc).removeClass("red");
+			$("#restTxt").text("还能输入");
+		}else{
+			$("#countTxt").text(cc).addClass("red");
+			$("#restTxt").text("超出");
+		}
+		
+	});
+	
 });
 </script>
 <% out.println(WBJSPCacheOut.out("@head_main")); %>
 		<div id="sendBox">
 			<div id="sendBox_title">来，说点什么吧</div>
 			<div id="sendAreaDiv">
-				<textarea name="sendArea"></textarea>
+				<textarea name="sendArea" id="talk"></textarea>
 			</div>
 			<div id="sendsub">
 			<span class="fleft">
 					<a href="#">图片</a> | <a href="#">话题</a> </span>
 			
-				<input type="button" name="" value=" 发布 " id="sendbt"/>
+				<input type="button" name="sendbt" value=" 发布 " id="sendbt"/>
 				<span id="sendtip">
-					还能输入 <span id="countTxt">140</span> 字
+					<span id="restTxt">还能输入</span> <span id="countTxt">140</span> 字
 				</span>
 <div class="clear"></div>
 			</div>

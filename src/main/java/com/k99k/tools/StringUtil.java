@@ -1,5 +1,8 @@
 package com.k99k.tools;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * 字符串工具类
  * @author keel
@@ -11,6 +14,25 @@ public final class StringUtil {
 		
 	}
 	
+	/**
+	 * 处理文本中的链接,使之加上a标签,使用正则实现
+	 * @return
+	 */
+	public static final StringBuffer findUrl(StringBuilder sb){
+		Pattern pattern = Pattern.compile("(http://|https://){1}[\\w\\.\\-/:]+");
+		Matcher matcher = pattern.matcher(sb);
+		StringBuffer buffer = new StringBuffer();
+		while(matcher.find()){   
+//			for (int i = 0; i < matcher.groupCount(); i++) {
+//				System.out.println("["+i+"]"+matcher.group(i));
+//			}
+			
+			//System.out.println(matcher.group());
+			matcher.appendReplacement(buffer, "<a href=\""+matcher.group(1)+"\">"+matcher.group(1)+"</a>");           
+		}
+		matcher.appendTail(buffer);
+		return buffer;
+	}
 	
 	/**
 	 * Object转为String,如果是null则转为""
