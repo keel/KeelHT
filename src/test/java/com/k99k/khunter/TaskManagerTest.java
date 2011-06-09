@@ -12,6 +12,11 @@ public class TaskManagerTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		String webRoot = "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/";
+		String jsonFilePath = webRoot+"kconfig.json";
+		String classPath = webRoot+"classes/";
+		ActionManager.init(jsonFilePath, classPath);
+		TaskManager.init(jsonFilePath, classPath);
 	}
 
 	@AfterClass

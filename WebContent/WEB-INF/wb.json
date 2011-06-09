@@ -18,7 +18,9 @@
 		"mailVerifyFail":"邮箱验证失败."
 	},
 	"wbTalk":{
-		"keywords":"江泽民,胡锦涛"
-	
+		"keywords":"江泽民,胡锦涛",
+		"topicReplace":"<a href='###'>###</a>",
+		"mentionReplace":"<a href='###'>###</a>",
+		"urlReplace":"<a href='###' target='_blank'>###</a>"
 	}
 }

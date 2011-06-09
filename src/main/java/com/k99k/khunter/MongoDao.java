@@ -115,6 +115,14 @@ public class MongoDao implements DaoInterface{
 		jsonConfig.put("id", this.id);
 		return true;
 	}
+	
+	/**
+	 * 获取一个DBCollection
+	 * @return DBCollection
+	 */
+	public DBCollection getColl(){
+		return this.dataSource.getColl(tableName);
+	}
 
 	/**
 	 * 按ID查找单个对象

@@ -3,6 +3,7 @@
  */
 package com.k99k.wb.acts;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,15 +11,23 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
+import com.k99k.khunter.DaoManager;
 import com.k99k.khunter.HTManager;
 import com.k99k.khunter.HttpActionMsg;
 import com.k99k.khunter.KIoc;
 import com.k99k.khunter.KObject;
+import com.k99k.khunter.TaskManager;
+import com.k99k.khunter.dao.WBUserDao;
 import com.k99k.tools.JSONTool;
 import com.k99k.tools.StringUtil;
 
 /**
- * 发表微博
+ * 发表微博的同步操作,异步任务由WBTalkAct实现.<br />
+ * 同步任务主要包括：<br />
+ * 1.处理关键字屏蔽;<br />
+ * 2.处理url;<br />
+ * 3.发表/转发msg;<br />
+ * 4.生成任务;<br />
  * @author keel
  *
  */
@@ -37,6 +46,15 @@ public class WBTalk extends Action {
 	 * 关键词数组
 	 */
 	private static String[] keywords;
+	
+	private static String[] topicReStr;
+	
+	private static String[] urlReStr;
+	
+	private static String[] mentionReStr;
+	
+	private WBUserDao userDao;
+	
 	
 	/**
 	 * 初始化关键词,处理按,号分隔的关键词集合
@@ -83,14 +101,29 @@ public class WBTalk extends Action {
 			msg.addData("[redirect]", "/");
 			return super.act(msg);
 		}
-		//发表WB
 		
+		String talk = httpmsg.getHttpReq().getParameter("talk");
+		
+		StringBuffer sb = new StringBuffer(talk);
 		//关键词过滤
+		sb = dealKeyWords(sb);
+		//url处理
+		sb = dealUrl(sb);
+		sb = dealTopic(sb);
+		sb = dealMention(sb);
 		
-		//话题词
+		String txt = sb.toString();
+		//TODO 发表/转发
+		long msgId = userDao.addTalk(txt, user.getName(), "web", "unknown place","pic_url", "urls");
+		//生成异步任务
+		ActionMsg task = new ActionMsg("talkact");
+		task.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
+		task.addData("user", user);
+		task.addData("msg", sb.toString());
+		task.addData("source", "web");
+		//task.addData("place", "");
 		
-		//@用户,提到的用户
-		
+		TaskManager.makeNewTask("WBTalkAct:"+msgId, task);
 		
 		return super.act(msg);
 	}
@@ -99,7 +132,7 @@ public class WBTalk extends Action {
 	 * 处理关键词,从关键词库中将相关词替换掉
 	 * @return
 	 */
-	public static final StringBuilder dealKeyWords(StringBuilder sb){
+	public static final StringBuffer dealKeyWords(StringBuffer sb){
 		for (int i = 0; i < keywords.length; i++) {
 			String s = keywords[i];
 			for (int j = sb.indexOf(s); j > 0; j = sb.indexOf(s)) {
@@ -110,20 +143,47 @@ public class WBTalk extends Action {
 	}
 	
 	/**
-	 * 处理话题,识别#符号,使用正则实现
+	 * topic,处理话题,识别#符号,使用正则实现
 	 * @return
 	 */
-	public static final StringBuffer dealTopic(StringBuilder sb){
+	public static final StringBuffer dealTopic(StringBuffer sb){
 		//Pattern pattern = Pattern.compile("(http://|https://){1}[\\w\\.\\-/:]+");
 		Pattern pattern = Pattern.compile("#(([^#]+))#");
 		Matcher matcher = pattern.matcher(sb);
 		StringBuffer buffer = new StringBuffer();
+		ArrayList<String> topics = null;
 		while(matcher.find()){   
-//			for (int i = 0; i < matcher.groupCount(); i++) {
-//				System.out.println("["+i+"]"+matcher.group(i));
-//			}
 			//TODO 处理#号的链接
-			matcher.appendReplacement(buffer, "<topic>"+matcher.group(1)+"</topic>");           
+			String topic = matcher.group(1);
+			if (topics == null) {
+				topics = new ArrayList<String>();
+			}
+			topics.add(topic);
+			matcher.appendReplacement(buffer, JOut.templetOut(topicReStr,new String[]{"?topic="+topic,topic}));           
+		}
+		matcher.appendTail(buffer);
+		if (topics != null) {
+			ActionMsg task = new ActionMsg("topic");
+			task.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
+			task.addData("topics", topics);
+			TaskManager.makeNewTask("topic", task);
+		}
+		return buffer;
+	}
+	
+	public static final StringBuffer dealUrl(StringBuffer sb){
+		Pattern pattern = Pattern.compile("(http://|https://){1}[\\w\\.\\-/:]+");
+		Matcher matcher = pattern.matcher(sb);
+		StringBuffer buffer = new StringBuffer();
+		//ArrayList<String> urls = null;
+		while(matcher.find()){   
+			//TODO 处理url的链接
+			String url = matcher.group(1);
+//			if (urls == null) {
+//				urls = new ArrayList<String>();
+//			}
+//			urls.add(url);
+			matcher.appendReplacement(buffer, JOut.templetOut(urlReStr,new String[]{url,url}));           
 		}
 		matcher.appendTail(buffer);
 		return buffer;
@@ -133,16 +193,25 @@ public class WBTalk extends Action {
 	 * 处理提到的用户
 	 * @return
 	 */
-	public static final StringBuffer dealMetion(StringBuilder sb){
+	public static final StringBuffer dealMention(StringBuffer sb){
 		Pattern pattern = Pattern.compile("@((\\S+))");
 		Matcher matcher = pattern.matcher(sb);
 		StringBuffer buffer = new StringBuffer();
+		ArrayList<String> mentions = null;
 		while(matcher.find()){   
-//			for (int i = 0; i < matcher.groupCount(); i++) {
-//				System.out.println("["+i+"]"+matcher.group(i));
-//			}
 			//TODO 处理@号的链接
-			matcher.appendReplacement(buffer, "<metion>"+matcher.group(1)+"</metion>");           
+			String re = matcher.group(1);
+			if (mentions == null) {
+				mentions = new ArrayList<String>();
+			}
+			mentions.add(re);
+			matcher.appendReplacement(buffer, JOut.templetOut(mentionReStr,new String[]{"?mention="+re,re}));           
+		}
+		if (mentions != null) {
+			ActionMsg task = new ActionMsg("mention");
+			task.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
+			task.addData("mentions", mentions);
+			TaskManager.makeNewTask("mention", task);
 		}
 		matcher.appendTail(buffer);
 		return buffer;
@@ -174,13 +243,15 @@ public class WBTalk extends Action {
 			String ini = KIoc.readTxtInUTF8(HTManager.getIniPath()+getIniPath());
 			Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
 			//先定位到json的cookies属性
-			Map<String, ?> m = (Map<String, ?>) root.get("wbSettings");
+			Map<String, ?> m = (Map<String, ?>) root.get("wbTalk");
 			String keywordsString = m.get("keywords").toString();
 			if(!initKeywords(keywordsString)){
 				log.error("WBTalk initKeywords Error!");
 			}
-			
-			
+			topicReStr = m.get("topicReplace").toString().split("###");
+			mentionReStr =  m.get("mentionReplace").toString().split("###");
+			urlReStr = m.get("urlReplace").toString().split("###");
+			userDao = (WBUserDao)DaoManager.findDao("wbUserDao");
 		} catch (Exception e) {
 			log.error("WBTalk init Error!", e);
 		}

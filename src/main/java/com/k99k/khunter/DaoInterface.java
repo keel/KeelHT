@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mongodb.DBCollection;
+
 /**
  * DAO接口
  * @author keel
@@ -16,6 +18,12 @@ public interface DaoInterface extends Cloneable{
 	 * @return
 	 */
 	public IDManager getIdm();
+	
+	/**
+	 * 创建一个DBCollection
+	 * @return DBCollection
+	 */
+	public DBCollection getColl();
 	
 	/**
 	 * 增加或更新一个索引

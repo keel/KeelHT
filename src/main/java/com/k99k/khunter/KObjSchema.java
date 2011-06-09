@@ -635,6 +635,17 @@ public class KObjSchema {
 	}
 	
 	/**
+	 * 创建一个空的KObject,注意只涉及一级KObjColumn设置，子KObjColumn不会再处理,均按父KObjColumn中的默认值设置
+	 * @param dao DaoInterface
+	 * @return KObject
+	 */
+	public KObject createEmptyKObj(DaoInterface dao){
+		KObject kobj = this.createEmptyKObjNoId();
+		kobj.setId(dao.getIdm().nextId());
+		return kobj;
+	}
+	
+	/**
 	 * 创建空ID的空对象,不涉及dao创建id的操作
 	 * @return
 	 */

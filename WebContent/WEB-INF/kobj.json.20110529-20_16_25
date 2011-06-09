@@ -77,10 +77,20 @@
 					"intro":"用户id"
 				},
 				{
-					"col":"inbox_id",
-					"def":0,
+					"col":"inbox_ids",
+					"def":[
+						
+					],
 					"len":0,
 					"required":true,
+					"type":3,
+					"intro":"inbox消息id集合"
+				},
+				{
+					"col":"inbox_ids.*",
+					"def":0,
+					"len":0,
+					"required":false,
 					"type":4,
 					"intro":"inbox消息id"
 				}
@@ -123,10 +133,20 @@
 					"intro":"用户id"
 				},
 				{
-					"col":"sent_id",
-					"def":0,
+					"col":"sent_ids",
+					"def":[
+						
+					],
 					"len":0,
 					"required":true,
+					"type":3,
+					"intro":"sent消息id集合"
+				},
+				{
+					"col":"sent_ids.*",
+					"def":0,
+					"len":0,
+					"required":false,
 					"type":4,
 					"intro":"sent消息id"
 				}
@@ -169,111 +189,25 @@
 					"intro":"用户id"
 				},
 				{
-					"col":"favourite_id",
-					"def":0,
+					"col":"favourite_ids",
+					"def":[
+						
+					],
 					"len":0,
 					"required":true,
+					"type":3,
+					"intro":"用户favourite消息id集合"
+				},
+				{
+					"col":"favourite_ids.*",
+					"def":0,
+					"len":0,
+					"required":false,
 					"type":4,
 					"intro":"favourite消息id"
 				}
 			],
 			"intro":"用户的所有收藏消息,每条1000个记录"
-		},
-		"wbcomm":{
-			"dao":{
-				"tableName":"wbComm",
-				"newDaoName":"wbCommDao",
-				"daoName":"mongoDao",
-				"props":{
-					"id":62,
-					"type":"single"
-				}
-			},
-			"indexes":[
-				{
-					"col":"createTime",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"intro"
-				},
-				{
-					"col":"re_msg_id",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"原msgid索引"
-				}
-			],
-			"columns":[
-				{
-					"col":"text",
-					"def":"",
-					"len":0,
-					"required":true,
-					"type":0,
-					"intro":"消息内容"
-				},
-				{
-					"col":"source",
-					"def":"",
-					"len":0,
-					"required":false,
-					"type":0,
-					"intro":"来自"
-				},
-				{
-					"col":"place",
-					"def":"",
-					"len":0,
-					"required":false,
-					"type":0,
-					"intro":"地点"
-				},
-				{
-					"col":"re_user_id",
-					"def":0,
-					"len":0,
-					"required":false,
-					"type":4,
-					"intro":"回复\/评论针对的用户ID"
-				},
-				{
-					"col":"re_msg_id",
-					"def":0,
-					"len":0,
-					"required":true,
-					"type":4,
-					"intro":"回复\/评论针对的消息ID"
-				},
-				{
-					"col":"re_screen",
-					"def":"",
-					"len":0,
-					"required":false,
-					"type":0,
-					"intro":"回复\/评论针对的用户显示名"
-				},
-				{
-					"col":"urls",
-					"def":[
-						
-					],
-					"len":0,
-					"required":false,
-					"type":3,
-					"intro":"消息中涉及的urls"
-				},
-				{
-					"col":"urls.*",
-					"def":"",
-					"len":0,
-					"required":false,
-					"type":0,
-					"intro":"涉及的urls"
-				}
-			],
-			"intro":"comments and replies"
 		},
 		"wbmsg":{
 			"dao":{
@@ -286,20 +220,7 @@
 				}
 			},
 			"indexes":[
-				{
-					"col":"createTime",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"createTime"
-				},
-				{
-					"col":"author_id",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"author_id index"
-				}
+				
 			],
 			"columns":[
 				{
@@ -455,37 +376,19 @@
 					"required":false,
 					"type":0,
 					"intro":"图片地址"
-				},
-				{
-					"col":"author_id",
-					"def":0,
-					"len":0,
-					"required":true,
-					"type":4,
-					"intro":"发表者id"
-				},
-				{
-					"col":"author_name",
-					"def":"",
-					"len":0,
-					"required":false,
-					"type":0,
-					"intro":"发表者name"
-				},
-				{
-					"col":"author_screen",
-					"def":"",
-					"len":0,
-					"required":false,
-					"type":0,
-					"intro":"发表者screen name"
 				}
 			],
 			"intro":"msgs"
 		},
 		"wbuser":{
 			"dao":{
-				"daoName":"wbUserDao"
+				"tableName":"wbUser",
+				"newDaoName":"wbUserDao",
+				"daoName":"mongoDao",
+				"props":{
+					"id":51,
+					"type":"single"
+				}
 			},
 			"indexes":[
 				{
@@ -789,6 +692,24 @@
 					"intro":"最新发表的消息"
 				},
 				{
+					"col":"notify",
+					"def":[
+						
+					],
+					"len":0,
+					"required":false,
+					"type":3,
+					"intro":"新的消息,好友,私信通知数量"
+				},
+				{
+					"col":"notify.*",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":1,
+					"intro":"新的消息,好友,私信通知数量"
+				},
+				{
 					"col":"follows",
 					"def":[
 						
@@ -821,38 +742,6 @@
 					"required":false,
 					"type":0,
 					"intro":"邮箱验证字符串"
-				},
-				{
-					"col":"notify_msg",
-					"def":0,
-					"len":0,
-					"required":false,
-					"type":1,
-					"intro":"新的消息数"
-				},
-				{
-					"col":"notify_fan",
-					"def":0,
-					"len":0,
-					"required":false,
-					"type":1,
-					"intro":"新的好友数"
-				},
-				{
-					"col":"notify_dmsg",
-					"def":0,
-					"len":0,
-					"required":false,
-					"type":1,
-					"intro":"新的私信数"
-				},
-				{
-					"col":"notify_mention",
-					"def":0,
-					"len":0,
-					"required":false,
-					"type":1,
-					"intro":"新的提到消息数"
 				}
 			],
 			"intro":"wb's user"
@@ -963,10 +852,20 @@
 					"intro":"用户id"
 				},
 				{
-					"col":"follow_id",
-					"def":0,
+					"col":"follow_ids",
+					"def":[
+						
+					],
 					"len":0,
 					"required":true,
+					"type":3,
+					"intro":"follow用户id集合"
+				},
+				{
+					"col":"follow_ids.*",
+					"def":0,
+					"len":0,
+					"required":false,
 					"type":4,
 					"intro":"follow用户id"
 				}
@@ -1093,10 +992,20 @@
 					"intro":"用户id"
 				},
 				{
-					"col":"fans_id",
-					"def":0,
+					"col":"fans_ids",
+					"def":[
+						
+					],
 					"len":0,
 					"required":true,
+					"type":3,
+					"intro":"fans用户id集合"
+				},
+				{
+					"col":"fans_ids.*",
+					"def":0,
+					"len":0,
+					"required":false,
 					"type":4,
 					"intro":"fans用户id"
 				}
@@ -1265,14 +1174,6 @@
 					"required":false,
 					"type":1,
 					"intro":"此话题的热度"
-				},
-				{
-					"col":"name",
-					"def":"",
-					"len":0,
-					"required":true,
-					"type":0,
-					"intro":"话题名"
 				}
 			],
 			"intro":"tags,话题(标签)"
@@ -1289,39 +1190,49 @@
 			},
 			"indexes":[
 				{
-					"col":"user_name",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"user_id index"
-				},
-				{
 					"col":"createTime",
 					"unique":false,
 					"asc":false,
 					"type":"normal",
 					"intro":"createTime index"
+				},
+				{
+					"col":"user_id",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"user_id index"
 				}
 			],
 			"columns":[
 				{
-					"col":"user_name",
-					"def":"",
-					"len":0,
-					"required":true,
-					"type":0,
-					"intro":"用户name"
-				},
-				{
-					"col":"mention_id",
+					"col":"user_id",
 					"def":0,
 					"len":0,
 					"required":true,
 					"type":4,
+					"intro":"用户id"
+				},
+				{
+					"col":"mention_ids",
+					"def":[
+						
+					],
+					"len":0,
+					"required":true,
+					"type":3,
+					"intro":"提到用户的消息id集合"
+				},
+				{
+					"col":"mention_ids.*",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":4,
 					"intro":"消息id"
 				}
 			],
-			"intro":"所有提到用户的消息"
+			"intro":"所有提到用户的消息,每条1000个记录"
 		},
 		"wb_dmsg":{
 			"dao":{
@@ -1359,10 +1270,20 @@
 					"intro":"用户id"
 				},
 				{
-					"col":"dmsg_id",
-					"def":0,
+					"col":"dmsg_ids",
+					"def":[
+						
+					],
 					"len":0,
 					"required":true,
+					"type":3,
+					"intro":"用户私信消息id集合"
+				},
+				{
+					"col":"dmsg_ids.*",
+					"def":0,
+					"len":0,
+					"required":false,
 					"type":4,
 					"intro":"消息id"
 				}

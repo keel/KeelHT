@@ -15,6 +15,23 @@ public final class StringUtil {
 	}
 	
 	/**
+	 * 查找String中并关键词，并替换为指定的String
+	 * @param sb 原StringBuilder
+	 * @param keywords 
+	 * @param replaceStr 用于替换的String
+	 * @return
+	 */
+	public static final StringBuilder replaceKeyWords(StringBuilder sb,String[] keywords,String replaceStr){
+		for (int i = 0; i < keywords.length; i++) {
+			String s = keywords[i];
+			for (int j = sb.indexOf(s); j > 0; j = sb.indexOf(s)) {
+				sb.replace(j, j+s.length(), replaceStr);
+			}
+		}
+		return sb;
+	}
+	
+	/**
 	 * 处理文本中的链接,使之加上a标签,使用正则实现
 	 * @return
 	 */
@@ -28,7 +45,8 @@ public final class StringUtil {
 //			}
 			
 			//System.out.println(matcher.group());
-			matcher.appendReplacement(buffer, "<a href=\""+matcher.group(1)+"\">"+matcher.group(1)+"</a>");           
+			String s = matcher.group(1);
+			matcher.appendReplacement(buffer, "<a href=\""+s+"\">"+s+"</a>");           
 		}
 		matcher.appendTail(buffer);
 		return buffer;

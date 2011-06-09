@@ -190,20 +190,7 @@
 				}
 			},
 			"indexes":[
-				{
-					"col":"createTime",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"intro"
-				},
-				{
-					"col":"re_msg_id",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"原msgid索引"
-				}
+				
 			],
 			"columns":[
 				{
@@ -242,7 +229,7 @@
 					"col":"re_msg_id",
 					"def":0,
 					"len":0,
-					"required":true,
+					"required":false,
 					"type":4,
 					"intro":"回复\/评论针对的消息ID"
 				},
@@ -485,7 +472,13 @@
 		},
 		"wbuser":{
 			"dao":{
-				"daoName":"wbUserDao"
+				"tableName":"wbUser",
+				"newDaoName":"wbUserDao",
+				"daoName":"mongoDao",
+				"props":{
+					"id":51,
+					"type":"single"
+				}
 			},
 			"indexes":[
 				{

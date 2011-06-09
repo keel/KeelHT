@@ -190,20 +190,7 @@
 				}
 			},
 			"indexes":[
-				{
-					"col":"createTime",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"intro"
-				},
-				{
-					"col":"re_msg_id",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"原msgid索引"
-				}
+				
 			],
 			"columns":[
 				{
@@ -242,7 +229,7 @@
 					"col":"re_msg_id",
 					"def":0,
 					"len":0,
-					"required":true,
+					"required":false,
 					"type":4,
 					"intro":"回复\/评论针对的消息ID"
 				},
@@ -286,20 +273,7 @@
 				}
 			},
 			"indexes":[
-				{
-					"col":"createTime",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"createTime"
-				},
-				{
-					"col":"author_id",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"author_id index"
-				}
+				
 			],
 			"columns":[
 				{
@@ -455,37 +429,19 @@
 					"required":false,
 					"type":0,
 					"intro":"图片地址"
-				},
-				{
-					"col":"author_id",
-					"def":0,
-					"len":0,
-					"required":true,
-					"type":4,
-					"intro":"发表者id"
-				},
-				{
-					"col":"author_name",
-					"def":"",
-					"len":0,
-					"required":false,
-					"type":0,
-					"intro":"发表者name"
-				},
-				{
-					"col":"author_screen",
-					"def":"",
-					"len":0,
-					"required":false,
-					"type":0,
-					"intro":"发表者screen name"
 				}
 			],
 			"intro":"msgs"
 		},
 		"wbuser":{
 			"dao":{
-				"daoName":"wbUserDao"
+				"tableName":"wbUser",
+				"newDaoName":"wbUserDao",
+				"daoName":"mongoDao",
+				"props":{
+					"id":51,
+					"type":"single"
+				}
 			},
 			"indexes":[
 				{

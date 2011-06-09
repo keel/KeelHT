@@ -485,7 +485,13 @@
 		},
 		"wbuser":{
 			"dao":{
-				"daoName":"wbUserDao"
+				"tableName":"wbUser",
+				"newDaoName":"wbUserDao",
+				"daoName":"mongoDao",
+				"props":{
+					"id":51,
+					"type":"single"
+				}
 			},
 			"indexes":[
 				{

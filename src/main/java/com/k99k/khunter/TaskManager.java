@@ -18,7 +18,20 @@ import com.k99k.tools.JSONTool;
 
 
 /**
- * Task管理器，负责载入和刷新Task，以及添加新的Task等
+ * Task管理器，负责载入和刷新Task，以及添加新的Task等.
+ * 创建Task的例子：
+<pre>
+//log为Action的name
+ActionMsg msg = new ActionMsg("log");
+//task的类型必须要有
+msg.addData(TASK_TYPE, TASK_TYPE_SCHEDULE_POOL);
+//不同类型的task需要有不同的参数
+msg.addData(TASK_DELAY, 5000);
+//静态方法创建新任务,至此任务创建完成,TaskManager将按类型完成任务的执行
+TaskManager.makeNewTask("newTaskTest", msg);
+//取消未执行的任务或定时/循环任务
+TaskManager.cancelTask("newTaskTest2");
+</pre>
  * @author keel
  *
  */
@@ -98,15 +111,15 @@ public final class TaskManager {
 	public static final int TASK_TYPE_SCHEDULE_POOL = 3;
 	public static final int TASK_TYPE_SCHEDULE_RATE = 4;
 	
-	public static final String TASK_TYPE = "taskType";
-	public static final String TASK_DELAY = "taskDelay";
-	public static final String TASK_INIT_DELAY = "taskInitDelay";
-	public static final String TASK_CANCEL = "taskCanCancel";
+	public static final String TASK_TYPE = "[taskType]";
+	public static final String TASK_DELAY = "[taskDelay]";
+	public static final String TASK_INIT_DELAY = "[taskInitDelay]";
+	public static final String TASK_CANCEL = "[taskCanCancel]";
 	
 	
 //	/**
 //	 * 清理taskMap,移除已经完成的过期task --由Task运行结束时自动调用清理
-//	 * TODO 可通过配置Action来实现定期或达到一定大小时自动清理taskMap
+//	 * TO DO 可通过配置Action来实现定期或达到一定大小时自动清理taskMap
 //	 */
 //	public static final void clearTaskMap(){
 //		for (Iterator<String> it = taskMap.keySet().iterator(); it.hasNext();) {
@@ -143,7 +156,7 @@ public final class TaskManager {
 	 * 添加一个立即执行的任务到立即处理的多线程线程池
 	 * @param task
 	 */
-	public static void addExeTask(Task task){
+	private static void addExeTask(Task task){
 		exePool.execute(task);
 	}
 	
@@ -153,7 +166,7 @@ public final class TaskManager {
 	 * @param delay 延迟
 	 * @param unit 时间单位
 	 */
-	public static void addScheduledTask(Task task,long delay,TimeUnit unit){
+	private static void addScheduledTask(Task task,long delay,TimeUnit unit){
 		if (delay <= 0) {
 			log.warn("ScheduledTask with no delay! Excuting now. task:"+task);
 		}
@@ -171,7 +184,7 @@ public final class TaskManager {
 	 * @param delay 循环延迟
 	 * @param unit 时间单位
 	 */
-	public static void addRateTask(Task task,long initDelay,long delay,TimeUnit unit){
+	private static void addRateTask(Task task,long initDelay,long delay,TimeUnit unit){
 		if (delay <= 0) {
 			log.error("RateTask with no delay! Task canceled!! task:"+task);
 			return;
@@ -196,15 +209,15 @@ public final class TaskManager {
 	 * 添加一个立即处理的任务到单线程池
 	 * @param task Task
 	 */
-	public static void addSingleTask(Task task){
+	private static void addSingleTask(Task task){
 		singleExePool.execute(task);
 	}
 	
 
 	/**
 	 * 创建一个新的任务,ActionMsg必须包括Task相关的参数
-	 * @param taskName String
-	 * @param msg ActionMsg
+	 * @param taskName String 任务名,取消任务时需要以此来定位任务
+	 * @param msg ActionMsg 用于执行任务的Action
 	 * @return 当taskName有重名或msg参数有误时返回false
 	 */
 	public static boolean makeNewTask(String taskName,ActionMsg msg){
@@ -410,11 +423,11 @@ public final class TaskManager {
 		ActionManager.init(jsonFilePath, classPath);
 		TaskManager.init(jsonFilePath, classPath);
 		
-		ActionMsg msg = new ActionMsg("log");
+		ActionMsg msg = new ActionMsg("testLog");
 		msg.addData(TASK_TYPE, TASK_TYPE_SCHEDULE_POOL);
 		msg.addData(TASK_DELAY, 5000);
 		TaskManager.makeNewTask("newTaskTest", msg);
-		ActionMsg msg2 = new ActionMsg("log");
+		ActionMsg msg2 = new ActionMsg("testLog");
 		msg2.addData(TASK_INIT_DELAY, 2000);
 		msg2.addData(TASK_DELAY, 2000);
 		msg2.addData(TASK_TYPE, TASK_TYPE_SCHEDULE_RATE);
