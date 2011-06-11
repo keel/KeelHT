@@ -28,46 +28,27 @@ if(o != null ){
 	return;
 }
 KObject user = (KObject)data.getData("wbUser");
+String uName = user.getName();
 out.println(WBJSPCacheOut.out("header1")); %>
 <script src="<%=sPrefix %>/js/jquery.validate.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/jquery.city_date.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(function(){
-
-//放下地区选择
-$.cnCity.cnCity("#cnCity");
-//---------------
-//选择生日
-$.cnBirth(1891,2011,"#cnBirth");
-//--------
-
-//处理请求
-$.validator.dealAjax = {
-	bt:$("#submitBT"),
-	ok:function(data){
-		//200表示成功,data为返回的uName
-		window.location = ("<%=sPrefix %>/"+data);
-	},
-	err:function(){
-		alert('登录失败!用户名和密码未通过验证.');
-	}
-};
-
-//开始验证
-$('#settingForm').validate({
-    /* 设置验证规则 */
-    rules: {
-        uNick: {
-            required:true,
-            rangelength:[4,15]
-        },
-        uUrl:{url:true},
-        uSex:{required:true},
-        cnLocal2:{required:function(element) {
-        	return $(element).val() == "";
-        }}
-    }
-});
+	$("#wbUserUrl").empty().append("<%=uName%>");
+	$("#r_follow_num").empty().append("<%=user.getProp("followers_count")%>");
+	$("#r_fans_num").empty().append("<%=user.getProp("friends_count")%>");
+	$("#r_uname").empty().append("<%=uName%>");
+	$("#r_mgs_num").empty().append("<%=user.getProp("statuses_count")%>");
+	$("#r_icon_1").empty().append("<img src='<%=sPrefix+"/images/upload/"+uName+"_2.jpg"%>' height='60' width='60' />");
+	$("#r_location").empty().append("<%=user.getProp("location")%>");
+	
+	
+	$("#logoutBT").click(function(){
+		event.preventDefault();
+		$.post("<%=sPrefix %>/login/logout", "uName=<%=uName %>" ,function(data) {
+			window.location="<%=sPrefix %>";
+		});
+	});
 
 });
 function updateavatar(){

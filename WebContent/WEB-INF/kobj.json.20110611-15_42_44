@@ -169,6 +169,14 @@
 					"intro":"用户id"
 				},
 				{
+					"col":"sent_id",
+					"def":0,
+					"len":0,
+					"required":true,
+					"type":4,
+					"intro":"sent消息id"
+				},
+				{
 					"col":"msg_id",
 					"def":0,
 					"len":0,

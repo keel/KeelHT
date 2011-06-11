@@ -1,14 +1,38 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,com.k99k.tools.*,com.k99k.wb.acts.*" session="false" %>
-<%
+<%!
 String sPrefix = KFilter.getStaticPrefix();
 String prefix = KFilter.getPrefix();
+%>
+<%
+Object o = request.getAttribute("[jspAttr]");
+HttpActionMsg data = null;
+if(o != null ){
+	data = (HttpActionMsg)o;
+}else{
+	out.print("attr is null.");
+	return;
+}
+KObject user = (KObject)data.getData("wbUser");
+String uName = user.getName();
 out.println(WBJSPCacheOut.out("header1"));
 %>
 <script src="<%=sPrefix %>/js/jquery.json-2.2.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/hotEdit.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(function(){
-
+	$("#wbUserUrl").empty().append("<%=uName%>");
+	$("#r_follow_num").empty().append("<%=user.getProp("followers_count")%>");
+	$("#r_fans_num").empty().append("<%=user.getProp("friends_count")%>");
+	$("#r_uname").empty().append("<%=uName%>");
+	$("#r_mgs_num").empty().append("<%=user.getProp("statuses_count")%>");
+	$("#r_icon_1").empty().append("<img src='<%=sPrefix+"/images/upload/"+uName+"_2.jpg"%>' height='60' width='60' />");
+	$("#r_location").empty().append("<%=user.getProp("location")%>");
+	
+	$("#logoutBT").text("登录");
+	$("#logoutBT").click(function(){
+		event.preventDefault();
+		window.location="<%=sPrefix %>/login";
+	});
 });
 </script>
 <% out.println(WBJSPCacheOut.out("@head_main")); %>

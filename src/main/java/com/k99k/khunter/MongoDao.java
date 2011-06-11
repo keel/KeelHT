@@ -123,6 +123,7 @@ public class MongoDao implements DaoInterface{
 	public DBCollection getColl(){
 		return this.dataSource.getColl(tableName);
 	}
+	
 
 	/**
 	 * 按ID查找单个对象
@@ -141,7 +142,7 @@ public class MongoDao implements DaoInterface{
 	/**
 	 * 按名称查找KObject对象
 	 * @param name KObject的name
-	 * @return
+	 * @return 未找到则返回null
 	 */
 	@Override
 	public KObject findOne(String name){
@@ -243,7 +244,7 @@ public class MongoDao implements DaoInterface{
 	        }
 	        return list;
 		} catch (Exception e) {
-			log.error("findByProps error!", e);
+			log.error("query error!", e);
 			return null;
 		}
 		
@@ -264,7 +265,7 @@ public class MongoDao implements DaoInterface{
 			DBCollection coll = this.dataSource.getColl(tableName);
 			return coll.find(q).hint(hin).count();
 		} catch (Exception e) {
-			log.error("findByProps error!", e);
+			log.error("count error!", e);
 			return 0;
 		}
 		
@@ -283,7 +284,7 @@ public class MongoDao implements DaoInterface{
 			DBCollection coll = this.dataSource.getColl(tableName);
 			return coll.find(q).count();
 		} catch (Exception e) {
-			log.error("findByProps error!", e);
+			log.error("count error!", e);
 			return 0;
 		}
 		
@@ -305,7 +306,7 @@ public class MongoDao implements DaoInterface{
 			}
 			return null;
 		} catch (Exception e) {
-			log.error("findByMap error!", e);
+			log.error("findOneMap error!", e);
 			return null;
 		}
 	}
@@ -388,7 +389,7 @@ public class MongoDao implements DaoInterface{
 	}
 	
 	/**
-	 * 更新单个对象
+	 * 更新单个对象,注意这里未处理KObject的默认字段,upsert为false
 	 * @param query BasicDBObject
 	 * @param set BasicDBObject
 	 * @return
@@ -408,7 +409,7 @@ public class MongoDao implements DaoInterface{
 	}
 	
 	/**
-	 * 更新对象
+	 * 更新对象,注意这里未处理KObject的默认字段
 	 * @param query BasicDBObject
 	 * @param set BasicDBObject
 	 * @param upset 如果不存在是否新建

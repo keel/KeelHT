@@ -13,14 +13,30 @@ if(o != null ){
 	return;
 }
 KObject user = (KObject)data.getData("wbUser");
+String uName = user.getName();
 out.println(WBJSPCacheOut.out("header1")); 
 %>
 <link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 <script src="<%=sPrefix %>/js/jquery.validate.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/jquery.city_date.js" type="text/javascript"></script>
-<script type="text/javascript" src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.pack.js"></script><script type="text/javascript">
+<script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.pack.js" type="text/javascript"></script>
+<script type="text/javascript">
 $(function(){
+	$("#wbUserUrl").empty().append("<%=uName%>");
+	$("#r_follow_num").empty().append("<%=user.getProp("followers_count")%>");
+	$("#r_fans_num").empty().append("<%=user.getProp("friends_count")%>");
+	$("#r_uname").empty().append("<%=uName%>");
+	$("#r_mgs_num").empty().append("<%=user.getProp("statuses_count")%>");
+	$("#r_icon_1").empty().append("<img src='<%=sPrefix+"/images/upload/"+uName+"_2.jpg"%>' height='60' width='60' />");
+	$("#r_location").empty().append("<%=user.getProp("location")%>");
 	
+	
+	$("#logoutBT").click(function(){
+		event.preventDefault();
+		$.post("<%=sPrefix %>/login/logout", "uName=<%=uName %>" ,function(data) {
+			window.location="<%=sPrefix %>";
+		});
+	});
 	//放下地区选择
 	$.cnCity.cnCity("#cnCity","<%= user.getProp("location")%>");
 	//---------------
@@ -41,6 +57,7 @@ $(function(){
 				'transitionOut'		: 'none',
 				'hideOnContentClick': true
 			});
+			setTimeout("$.fancybox.close()",500);
 		},
 		err:function(){
 			$.fancybox(

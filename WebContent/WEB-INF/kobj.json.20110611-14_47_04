@@ -169,6 +169,14 @@
 					"intro":"用户id"
 				},
 				{
+					"col":"sent_id",
+					"def":0,
+					"len":0,
+					"required":true,
+					"type":4,
+					"intro":"sent消息id"
+				},
+				{
 					"col":"msg_id",
 					"def":0,
 					"len":0,
@@ -1026,13 +1034,6 @@
 					"intro":"createTime index"
 				},
 				{
-					"col":"hot",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"hot index"
-				},
-				{
 					"col":"user_id",
 					"unique":false,
 					"asc":false,
@@ -1056,14 +1057,6 @@
 					"required":true,
 					"type":4,
 					"intro":"fans用户id"
-				},
-				{
-					"col":"hot",
-					"def":0,
-					"len":0,
-					"required":false,
-					"type":1,
-					"intro":"热度,用于排序,发MSG时优时发送hot值高的"
 				}
 			],
 			"intro":"用户的所有fans"

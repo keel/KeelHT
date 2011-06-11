@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.mongodb.DBCollection;
 
+
 /**
  * DAO接口
  * @author keel
@@ -20,7 +21,7 @@ public interface DaoInterface extends Cloneable{
 	public IDManager getIdm();
 	
 	/**
-	 * 创建一个DBCollection
+	 * 创建一个DBCollection,注意coll操作将无法支持KObject默认字段,务必谨慎使用,建议仅在读操作中使用
 	 * @return DBCollection
 	 */
 	public DBCollection getColl();

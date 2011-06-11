@@ -16,6 +16,8 @@ out.println(WBJSPCacheOut.out("header1"));
 %>
 <script src="<%=sPrefix %>/js/jquery.json-2.2.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/hotEdit.js" type="text/javascript"></script>
+<script src="<%=sPrefix %>/js/jquery.validate.min.js" type="text/javascript"></script>
+<script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.pack.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(function(){
 	$("#wbUserUrl").empty().append("<%=uName%>");
@@ -25,7 +27,6 @@ $(function(){
 	$("#r_mgs_num").empty().append("<%=user.getProp("statuses_count")%>");
 	$("#r_icon_1").empty().append("<img src='<%=sPrefix+"/images/upload/"+uName+"_2.jpg"%>' height='60' width='60' />");
 	$("#r_location").empty().append("<%=user.getProp("location")%>");
-	
 	
 	$("#logoutBT").click(function(){
 		event.preventDefault();
@@ -45,25 +46,67 @@ $(function(){
 		}
 		
 	});
+
+	//处理请求
+	$.validator.dealAjax = {
+		bt:$("#sendbt"),
+		ok:function(data){
+			$.fancybox(
+			'<p class="fancyMsgBox1" >消息发送成功!</p>',
+			{	'autoDimensions'	: false,
+				'width'         	: 300,
+				'height'        	: 'auto',
+				'transitionIn'		: 'none',
+				'transitionOut'		: 'none',
+				'hideOnContentClick': true
+			});
+			setTimeout("$.fancybox.close()",800);
+		},
+		err:function(){
+			$.fancybox(
+			'<p class="fancyMsgBox2" >消息发送失败.请重新登录!</p>',
+			{	'autoDimensions'	: false,
+				'width'         	: 300,
+				'height'        	: 'auto',
+				'transitionIn'		: 'none',
+				'transitionOut'		: 'none',
+				'hideOnContentClick': true
+			});
+		}
+	};
+	
+	//开始验证
+	$('#talkForm').validate({
+	    // 设置验证规则
+	    rules: {
+	        talk: {
+	            required:true,
+	            rangelength:[1,200]
+	        }
+	    }
+	});
 	
 });
 </script>
 <% out.println(WBJSPCacheOut.out("@head_main")); %>
 		<div id="sendBox">
+			<form name="talkForm" id="talkForm" action="<%=prefix %>/talk" method="post">
 			<div id="sendBox_title">来，说点什么吧</div>
 			<div id="sendAreaDiv">
-				<textarea name="sendArea" id="talk"></textarea>
+				<textarea name="talk" id="talk"></textarea>
+				<input type="hidden" value="" name="pic_url" />
 			</div>
 			<div id="sendsub">
 			<span class="fleft">
 					<a href="#">图片</a> | <a href="#">话题</a> </span>
 			
-				<input type="button" name="sendbt" value=" 发布 " id="sendbt"/>
+				<input type="submit" name="sendbt" value=" 发布 " id="sendbt"/>
 				<span id="sendtip">
 					<span id="restTxt">还能输入</span> <span id="countTxt">140</span> 字
 				</span>
 <div class="clear"></div>
 			</div>
+			</form>
 		</div>
 		<div id="wbList">
 			<div id="ad1"></div>
