@@ -13,7 +13,7 @@
 			"_dbType":"mongodb",
 			"ip":"127.0.0.1",
 			"port":27017,
-			"dbName":"kht",
+			"dbName":"kht2",
 			"user":"sike_ht",
 			"pwd":"jsinfo2901_A",
 			"maxWaitTime":5000,

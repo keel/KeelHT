@@ -4,14 +4,15 @@
 package com.k99k.wb.acts;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
-import com.k99k.khunter.DaoInterface;
 import com.k99k.khunter.DaoManager;
 import com.k99k.khunter.KObjManager;
 import com.k99k.khunter.KObjSchema;
 import com.k99k.khunter.KObject;
+import com.k99k.khunter.dao.WBUserDao;
 
 /**
  * wb用户类,获取用户信息,修改用户信息
@@ -31,7 +32,7 @@ public class WBUser extends Action {
 	/**
 	 * wbUserDao,初始化时获取
 	 */
-	private static DaoInterface wbUserDao = null;
+	private static WBUserDao wbUserDao = null;
 	
 	private static KObjSchema wbUserSchema = null;
 	
@@ -107,8 +108,8 @@ public class WBUser extends Action {
 	 * @param user
 	 * @return
 	 */
-	public static final boolean saveUserProp(KObject user){
-		return wbUserDao.save(user);
+	public static final boolean saveUserProp(long userId,Map<String,Object> props){
+		return wbUserDao.saveProp(userId,props);
 	}
 	
 	/**
@@ -145,7 +146,7 @@ public class WBUser extends Action {
 	@Override
 	public void init() {
 		//初始化Dao和wbUserSchema
-		wbUserDao = DaoManager.findDao("wbUserDao");
+		wbUserDao = (WBUserDao)DaoManager.findDao("wbUserDao");
 		wbUserSchema = KObjManager.findSchema("wbuser");
 	}
 

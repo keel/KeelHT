@@ -55,6 +55,7 @@ function updateavatar(){
 	var r = new Date();
 	var src = "<%=sPrefix+"/images/upload/"+user.getName()+"_2.jpg?t="%>"+r;
 	$("#avatar_u").attr("src",src);
+	$("#r_icon_1 img").attr("src",src);
 }
 </script>
 <% out.println(WBJSPCacheOut.out("@head_main")); %>

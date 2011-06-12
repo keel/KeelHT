@@ -33,7 +33,7 @@ public class KObject {
 	 */
 	public KObject(int maxProp) {
 		this.propMap = new HashMap<String,Object>(maxProp);
-		this.propMap.put("id", 0L);
+		this.propMap.put("_id", 0L);
 		this.propMap.put("state", 0);
 		this.propMap.put("level", 0);
 		this.propMap.put("info", "");
@@ -66,7 +66,7 @@ public class KObject {
 			long createTime, int version, String name, String creatorName,
 			long creatorId, String url,String type,int maxProp) {
 		this.propMap = new HashMap<String,Object>(maxProp);
-		this.propMap.put("id", id);
+		this.propMap.put("_id", id);
 		this.propMap.put("state", state);
 		this.propMap.put("level", level);
 		this.propMap.put("info", info);
@@ -211,11 +211,11 @@ public class KObject {
 	}
 	
 	public final void setId(long id){
-		this.propMap.put("id", id);
+		this.propMap.put("_id", id);
 	}
 	
 	public final long getId(){
-		return getLongByName("id");
+		return getLongByName("_id");
 	}
 	
 	/**

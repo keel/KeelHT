@@ -682,6 +682,21 @@ public class KObjSchema {
 	}
 	
 	/**
+	 * 获取col列表,不包含有子col对象的属性
+	 * @return
+	 */
+	public final ArrayList<KObjColumn> getColListWithNoSub(){
+		ArrayList<KObjColumn> list = new ArrayList<KObjColumn>();
+		for (Iterator<KObjColumn> iterator = this.columnList.iterator(); iterator.hasNext();) {
+			KObjColumn kc = iterator.next();
+			if (kc.getSubColumns() == null) {
+				list.add(kc);
+			}
+		}
+		return list;
+	}
+	
+	/**
 	 * 获取所有的column的name,包括KObject自带的,但不包含子column对象
 	 * @return String[]
 	 */

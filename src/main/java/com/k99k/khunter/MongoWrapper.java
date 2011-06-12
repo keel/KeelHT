@@ -23,7 +23,7 @@ public class MongoWrapper implements DBObject {
 	 */
 	public MongoWrapper(KObject kobject) {
 		this.kobj = kobject;
-		this.kobj.setProp("_id", kobj.getId());
+		//this.kobj.setProp("_id", kobj.getId());
 	}
 	
 	

@@ -36,22 +36,7 @@ $(function(){
 });
 </script>
 <% out.println(WBJSPCacheOut.out("@head_main")); %>
-		<div id="sendBox">
-			<div id="sendBox_title">来，说点什么吧- sent</div>
-			<div id="sendAreaDiv">
-				<textarea name="sendArea"></textarea>
-			</div>
-			<div id="sendsub">
-			<span class="fleft">
-					<a href="#">图片</a> | <a href="#">话题</a> </span>
-			
-				<input type="button" name="" value=" 发布 " id="sendbt"/>
-				<span id="sendtip">
-					还能输入 <span id="countTxt">140</span> 字
-				</span>
-<div class="clear"></div>
-			</div>
-		</div>
+		
 		<div id="wbList">
 			<div id="ad1"></div>
 			<div id="listTools">
@@ -65,19 +50,19 @@ $(function(){
 						
 					<div class="msgBox">
 						<div class="userName" ><a href="/vivizhang2010" title="饭小团(@vivizhang2010)" >饭小团</a>转播:&nbsp;</div>
-						<div class="msgCnt">感谢Edward支持：）游戏音乐作为游戏文化传播的一个载体，相信会越来越受到网游厂商的重视。<em rel="@gametalk"><a href="/gametalk" title="" >百家游坛</a>(@gametalk)</em>小飞马(@matrix) 游博小贝(@hadeszhang) 老姚(@老姚) 火狼(@火狼) </div>
+						<div class="msgCnt">感谢Edward支持：）游戏音乐作为游戏文化传播的一个载体，相信会越来越受到网游厂商的重视。<em ><a href="/gametalk" title="" >百家游坛</a>(@gametalk)</em>小飞马(@matrix) 游博小贝(@hadeszhang) 老姚(@老姚) 火狼(@火狼) </div>
 						<div class="replyBox">
 							<div class="msgBox">
 						
 								<div class="msgCnt">
-						<strong><a href="/gugong" title="故宫(@故宫)" card="1" ctype="2" rel="故宫(@故宫)">故宫</a><a href="/certification" title="腾讯认证" target="_blank" class="vip" card="1" ctype="2" rel="腾讯认证"></a>:</strong><a href="/k/%E6%95%85%E5%AE%AB%E7%A7%98%E5%A2%83%E7%B3%BB%E5%88%97">#故宫秘境系列#</a>符望阁位于宁寿宫花园第四进院落，建于乾隆三十七年（1772）。符望阁在形制上模仿建福宫花园的延春阁。平面呈方形，外观两层，内实三层，四角攒尖顶。室内装修颇具特色，以各种不同类型的装修巧妙地分隔空间，穿门越槛之际，往往迷失方向，故俗有“迷楼”之称。<a href="#" class="url" target="_blank" title="">3</a></div>
+						<strong><a href="/gugong" title="故宫(@故宫)" rel="故宫(@故宫)">故宫</a><a href="/certification" title="腾讯认证" target="_blank" class="vip"  rel="腾讯认证"></a>:</strong><a href="/k/%E6%95%85%E5%AE%AB%E7%A7%98%E5%A2%83%E7%B3%BB%E5%88%97">#故宫秘境系列#</a>符望阁位于宁寿宫花园第四进院落，建于乾隆三十七年（1772）。符望阁在形制上模仿建福宫花园的延春阁。平面呈方形，外观两层，内实三层，四角攒尖顶。室内装修颇具特色，以各种不同类型的装修巧妙地分隔空间，穿门越槛之际，往往迷失方向，故俗有“迷楼”之称。<a href="#" class="url" target="_blank" title="">3</a></div>
 						
 								<div class="mediaWrap">
 									<div class="picBox">
-										<div class="tools"><a href="#" class="btnBack">向左转</a> | <a href="#" class="btnPrev">向右转</a><a href="#" class="btnOriginal"  target="_blank">查看原图</a></div><a href="#" target="_blank" class="pic"><img alt="[图片]" src="<%=sPrefix %>/images/460.jpg" style="display: inline; "></a></div>			
+										<div class="tools"><a href="#" class="btnBack">向左转</a> | <a href="#" class="btnPrev">向右转</a><a href="#" class="btnOriginal"  target="_blank">查看原图</a></div><a href="#" target="_blank" class="pic"><img alt="[图片]" src="<%=sPrefix %>/images/460.jpg" style="display: inline; " /></a></div>			
 	        						</div>
 
-								<div class="pubInfo"><span class="fleft">            <a class="time" target="_blank" href="/p/t/39552051902918" rel="1303395437" from="3" title="2011年4月21日 22:17">14分钟前</a> 来自网页 <a class="zfNum" href="/p/t/39552051902918" target="_blank">查看转播和评论(<b class="relayNum">37</b>)</a>          </span>  </div>
+								<div class="pubInfo"><span class="fleft">            <a class="time" target="_blank" href="/p/t/39552051902918" rel="1303395437" title="2011年4月21日 22:17">14分钟前</a> 来自网页 <a class="zfNum" href="/p/t/39552051902918" target="_blank">查看转播和评论(<b class="relayNum">37</b>)</a>          </span>  </div>
 							
 							</div>
 	<div class="clear"></div>
@@ -85,10 +70,11 @@ $(function(){
 					</div><!-- replyBox end -->
 						
 						
-						<div class="pubInfo"><span class="fleft"><a class="time" target="_blank" href="/p/t/9579026057805" from="4" rel="1303395885" title="2011年4月21日 22:24">7分钟前</a> <a href="#" class="f" target="_blank">来自手机(t.3g.qq.com)</a>    </span>
-							<div class="funBox"><a href="#" class="relay" num="37">转播</a> <span>|</span> <a href="/p/t/39552051902918" class="comt" num="0">评论</a> <span>|</span> 
+						<div class="pubInfo"><span class="fleft"><a class="time" target="_blank" href="/p/t/9579026057805" title="2011年4月21日 22:24">7分钟前</a> <a href="#" class="f" target="_blank">来自手机(t.3g.qq.com)</a>    </span>
+							<div class="funBox"><a href="#" class="relay">转播</a> <span>|</span> <a href="/p/t/39552051902918" class="comt">评论</a> <span>|</span> 
 								<span class="mFun"><a href="#">更多<em class="btn_ldrop"></em></a>
-									<div class="mFunDrop"><b></b><b class="mask"></b><p><a href="#" class="reply">对话</a></p><p><a href="#" class="fav" type="1">收藏</a></p><div class="shareBtn"><p><a href="#">发邮件</a></p></div><p><a href="/t/9579026057805" class="detil" target="_blank">详情</a></p><p><a href="#" class="alarm">举报</a></p>
+									<div class="mFunDrop">
+<p><a href="#" class="reply">对话</a></p><p><a href="#" class="fav" type="1">收藏</a></p><div class="shareBtn"><p><a href="#">发邮件</a></p></div><p><a href="/t/9579026057805" class="detil" target="_blank">详情</a></p><p><a href="#" class="alarm">举报</a></p>
 									</div>
 								</span>
 							</div>
@@ -101,10 +87,10 @@ $(function(){
 						
 					<div class="msgBox">
 						<div class="userName" ><a href="/vivizhang2010" title="饭小团(@vivizhang2010)" >饭小团</a>转播:&nbsp;</div>
-						<div class="msgCnt">感谢Edward支持：）游戏音乐作为游戏文化传播的一个载体，相信会越来越受到网游厂商的重视。<em rel="@gametalk"><a href="/gametalk" title="" >百家游坛</a>(@gametalk)</em>小飞马(@matrix) 游博小贝(@hadeszhang) 老姚(@老姚) 火狼(@火狼) </div>
+						<div class="msgCnt">感谢Edward支持：）游戏音乐作为游戏文化传播的一个载体，相信会越来越受到网游厂商的重视。<em><a href="/gametalk" title="" >百家游坛</a>(@gametalk)</em>小飞马(@matrix) 游博小贝(@hadeszhang) 老姚(@老姚) 火狼(@火狼) </div>
 						
 						
-						<div class="pubInfo"><span class="fleft"><a class="time" target="_blank" href="/p/t/9579026057805" from="4" rel="1303395885" title="2011年4月21日 22:24">7分钟前</a> <a href="#" class="f" target="_blank">来自手机(t.3g.qq.com)</a>    </span>
+						<div class="pubInfo"><span class="fleft"><a class="time" target="_blank" href="/p/t/9579026057805"  rel="1303395885" title="2011年4月21日 22:24">7分钟前</a> <a href="#" class="f" target="_blank">来自手机(t.3g.qq.com)</a>    </span>
 							
 						</div>
 						

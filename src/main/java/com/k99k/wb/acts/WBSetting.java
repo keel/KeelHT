@@ -3,6 +3,7 @@
  */
 package com.k99k.wb.acts;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -53,7 +54,7 @@ public class WBSetting extends Action {
 		
 		//基本设置
 		if(subact.equals("basic")){
-			basic(httpmsg,isSet,user);
+			basic(httpmsg,isSet,user.getId());
 			return super.act(msg);
 		}
 		//头像
@@ -80,10 +81,10 @@ public class WBSetting extends Action {
 	/**
 	 * 处理基本设置请求
 	 * @param httpmsg
+	 * @param userId
 	 * @param isSet
-	 * @param user
 	 */
-	static final void basic(HttpActionMsg httpmsg,String isSet,KObject user){
+	static final void basic(HttpActionMsg httpmsg,String isSet,long userId){
 		//是否更新请求
 		if (isSet.equals("set")) {
 			String uNick = httpmsg.getHttpReq().getParameter("uNick");
@@ -97,13 +98,14 @@ public class WBSetting extends Action {
 			String uIntro = httpmsg.getHttpReq().getParameter("uIntro");
 			if (StringUtil.isStringWithLen(uNick, 3)&& StringUtil.isDigits(uSex) && StringUtil.isStringWithLen(cnLocal1, 2)
 					&& StringUtil.isStringWithLen(cnLocal2, 2)&& StringUtil.isDigits(cnYear)&& StringUtil.isDigits(cnMonth)&& StringUtil.isDigits(cnDay)) {
-				user.setProp("screen_name", uNick);
-				user.setProp("sex", uSex);
-				user.setProp("location", cnLocal1+"-"+cnLocal2);
-				user.setProp("birthday",cnYear+"-"+cnMonth+"-"+cnDay);
-				user.setProp("user_url", StringUtil.objToStrNotNull(uUrl));
-				user.setProp("description",StringUtil.objToStrNotNull(uIntro));
-				if(WBUser.saveUserProp(user)){
+				HashMap<String,Object> userProp = new HashMap<String, Object>();
+				userProp.put("screen_name", uNick);
+				userProp.put("sex", uSex);
+				userProp.put("location", cnLocal1+"-"+cnLocal2);
+				userProp.put("birthday",cnYear+"-"+cnMonth+"-"+cnDay);
+				userProp.put("user_url", StringUtil.objToStrNotNull(uUrl));
+				userProp.put("description",StringUtil.objToStrNotNull(uIntro));
+				if(WBUser.saveUserProp(userId,userProp)){
 					httpmsg.addData("[print]", "ok");
 				}else{
 					JOut.err(502, httpmsg);
@@ -130,8 +132,9 @@ public class WBSetting extends Action {
 			String newPwd2 = httpmsg.getHttpReq().getParameter("newPwd2");
 			if (StringUtil.isStringWithLen(orgPwd, 6)&& StringUtil.isStringWithLen(newPwd, 6)
 					&& newPwd.equals(newPwd2) && user.getProp("pwd").equals(orgPwd)) {
-				user.setProp("pwd", newPwd);
-				if(WBUser.saveUserProp(user)){
+				HashMap<String,Object> userProp = new HashMap<String, Object>();
+				userProp.put("pwd", newPwd);
+				if(WBUser.saveUserProp(user.getId(),userProp)){
 					httpmsg.addData("[print]", "ok");
 					return;
 				}else{
@@ -167,8 +170,10 @@ public class WBSetting extends Action {
 			try {
 				String mail = user.getProp("email").toString();
 				String emailcheck = enc.encrypt(user.getName()+"|"+mail+"|"+System.currentTimeMillis());
-				user.setProp("emailcheck", emailcheck);
-				if(WBUser.saveUserProp(user)){
+				HashMap<String,Object> userProp = new HashMap<String, Object>();
+				userProp.put("emailcheck", emailcheck);
+				
+				if(WBUser.saveUserProp(user.getId(),userProp)){
 					WBEmail.addTask(mail, mailTitle, JOut.templetOut(mailContentReStr,new String[]{user.getName(),emailcheck,StringUtil.getFormatDateString("yyyy-MM-dd")}));
 					httpmsg.addData("[print]", "ok");
 					return;
@@ -186,9 +191,10 @@ public class WBSetting extends Action {
 		else if(isSet.equals("modify")){
 			String email = httpmsg.getHttpReq().getParameter("newEmail");
 			if (StringUtil.isStringWithLen(email, 4)) {
-				user.setProp("email", email);
-				user.setState(0);
-				if (WBUser.saveUserProp(user)) {
+				HashMap<String,Object> userProp = new HashMap<String, Object>();
+				userProp.put("email", email);
+				userProp.put("state", 0);
+				if (WBUser.saveUserProp(user.getId(),userProp)) {
 					httpmsg.addData("[print]",email);
 					return;
 				}else{
@@ -204,8 +210,9 @@ public class WBSetting extends Action {
 		else if(isSet.equals("check")){
 			String verify = httpmsg.getHttpReq().getParameter("key");
 			if (verify.equals(user.getProp("emailcheck"))) {
-				user.setState(1);
-				if (WBUser.saveUserProp(user)) {
+				HashMap<String,Object> userProp = new HashMap<String, Object>();
+				userProp.put("state", 1);
+				if (WBUser.saveUserProp(user.getId(),userProp)) {
 					//验证成功
 					httpmsg.addData("[print]",mailVerifyOK);
 					return;
