@@ -188,7 +188,11 @@ public class WBUserDao extends MongoDao {
 	 * @return
 	 */
 	public static final boolean comment(KObject newMsg,long msgId,long userId,String msg,String source,String place){
+		//添加一个comm
 		
+		//原用户增加一个提到的消息数量
+		
+		//原消息增加一个评论数量
 		
 		return true;
 	}
@@ -204,12 +208,16 @@ public class WBUserDao extends MongoDao {
 	 * @return
 	 */
 	public static final boolean rt(KObject newMsg,long msgId,long userId,String msg,String source,String place){
+		//新增一个转发msg，包括原msg的id
 		
+		//原消息增加一个评论数量
+		
+		//其他同comm
 		
 		return true;
 	}
 	
-	public static final ArrayList<KObject> readComms(long userId,int page,int pageSize){
+	public static final ArrayList<KObject> readComms(long msgId,int page,int pageSize){
 		
 		
 		return null;
@@ -233,7 +241,9 @@ public class WBUserDao extends MongoDao {
 		return null;
 	}
 	
+	
 	//TODO topic List
+	//TODO 我的收藏
 	//TODO 排行
 	
 	/**
