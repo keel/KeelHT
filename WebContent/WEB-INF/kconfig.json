@@ -119,6 +119,10 @@
 			"_class":"com.k99k.wb.acts.WBTalkAct"
 		},
 		{
+			"_actName":"commact",
+			"_class":"com.k99k.wb.acts.WBCommAct"
+		},
+		{
 			"_actName":"topic",
 			"_class":"com.k99k.wb.acts.WBTopic"
 		},

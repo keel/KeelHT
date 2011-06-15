@@ -128,10 +128,8 @@ public class WBTalk extends Action {
 		ArrayList<String> ts = dealTopic(sb,msgId);
 		//mention
 		ArrayList<String> ms = dealMention(sb,msgId);
-		//TODO pic upload url
-		//String picUrl = ;
 		String txt = sb.toString();
-		// 发表/转发
+		//TODO 发表/转发
 		WBUserDao.addTalk(newMsg,txt, user.getId(),user.getName(), (String)user.getProp("screen"),"web", "unknown place",pic_url, us,ts,ms);
 		//生成异步任务
 		ActionMsg task = new ActionMsg("talkact");

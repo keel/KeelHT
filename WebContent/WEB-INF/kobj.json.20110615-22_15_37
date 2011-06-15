@@ -262,15 +262,15 @@
 					"len":0,
 					"required":false,
 					"type":3,
-					"intro":"提到的URL"
+					"intro":"消息中涉及的urls"
 				},
 				{
 					"col":"urls.*",
-					"def":0,
+					"def":"",
 					"len":0,
 					"required":false,
-					"type":4,
-					"intro":"提到的URL的ID"
+					"type":0,
+					"intro":"涉及的urls"
 				},
 				{
 					"col":"user_id",
@@ -315,6 +315,24 @@
 					"required":false,
 					"type":4,
 					"intro":"提到的话题ID"
+				},
+				{
+					"col":"url",
+					"def":[
+						
+					],
+					"len":0,
+					"required":false,
+					"type":3,
+					"intro":"URL"
+				},
+				{
+					"col":"url.*",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":4,
+					"intro":"URL的ID"
 				}
 			],
 			"intro":"comments and replies"

@@ -46,10 +46,12 @@ public class WBUserDao extends MongoDao {
 	private static DaoInterface wbInboxDao;
 	private static DaoInterface wbSentDao;
 	private static DaoInterface wbUserDao;
+	private static DaoInterface wbCommDao;
 	
 	private static KObjConfig wbTagConfig;
 	private static KObjConfig wbMentionConfig;
 	private static KObjConfig wbMsgConfig;
+	private static KObjConfig wbCommConfig;
 	//private static KObjConfig wbFansConfig;
 	private static KObjConfig wbInboxConfig;
 	private static KObjConfig wbSentConfig;
@@ -62,6 +64,10 @@ public class WBUserDao extends MongoDao {
 		return wbMsgConfig.getKobjSchema().createEmptyKObj();
 	}
 	
+	public static final KObject newComm(){
+		return wbCommConfig.getKobjSchema().createEmptyKObj();
+	}
+	
 	/**
 	 * 注意:这里的初始化操作在WBTalkAct的init方法中实现
 	 */
@@ -69,6 +75,7 @@ public class WBUserDao extends MongoDao {
 		wbTagConfig = KObjManager.findKObjConfig("wbtags");
 		wbMentionConfig = KObjManager.findKObjConfig("wb_mention");
 		wbMsgConfig = KObjManager.findKObjConfig("wbmsg");
+		wbCommConfig = KObjManager.findKObjConfig("wbcomm");
 		//wbFansConfig = KObjManager.findKObjConfig("wb_fans");
 		wbInboxConfig = KObjManager.findKObjConfig("wb_inbox");
 		wbSentConfig = KObjManager.findKObjConfig("wb_sent");
@@ -76,6 +83,7 @@ public class WBUserDao extends MongoDao {
 		wbTagsDao = DaoManager.findDao("wbTagsDao");
 		wbMentionDao = DaoManager.findDao("wbMentionDao");
 		wbMsgDao = DaoManager.findDao("wbMsgDao");
+		wbCommDao = DaoManager.findDao("wbCommDao");
 		wbFansDao = DaoManager.findDao("wbFansDao");
 		wbUserDao = DaoManager.findDao("wbUserDao");
 		wbSentDao = DaoManager.findDao("wbSentDao");
@@ -178,28 +186,43 @@ public class WBUserDao extends MongoDao {
 	
 	
 	/**
-	 * 评论
-	 * @param newMsg
-	 * @param msgId
-	 * @param userId
-	 * @param msg
-	 * @param source
-	 * @param place
+	 * 添加评论的同步操作
+	 * @param newComm 带ID的新评论
+	 * @param msgId 原消息ID
+	 * @param re_userId 原消息用户ID
+	 * @param userId 发表者ID
+	 * @param msg 评论内容
+	 * @param source 来源
+	 * @param place 发布地点
+	 * @param urls
+	 * @param topics
+	 * @param mentions
 	 * @return
 	 */
-	public static final boolean comment(KObject newMsg,long msgId,long userId,String msg,String source,String place){
+	public static final boolean addComm(KObject newComm,long msgId,long re_userId,long userId,String msg,String source,String place,ArrayList<String> urls,ArrayList<String> topics,ArrayList<String> mentions){
 		//添加一个comm
+		newComm.setProp("text", msg);
+		newComm.setProp("source", source);
+		newComm.setProp("place", place);
+		newComm.setProp("user_id", userId);
+		newComm.setProp("re_msg_id", msgId);
+		newComm.setProp("re_user_id", re_userId);
 		
-		//原用户增加一个提到的消息数量
-		
-		//原消息增加一个评论数量
-		
-		return true;
+		if (topics != null) {
+			newComm.setProp("tags", topics);
+		}
+		if (mentions != null) {
+			newComm.setProp("mentions", mentions);
+		}
+		if (urls != null) {
+			newComm.setProp("urls", urls);
+		}
+		return wbCommDao.save(newComm);
 	}
 	
 	/**
 	 * 转发
-	 * @param newMsg
+	 * @param rtMsg
 	 * @param msgId
 	 * @param userId
 	 * @param msg
@@ -207,7 +230,7 @@ public class WBUserDao extends MongoDao {
 	 * @param place
 	 * @return
 	 */
-	public static final boolean rt(KObject newMsg,long msgId,long userId,String msg,String source,String place){
+	public static final boolean rt(KObject rtMsg,long msgId,long userId,String msg,String source,String place,ArrayList<String> urls,ArrayList<String> topics,ArrayList<String> mentions){
 		//新增一个转发msg，包括原msg的id
 		
 		//原消息增加一个评论数量
@@ -241,10 +264,31 @@ public class WBUserDao extends MongoDao {
 		return null;
 	}
 	
+	public static final ArrayList<KObject> getOneTopicList(long userId,int page,int pageSize){
+		
+		
+		return null;
+	}
 	
-	//TODO topic List
-	//TODO 我的收藏
-	//TODO 排行
+	public static final ArrayList<KObject> getFavList(long userId,int page,int pageSize){
+		
+		
+		return null;
+	}
+	
+	/**
+	 * TODO 话题排行
+	 * @param userId
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	public static final ArrayList<KObject> getTopicTopList(long userId,int page,int pageSize){
+		
+		
+		return null;
+	}
+	
 	
 	/**
 	 * follow操作,原用户$addToSet一个follows,friends_count++,目标用户$addToSet一个fans,followers_count++;<br />
@@ -410,7 +454,6 @@ public class WBUserDao extends MongoDao {
 	 * @param max
 	 * @return ArrayList<KObject> 
 	 */
-	@SuppressWarnings("unchecked")
 	private static final ArrayList<KObject> getInboxMsgList(long userId,int skip,int max){
 		ArrayList<Long> msgIdList = new ArrayList<Long>(30);
 		List<Map<String,Object>> msgIds = wbInboxDao.query(new BasicDBObject("user_id",userId), prop_msg_id,prop_id_desc, skip, max, null);
@@ -419,14 +462,26 @@ public class WBUserDao extends MongoDao {
 			msgIdList.add((Long)m.get("msg_id"));
 		}
 		
-		ArrayList<KObject> list = new ArrayList<KObject>(30);		
+		ArrayList<KObject> list = getMsgList(msgIdList,30);	
+		wbUserDao.updateOne(new BasicDBObject("_id",userId), prop_notify_msg_reset);
+		return list;
+	}
+	
+	/**
+	 * 从msgId列表中取出MSG对象列表
+	 * @param msgIdList ArrayList<Long>
+	 * @param initSize 初始化list的大小,一般为每页的size大小
+	 * @return ArrayList<KObject>
+	 */
+	@SuppressWarnings("unchecked")
+	private static final ArrayList<KObject> getMsgList(ArrayList<Long> msgIdList,int initSize){
+		ArrayList<KObject> list = new ArrayList<KObject>(initSize);		
 		DBCollection coll = wbMsgDao.getColl();
 		DBCursor cur = coll.find(new BasicDBObject("_id",new BasicDBObject("$in",msgIdList)));
 		while (cur.hasNext()) {
 			Map<String,Object> m = (Map<String,Object>) cur.next();
 			list.add(new KObject(m));
 		}
-		wbUserDao.updateOne(new BasicDBObject("_id",userId), prop_notify_msg_reset);
 		return list;
 	}
 	
@@ -511,6 +566,8 @@ public class WBUserDao extends MongoDao {
 	
 	/**
 	 * 添加一个talk msg
+	 * TODO 最好还是放到用户自己的数据中去，当消息获取超过用户data长度时，从公共消息列表中获取
+	 * @param newMsg 已带有ID的空消息
 	 * @param talkMsg
 	 * @param userId
 	 * @param userName
