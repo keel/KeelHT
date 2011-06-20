@@ -262,7 +262,15 @@
 					"len":0,
 					"required":false,
 					"type":3,
-					"intro":"提到的URL(未使用)"
+					"intro":"提到的URL"
+				},
+				{
+					"col":"urls.*",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":4,
+					"intro":"提到的URL的ID"
 				},
 				{
 					"col":"user_id",
@@ -317,7 +325,7 @@
 					"intro":"是否为转发"
 				}
 			],
-			"intro":"转发或评论,用于获取某消息的所有相关消息"
+			"intro":"comments and replies"
 		},
 		"wbmsg":{
 			"dao":{
@@ -336,13 +344,6 @@
 					"asc":false,
 					"type":"normal",
 					"intro":"createTime"
-				},
-				{
-					"col":"state",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"state index"
 				},
 				{
 					"col":"author_id",
@@ -488,14 +489,6 @@
 					"required":false,
 					"type":1,
 					"intro":"转发或评论消息次数"
-				},
-				{
-					"col":"state",
-					"def":0,
-					"len":0,
-					"required":false,
-					"type":1,
-					"intro":"0为正常,-1为删除,1为不显示"
 				}
 			],
 			"intro":"msgs"
@@ -1447,7 +1440,7 @@
 					"intro":"用户name"
 				}
 			],
-			"intro":"所有提到用户的消息,用于获取某用户被提到的消息集"
+			"intro":"所有提到用户的消息"
 		},
 		"wb_dmsg":{
 			"dao":{

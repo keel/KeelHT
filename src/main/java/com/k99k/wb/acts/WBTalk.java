@@ -116,6 +116,14 @@ public class WBTalk extends Action {
 		
 		String talk = httpmsg.getHttpReq().getParameter("talk");
 		String pic_url = httpmsg.getHttpReq().getParameter("pic_url");
+		String source = "web";
+		String place = "";
+		//是否转发
+		boolean isRT = httpmsg.getHttpReq().getParameter("isRT")!=null && StringUtil.isDigits(httpmsg.getHttpReq().getParameter("rt_id")) && httpmsg.getHttpReq().getParameter("isRT").equals("true") && httpmsg.getHttpReq().getParameter("rt_name")!=null;
+		long rt_id = (isRT)?Long.parseLong(httpmsg.getHttpReq().getParameter("rt_id")):0;
+		String rt_name = (isRT)?(String)httpmsg.getHttpReq().getParameter("rt_name"):null;
+		//消息状态,控制其是否显示,如进行评论但不转发时会将此state置为1，默认为0
+		int state = (httpmsg.getHttpReq().getParameter("talk_state")!=null)?Integer.parseInt((String)httpmsg.getHttpReq().getParameter("talk_state")):null;
 		
 		StringBuffer sb = new StringBuffer(talk);
 		KObject newMsg = WBUserDao.newMsg();
@@ -129,14 +137,30 @@ public class WBTalk extends Action {
 		//mention
 		ArrayList<String> ms = dealMention(sb,msgId);
 		String txt = sb.toString();
-		//TODO 发表/转发
-		WBUserDao.addTalk(newMsg,txt, user.getId(),user.getName(), (String)user.getProp("screen"),"web", "unknown place",pic_url, us,ts,ms);
+		//发表/转发/评论(评论无转发时仅加入wbcomm)
+		if (rt_id != 0  && state == 1) {
+			//仅评论，无转发时,不加入到wbmsg表中,仅在wbcomm中添加
+		}else{
+			WBUserDao.addTalk(newMsg,txt, user.getId(),user.getName(), (String)user.getProp("screen"),source, place,pic_url, us,ts,ms,isRT,rt_id,state);
+		}
 		//生成异步任务
 		ActionMsg task = new ActionMsg("talkact");
 		task.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
 		task.addData("userId", user.getId());
 		task.addData("txt", txt);
 		task.addData("msgId", msgId);
+		task.addData("isRT", isRT);
+		task.addData("state", state);
+		if (isRT) {
+			task.addData("rt_id", rt_id);
+			task.addData("rt_name", rt_name);
+			task.addData("source", source);
+			task.addData("place", place);
+			task.addData("topics", ts);
+			task.addData("mentions", ms);
+		}
+		
+		
 		TaskManager.makeNewTask("WBTalkAct:"+msgId, task);
 		
 		return super.act(msg);

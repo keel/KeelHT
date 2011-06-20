@@ -177,11 +177,7 @@ public class MongoDao implements DaoInterface{
 			BasicDBObject f = (fields==null)?null:new BasicDBObject(fields);
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
-			DBCursor cur = coll.find(q,f,0, 1);
-	        if(cur.hasNext()) {
-	        	return (Map<String,Object>) cur.next();
-	        }
-	        return null;
+	        return (Map<String,Object>)coll.findOne(q,f);
 		} catch (Exception e) {
 			log.error("find error!", e);
 			return null;
@@ -234,9 +230,9 @@ public class MongoDao implements DaoInterface{
 			DBCollection coll = this.dataSource.getColl(tableName);
 			DBCursor cur = null;
 			if (sortBy != null) {
-				cur = coll.find(q, field, skip, len).sort(sort).hint(hin);
+				cur = coll.find(q, field).sort(sort).skip(skip).limit(len).hint(hin);
 			} else {
-				cur = coll.find(q, field, skip, len).hint(hin);
+				cur = coll.find(q, field).skip(skip).limit(len).hint(hin);
 			}
 	        while(cur.hasNext()) {
 	        	HashMap<String, Object> m = (HashMap<String, Object>) cur.next();

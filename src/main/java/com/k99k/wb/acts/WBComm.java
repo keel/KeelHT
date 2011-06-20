@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.HttpActionMsg;
-import com.k99k.khunter.KObjConfig;
 import com.k99k.khunter.KObject;
 import com.k99k.khunter.TaskManager;
 import com.k99k.khunter.dao.WBUserDao;
 
 /**
- * 评论
+ * 废弃掉,使用WBTalk实现
+ * 评论,同步操作
  * @author keel
  *
  */
@@ -46,7 +46,8 @@ public class WBComm extends Action {
 		long msgId = Long.parseLong(httpmsg.getHttpReq().getParameter("msgId"));
 		long re_user_id = Long.parseLong(httpmsg.getHttpReq().getParameter("re_user_id"));
 		boolean isRT = httpmsg.getHttpReq().getParameter("isRT")!=null && httpmsg.getHttpReq().getParameter("isRT").equals("true");
-		
+		String source = "web";
+		String place = "";
 		StringBuffer sb = new StringBuffer(talk);
 		KObject newComm = WBUserDao.newComm();
 		long commId = newComm.getId();
@@ -59,8 +60,7 @@ public class WBComm extends Action {
 		//mention
 		ArrayList<String> ms = WBTalk.dealMention(sb,commId);
 		String txt = sb.toString();
-		//TODO 是否同时转发
-		WBUserDao.addComm(newComm,msgId,re_user_id, user.getId(), txt,"web", "unknown place",us,ts,ms);
+		WBUserDao.addComm(newComm,msgId,re_user_id, user.getId(), txt,source, place,ts,ms,false);
 		//生成异步任务
 		ActionMsg task = new ActionMsg("commact");
 		task.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);

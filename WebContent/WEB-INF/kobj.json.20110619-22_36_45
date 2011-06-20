@@ -262,7 +262,15 @@
 					"len":0,
 					"required":false,
 					"type":3,
-					"intro":"提到的URL(未使用)"
+					"intro":"提到的URL"
+				},
+				{
+					"col":"urls.*",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":4,
+					"intro":"提到的URL的ID"
 				},
 				{
 					"col":"user_id",

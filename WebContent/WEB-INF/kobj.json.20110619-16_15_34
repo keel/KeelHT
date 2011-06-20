@@ -87,52 +87,6 @@
 			],
 			"intro":"用户收到的所有消息"
 		},
-		"wb_favourite":{
-			"dao":{
-				"tableName":"wbFavourite",
-				"newDaoName":"wbFavouriteDao",
-				"daoName":"mongoDao",
-				"props":{
-					"id":59,
-					"type":"single"
-				}
-			},
-			"indexes":[
-				{
-					"col":"createTime",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"createTime index"
-				},
-				{
-					"col":"user_id",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"user_id index"
-				}
-			],
-			"columns":[
-				{
-					"col":"user_id",
-					"def":0,
-					"len":0,
-					"required":true,
-					"type":4,
-					"intro":"用户id"
-				},
-				{
-					"col":"msg_id",
-					"def":0,
-					"len":0,
-					"required":true,
-					"type":4,
-					"intro":"favourite消息id"
-				}
-			],
-			"intro":"用户的所有收藏消息"
-		},
 		"wb_sent":{
 			"dao":{
 				"tableName":"wbSent",
@@ -178,6 +132,52 @@
 				}
 			],
 			"intro":"用户发送的所有消息"
+		},
+		"wb_favourite":{
+			"dao":{
+				"tableName":"wbFavourite",
+				"newDaoName":"wbFavouriteDao",
+				"daoName":"mongoDao",
+				"props":{
+					"id":59,
+					"type":"single"
+				}
+			},
+			"indexes":[
+				{
+					"col":"createTime",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"createTime index"
+				},
+				{
+					"col":"user_id",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"user_id index"
+				}
+			],
+			"columns":[
+				{
+					"col":"user_id",
+					"def":0,
+					"len":0,
+					"required":true,
+					"type":4,
+					"intro":"用户id"
+				},
+				{
+					"col":"msg_id",
+					"def":0,
+					"len":0,
+					"required":true,
+					"type":4,
+					"intro":"favourite消息id"
+				}
+			],
+			"intro":"用户的所有收藏消息"
 		},
 		"wbcomm":{
 			"dao":{
@@ -262,7 +262,15 @@
 					"len":0,
 					"required":false,
 					"type":3,
-					"intro":"提到的URL(未使用)"
+					"intro":"提到的URL"
+				},
+				{
+					"col":"urls.*",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":4,
+					"intro":"提到的URL的ID"
 				},
 				{
 					"col":"user_id",
@@ -307,17 +315,9 @@
 					"required":false,
 					"type":4,
 					"intro":"提到的话题ID"
-				},
-				{
-					"col":"isRT",
-					"def":false,
-					"len":0,
-					"required":false,
-					"type":5,
-					"intro":"是否为转发"
 				}
 			],
-			"intro":"转发或评论,用于获取某消息的所有相关消息"
+			"intro":"comments and replies"
 		},
 		"wbmsg":{
 			"dao":{
@@ -336,13 +336,6 @@
 					"asc":false,
 					"type":"normal",
 					"intro":"createTime"
-				},
-				{
-					"col":"state",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"state index"
 				},
 				{
 					"col":"author_id",
@@ -385,7 +378,15 @@
 					"len":0,
 					"required":false,
 					"type":3,
-					"intro":"消息中涉及的urls(未使用)"
+					"intro":"消息中涉及的urls"
+				},
+				{
+					"col":"urls.*",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"涉及的urls"
 				},
 				{
 					"col":"mentions",
@@ -431,7 +432,15 @@
 					"len":0,
 					"required":false,
 					"type":3,
-					"intro":"评论\/转播的消息id列表(未使用)"
+					"intro":"评论\/转播的消息id列表"
+				},
+				{
+					"col":"comments.*",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":4,
+					"intro":"评论\/转播的消息id"
 				},
 				{
 					"col":"pic_url",
@@ -480,56 +489,9 @@
 					"required":false,
 					"type":4,
 					"intro":"转发消息ID"
-				},
-				{
-					"col":"rt_comm_count",
-					"def":0,
-					"len":0,
-					"required":false,
-					"type":1,
-					"intro":"转发或评论消息次数"
-				},
-				{
-					"col":"state",
-					"def":0,
-					"len":0,
-					"required":false,
-					"type":1,
-					"intro":"0为正常,-1为删除,1为不显示"
 				}
 			],
 			"intro":"msgs"
-		},
-		"wb_keywords":{
-			"dao":{
-				"tableName":"wbKeywords",
-				"newDaoName":"wbKeywordsDao",
-				"daoName":"mongoDao",
-				"props":{
-					"id":62,
-					"type":"single"
-				}
-			},
-			"indexes":[
-				{
-					"col":"text",
-					"unique":false,
-					"asc":true,
-					"type":"normal",
-					"intro":"intro"
-				}
-			],
-			"columns":[
-				{
-					"col":"text",
-					"def":"",
-					"len":0,
-					"required":true,
-					"type":0,
-					"intro":"关键词"
-				}
-			],
-			"intro":"关键词"
 		},
 		"wbuser":{
 			"dao":{
@@ -999,6 +961,37 @@
 			],
 			"intro":"wb's user"
 		},
+		"wb_keywords":{
+			"dao":{
+				"tableName":"wbKeywords",
+				"newDaoName":"wbKeywordsDao",
+				"daoName":"mongoDao",
+				"props":{
+					"id":62,
+					"type":"single"
+				}
+			},
+			"indexes":[
+				{
+					"col":"text",
+					"unique":false,
+					"asc":true,
+					"type":"normal",
+					"intro":"intro"
+				}
+			],
+			"columns":[
+				{
+					"col":"text",
+					"def":"",
+					"len":0,
+					"required":true,
+					"type":0,
+					"intro":"关键词"
+				}
+			],
+			"intro":"关键词"
+		},
 		"wbfeedback":{
 			"dao":{
 				"tableName":"wbFeedback",
@@ -1037,6 +1030,52 @@
 				}
 			],
 			"intro":"举报与反馈"
+		},
+		"wb_follow":{
+			"dao":{
+				"tableName":"wbFollow",
+				"newDaoName":"wbFollowDao",
+				"daoName":"mongoDao",
+				"props":{
+					"id":57,
+					"type":"single"
+				}
+			},
+			"indexes":[
+				{
+					"col":"createTime",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"createTime index"
+				},
+				{
+					"col":"user_id",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"user_id index"
+				}
+			],
+			"columns":[
+				{
+					"col":"user_id",
+					"def":0,
+					"len":0,
+					"required":true,
+					"type":4,
+					"intro":"用户id"
+				},
+				{
+					"col":"follow_id",
+					"def":0,
+					"len":0,
+					"required":true,
+					"type":4,
+					"intro":"follow用户id"
+				}
+			],
+			"intro":"用户关注的所有用户"
 		},
 		"hello":{
 			"dao":{
@@ -1121,52 +1160,6 @@
 				}
 			],
 			"intro":"intro of hello"
-		},
-		"wb_follow":{
-			"dao":{
-				"tableName":"wbFollow",
-				"newDaoName":"wbFollowDao",
-				"daoName":"mongoDao",
-				"props":{
-					"id":57,
-					"type":"single"
-				}
-			},
-			"indexes":[
-				{
-					"col":"createTime",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"createTime index"
-				},
-				{
-					"col":"user_id",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"user_id index"
-				}
-			],
-			"columns":[
-				{
-					"col":"user_id",
-					"def":0,
-					"len":0,
-					"required":true,
-					"type":4,
-					"intro":"用户id"
-				},
-				{
-					"col":"follow_id",
-					"def":0,
-					"len":0,
-					"required":true,
-					"type":4,
-					"intro":"follow用户id"
-				}
-			],
-			"intro":"用户关注的所有用户"
 		},
 		"wb_fans":{
 			"dao":{
@@ -1419,7 +1412,7 @@
 					"unique":false,
 					"asc":false,
 					"type":"normal",
-					"intro":"user_name index"
+					"intro":"user_id index"
 				},
 				{
 					"col":"createTime",
@@ -1431,23 +1424,23 @@
 			],
 			"columns":[
 				{
-					"col":"msg_id",
-					"def":0,
-					"len":0,
-					"required":true,
-					"type":4,
-					"intro":"消息id"
-				},
-				{
 					"col":"user_name",
 					"def":"",
 					"len":0,
 					"required":true,
 					"type":0,
 					"intro":"用户name"
+				},
+				{
+					"col":"msg_id",
+					"def":0,
+					"len":0,
+					"required":true,
+					"type":4,
+					"intro":"消息id"
 				}
 			],
-			"intro":"所有提到用户的消息,用于获取某用户被提到的消息集"
+			"intro":"所有提到用户的消息"
 		},
 		"wb_dmsg":{
 			"dao":{

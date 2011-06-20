@@ -8,6 +8,7 @@ import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.dao.WBUserDao;
 
 /**
+ * 废弃掉,使用WBTalk实现
  * 发表Comm的异步后续操作,作为任务执行.
  * @author keel
  *
@@ -28,20 +29,18 @@ public class WBCommAct extends Action {
 	 */
 	@Override
 	public ActionMsg act(ActionMsg msg) {
-		long userId = (Long)msg.getData("userId");
-		String txt = (String)msg.getData("txt");
-		long msgId = (Long)msg.getData("msgId");
+		//long userId = (Long)msg.getData("userId");
+		//String txt = (String)msg.getData("txt");
+		//long msgId = (Long)msg.getData("msgId");
 		boolean isRT = (Boolean)msg.getData("isRT");
-
+		
+		
 		//原用户增加一个提到的消息数量
 		
-		//原消息增加一个评论数量
 		
+		//转发
 		if (isRT) {
-			//更新lastMsg
-			WBUserDao.updateLastMsg(userId, txt,msgId);
-			//向所有的fans发送消息,处理fans的inbox
-			WBUserDao.pushMsgToFans(userId, msgId);
+			
 		}
 		
 		return super.act(msg);
