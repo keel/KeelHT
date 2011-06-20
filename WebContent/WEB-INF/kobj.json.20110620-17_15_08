@@ -972,14 +972,6 @@
 					"required":false,
 					"type":1,
 					"intro":"私信数"
-				},
-				{
-					"col":"mention_count",
-					"def":0,
-					"len":0,
-					"required":false,
-					"type":1,
-					"intro":"提到的消息数"
 				}
 			],
 			"intro":"wb's user"
