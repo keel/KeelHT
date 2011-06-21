@@ -407,8 +407,8 @@ public class WBUserDao extends MongoDao {
 	 * @return
 	 */
 	public static final ArrayList<KObject> readOneTopicList(String topic,int page,int pageSize){
-		KObject t = wbTagsDao.findOne(topic);
-		int msgCount = Integer.parseInt(t.getProp("sum").toString());
+		Map<String,Object> t = wbTagsDao.findOneMap(new BasicDBObject("name",topic),new BasicDBObject("sum",1));
+		int msgCount = Integer.parseInt(t.get("sum").toString());
 		if (msgCount<=0 || pageSize<=0) {
 			return null;
 		}
@@ -426,23 +426,15 @@ public class WBUserDao extends MongoDao {
 		int skip = pageSize*(page-1);
 		
 		ArrayList<Long> msgIdList = new ArrayList<Long>(pageSize);
-		List<Map<String,Object>> msgIds = wbFavDao.query(new BasicDBObject("user_id",userId), prop_msg_id,prop_id_desc, skip, pageSize, null);
-		for (Iterator<Map<String, Object>> it = msgIds.iterator(); it.hasNext();) {
-			Map<String, Object> m = it.next();
-			msgIdList.add((Long)m.get("msg_id"));
-		}
 		ArrayList<Map<String, Object>> userIdList = new ArrayList<Map<String, Object>>(pageSize);
 		BasicDBObject fields = new BasicDBObject();
-		fields.append("fans", new BasicDBObject("$slice",new int[]{0-skip,pageSize}));
-		List<Map<String,Object>> msgIds = wbUserDao.query(new BasicDBObject("user_id",userId), fields,null, 0, 1, null);
+		fields.append("tag_ids", new BasicDBObject("$slice",new int[]{0-skip,pageSize}));
+		List<Map<String,Object>> msgIds = wbTagsDao.query(new BasicDBObject("name",topic), fields,null, 0, 1, null);
 		for (Iterator<Map<String, Object>> it = msgIds.iterator(); it.hasNext();) {
 			Map<String, Object> m = it.next();
 			userIdList.add(m);
 		}
-		
-		
 		ArrayList<KObject> list = getMsgList(msgIdList,pageSize);	
-		
 		return list;
 	}
 	

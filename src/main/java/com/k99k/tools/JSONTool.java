@@ -66,6 +66,11 @@ public final class JSONTool {
 		return jsonWriter.write(map,6);
 	}
 	
+	public static final String writeFormatedJsonString(Object obj){
+		JSONFormatWriter jsonWriter = new JSONFormatWriter();
+		return jsonWriter.write(obj,6);
+	}
+	
 	/**
 	 * 使用JSONWriter将HashMap转成String形式的json,并进行format
 	 * @param map
