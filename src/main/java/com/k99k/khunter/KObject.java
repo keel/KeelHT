@@ -3,6 +3,8 @@
  */
 package com.k99k.khunter;
 
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -179,7 +181,8 @@ public class KObject {
 			Object o = this.propMap.get(key);
 			sb.append("\"").append(key).append("\":");
 			if (o instanceof String || o instanceof Character) {
-				sb.append("\"").append(o).append("\"");
+				jsonString(sb,o);
+				//sb.append("\"").append(o).append("\"");
 			}else{
 				sb.append(o);
 			}
@@ -188,6 +191,38 @@ public class KObject {
 		sb.append("\"_class\":\"").append(this.getClass().getName()).append("\"");
 		sb.append("}");
 		return sb.toString();
+	}
+	
+	private static final void jsonString(StringBuilder sb,Object obj) {
+        sb.append('"');
+        CharacterIterator it = new StringCharacterIterator(obj.toString());
+        for (char c = it.first(); c != CharacterIterator.DONE; c = it.next()) {
+            if (c == '"') {sb.append("\\\"");break;}
+            else if (c == '\\') {sb.append("\\\\");break;}
+            else if (c == '/') {sb.append("\\/");break;}
+            else if (c == '\b') {sb.append("\\b");break;}
+            else if (c == '\f') {sb.append("\\f");break;}
+            else if (c == '\n') {sb.append("\\n");break;}
+            else if (c == '\r') {sb.append("\\r");break;}
+            else if (c == '\t') {sb.append("\\t");break;}
+            else if (Character.isISOControl(c)) {
+                unicode(sb,c);break;
+            } else {
+            	sb.append(c);
+            }
+        }
+        sb.append('"');
+    }
+	private  static char[] hex = "0123456789ABCDEF".toCharArray();
+	
+	private static final void unicode(StringBuilder sb, char c) {
+		sb.append("\\u");
+		int n = c;
+		for (int i = 0; i < 4; ++i) {
+			int digit = (n & 0xf000) >> 12;
+			sb.append(hex[digit]);
+			n <<= 4;
+		}
 	}
 	
 	

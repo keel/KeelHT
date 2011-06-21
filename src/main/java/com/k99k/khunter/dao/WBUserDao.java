@@ -698,7 +698,7 @@ public class WBUserDao extends MongoDao {
 	
 	public static final ArrayList<KObject> readSentMsgs(long userId,int page,int pageSize){
 		KObject user = wbUserDao.findOne(userId);
-		int msgCount = Integer.parseInt(user.getProp("sent_count").toString());
+		int msgCount = Integer.parseInt(user.getProp("statuses_count").toString());
 		if (msgCount<=0 || pageSize<=0) {
 			return null;
 		}

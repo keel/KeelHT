@@ -41,7 +41,7 @@ public class WBTalkAct extends Action {
 		String txt = (String)msg.getData("txt");
 		long msgId = (Long)msg.getData("msgId");
 		boolean isRT = (Boolean)msg.getData("isRT");
-		int state = Integer.parseInt((String)msg.getData("state"));
+		int state = (Integer)msg.getData("state");
 		//更新消息发表者和sent
 		WBUserDao.updateUserAndSentForNewMsg(userId, txt,msgId,isRT);
 

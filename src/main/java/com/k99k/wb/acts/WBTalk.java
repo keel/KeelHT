@@ -110,7 +110,7 @@ public class WBTalk extends Action {
 		//验证用户请求是否合法
 		KObject user = WBLogin.cookieAuth(httpmsg);
 		if (user == null) {
-			msg.addData("[redirect]", "/");
+			JOut.err(401, httpmsg);
 			return super.act(msg);
 		}
 		
@@ -123,7 +123,7 @@ public class WBTalk extends Action {
 		long rt_id = (isRT)?Long.parseLong(httpmsg.getHttpReq().getParameter("rt_id")):0;
 		String rt_name = (isRT)?(String)httpmsg.getHttpReq().getParameter("rt_name"):null;
 		//消息状态,控制其是否显示,如进行评论但不转发时会将此state置为1，默认为0
-		int state = (httpmsg.getHttpReq().getParameter("talk_state")!=null)?Integer.parseInt((String)httpmsg.getHttpReq().getParameter("talk_state")):null;
+		int state = (StringUtil.isDigits(httpmsg.getHttpReq().getParameter("talk_state")))?Integer.parseInt((String)httpmsg.getHttpReq().getParameter("talk_state")):0;
 		
 		StringBuffer sb = new StringBuffer(talk);
 		KObject newMsg = WBUserDao.newMsg();

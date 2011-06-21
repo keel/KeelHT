@@ -87,52 +87,6 @@
 			],
 			"intro":"用户收到的所有消息"
 		},
-		"wb_sent":{
-			"dao":{
-				"tableName":"wbSent",
-				"newDaoName":"wbSentDao",
-				"daoName":"mongoDao",
-				"props":{
-					"id":56,
-					"type":"single"
-				}
-			},
-			"indexes":[
-				{
-					"col":"createTime",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"createTime index"
-				},
-				{
-					"col":"user_id",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"user_id index"
-				}
-			],
-			"columns":[
-				{
-					"col":"user_id",
-					"def":0,
-					"len":0,
-					"required":true,
-					"type":4,
-					"intro":"用户id"
-				},
-				{
-					"col":"msg_id",
-					"def":0,
-					"len":0,
-					"required":true,
-					"type":4,
-					"intro":"sent消息id"
-				}
-			],
-			"intro":"用户发送的所有消息"
-		},
 		"wb_favourite":{
 			"dao":{
 				"tableName":"wbFavourite",
@@ -178,6 +132,52 @@
 				}
 			],
 			"intro":"用户的所有收藏消息"
+		},
+		"wb_sent":{
+			"dao":{
+				"tableName":"wbSent",
+				"newDaoName":"wbSentDao",
+				"daoName":"mongoDao",
+				"props":{
+					"id":56,
+					"type":"single"
+				}
+			},
+			"indexes":[
+				{
+					"col":"createTime",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"createTime index"
+				},
+				{
+					"col":"user_id",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"user_id index"
+				}
+			],
+			"columns":[
+				{
+					"col":"user_id",
+					"def":0,
+					"len":0,
+					"required":true,
+					"type":4,
+					"intro":"用户id"
+				},
+				{
+					"col":"msg_id",
+					"def":0,
+					"len":0,
+					"required":true,
+					"type":4,
+					"intro":"sent消息id"
+				}
+			],
+			"intro":"用户发送的所有消息"
 		},
 		"wbcomm":{
 			"dao":{
@@ -338,18 +338,18 @@
 					"intro":"createTime"
 				},
 				{
+					"col":"creatorId",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"creatorId index"
+				},
+				{
 					"col":"state",
 					"unique":false,
 					"asc":false,
 					"type":"normal",
 					"intro":"state index"
-				},
-				{
-					"col":"author_id",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"author_id index"
 				}
 			],
 			"columns":[
@@ -442,22 +442,6 @@
 					"intro":"图片地址"
 				},
 				{
-					"col":"author_id",
-					"def":0,
-					"len":0,
-					"required":true,
-					"type":4,
-					"intro":"发表者id"
-				},
-				{
-					"col":"author_name",
-					"def":"",
-					"len":0,
-					"required":false,
-					"type":0,
-					"intro":"发表者name"
-				},
-				{
 					"col":"author_screen",
 					"def":"",
 					"len":0,
@@ -496,9 +480,56 @@
 					"required":false,
 					"type":1,
 					"intro":"0为正常,-1为删除,1为不显示"
+				},
+				{
+					"col":"creatorName",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"发表者name"
+				},
+				{
+					"col":"creatorId",
+					"def":0,
+					"len":0,
+					"required":true,
+					"type":4,
+					"intro":"发表者id"
 				}
 			],
 			"intro":"msgs"
+		},
+		"wb_keywords":{
+			"dao":{
+				"tableName":"wbKeywords",
+				"newDaoName":"wbKeywordsDao",
+				"daoName":"mongoDao",
+				"props":{
+					"id":62,
+					"type":"single"
+				}
+			},
+			"indexes":[
+				{
+					"col":"text",
+					"unique":false,
+					"asc":true,
+					"type":"normal",
+					"intro":"intro"
+				}
+			],
+			"columns":[
+				{
+					"col":"text",
+					"def":"",
+					"len":0,
+					"required":true,
+					"type":0,
+					"intro":"关键词"
+				}
+			],
+			"intro":"关键词"
 		},
 		"wbuser":{
 			"dao":{
@@ -984,37 +1015,6 @@
 			],
 			"intro":"wb's user"
 		},
-		"wb_keywords":{
-			"dao":{
-				"tableName":"wbKeywords",
-				"newDaoName":"wbKeywordsDao",
-				"daoName":"mongoDao",
-				"props":{
-					"id":62,
-					"type":"single"
-				}
-			},
-			"indexes":[
-				{
-					"col":"text",
-					"unique":false,
-					"asc":true,
-					"type":"normal",
-					"intro":"intro"
-				}
-			],
-			"columns":[
-				{
-					"col":"text",
-					"def":"",
-					"len":0,
-					"required":true,
-					"type":0,
-					"intro":"关键词"
-				}
-			],
-			"intro":"关键词"
-		},
 		"wbfeedback":{
 			"dao":{
 				"tableName":"wbFeedback",
@@ -1053,52 +1053,6 @@
 				}
 			],
 			"intro":"举报与反馈"
-		},
-		"wb_follow":{
-			"dao":{
-				"tableName":"wbFollow",
-				"newDaoName":"wbFollowDao",
-				"daoName":"mongoDao",
-				"props":{
-					"id":57,
-					"type":"single"
-				}
-			},
-			"indexes":[
-				{
-					"col":"createTime",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"createTime index"
-				},
-				{
-					"col":"user_id",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"user_id index"
-				}
-			],
-			"columns":[
-				{
-					"col":"user_id",
-					"def":0,
-					"len":0,
-					"required":true,
-					"type":4,
-					"intro":"用户id"
-				},
-				{
-					"col":"follow_id",
-					"def":0,
-					"len":0,
-					"required":true,
-					"type":4,
-					"intro":"follow用户id"
-				}
-			],
-			"intro":"用户关注的所有用户"
 		},
 		"hello":{
 			"dao":{
@@ -1183,6 +1137,52 @@
 				}
 			],
 			"intro":"intro of hello"
+		},
+		"wb_follow":{
+			"dao":{
+				"tableName":"wbFollow",
+				"newDaoName":"wbFollowDao",
+				"daoName":"mongoDao",
+				"props":{
+					"id":57,
+					"type":"single"
+				}
+			},
+			"indexes":[
+				{
+					"col":"createTime",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"createTime index"
+				},
+				{
+					"col":"user_id",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"user_id index"
+				}
+			],
+			"columns":[
+				{
+					"col":"user_id",
+					"def":0,
+					"len":0,
+					"required":true,
+					"type":4,
+					"intro":"用户id"
+				},
+				{
+					"col":"follow_id",
+					"def":0,
+					"len":0,
+					"required":true,
+					"type":4,
+					"intro":"follow用户id"
+				}
+			],
+			"intro":"用户关注的所有用户"
 		},
 		"wb_fans":{
 			"dao":{
@@ -1431,18 +1431,18 @@
 			},
 			"indexes":[
 				{
-					"col":"createTime",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"createTime index"
-				},
-				{
 					"col":"user_name",
 					"unique":false,
 					"asc":false,
 					"type":"normal",
 					"intro":"user_name index"
+				},
+				{
+					"col":"createTime",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"createTime index"
 				}
 			],
 			"columns":[

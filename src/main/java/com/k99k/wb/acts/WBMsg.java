@@ -3,12 +3,15 @@
  */
 package com.k99k.wb.acts;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.HttpActionMsg;
 import com.k99k.khunter.KFilter;
+import com.k99k.khunter.KObject;
 import com.k99k.khunter.dao.WBUserDao;
-import com.k99k.tools.JSONTool;
 import com.k99k.tools.StringUtil;
 
 /**
@@ -36,32 +39,74 @@ public class WBMsg extends Action {
 	public ActionMsg act(ActionMsg msg) {
 		String subact = KFilter.actPath(msg, 2, "inbox");
 		HttpActionMsg httpmsg = (HttpActionMsg)msg;
-		String p_str = httpmsg.getHttpReq().getParameter("p");
-		String pz_str = httpmsg.getHttpReq().getParameter("pz");
+		
+		String re = null;
+		
+		
 		String uid_str = httpmsg.getHttpReq().getParameter("uid");
-		if (!StringUtil.isDigits(p_str) || !StringUtil.isDigits(pz_str) || !StringUtil.isDigits(uid_str)) {
-			msg.addData("[print]", "err paras");
+		if (!StringUtil.isDigits(uid_str)) {
+			JOut.err(400, httpmsg);
 			return super.act(msg);
 		}
 		long userId = Long.parseLong(uid_str);
-		int page = Integer.parseInt(p_str);
-		int pageSize = Integer.parseInt(pz_str);
+		
 		
 		if (subact.equals("inbox")) {
-			String re = JSONTool.writeFormatedJsonString(WBUserDao.readOnePageMsgs(userId, page, pageSize));
-			msg.addData("[print]", re);
-			return super.act(msg);
+			String p_str = httpmsg.getHttpReq().getParameter("p");
+			String pz_str = httpmsg.getHttpReq().getParameter("pz");
+			int page = Integer.parseInt(p_str);
+			int pageSize = Integer.parseInt(pz_str);
+			if (!StringUtil.isDigits(p_str) || !StringUtil.isDigits(pz_str)) {
+				JOut.err(400, httpmsg);
+				return super.act(msg);
+			}
+			
+			
+			//re = JSONTool.writeFormatedJsonString(WBUserDao.readOnePageMsgs(userId, page, pageSize));
+			re = writeKObjList(WBUserDao.readOnePageMsgs(userId, page, pageSize));
+			
 		}else if(subact.equals("unread")){
-			
+			String max_str = httpmsg.getHttpReq().getParameter("max");
+			if (!StringUtil.isDigits(max_str)) {
+				JOut.err(400, httpmsg);
+				return super.act(msg);
+			}
+			int max = Integer.parseInt(max_str);
+			re = writeKObjList(WBUserDao.readUnReadMsgs(userId, max));
 		}else if(subact.equals("sent")){
-			
+			String p_str = httpmsg.getHttpReq().getParameter("p");
+			String pz_str = httpmsg.getHttpReq().getParameter("pz");
+			int page = Integer.parseInt(p_str);
+			int pageSize = Integer.parseInt(pz_str);
+			if (!StringUtil.isDigits(p_str) || !StringUtil.isDigits(pz_str)) {
+				JOut.err(400, httpmsg);
+				return super.act(msg);
+			}
+			re = writeKObjList(WBUserDao.readSentMsgs(userId, page, pageSize));
 		}
 		
-		
+		msg.addData("[print]", re);
 		return super.act(msg);
 	}
 
 
+	/**
+	 * 输出ArrayList<KObject>
+	 * @param list ArrayList<KObject>
+	 * @return String
+	 */
+	public static final String writeKObjList(ArrayList<KObject> list){
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		for (Iterator<KObject> it = list.iterator(); it.hasNext();) {
+			KObject kobj = it.next();
+			sb.append(kobj.toString());
+			sb.append(",");
+		}
+		sb.deleteCharAt(sb.length()-1);
+		sb.append("]");
+		return sb.toString();
+	}
 
 
 

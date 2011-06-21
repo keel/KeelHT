@@ -18,25 +18,25 @@
 					"col":"from_id",
 					"def":0,
 					"len":0,
+					"required":true,
 					"type":4,
-					"intro":"发送方ID",
-					"required":true
+					"intro":"发送方ID"
 				},
 				{
 					"col":"to_id",
 					"def":0,
 					"len":0,
+					"required":true,
 					"type":4,
-					"intro":"接收方ID",
-					"required":true
+					"intro":"接收方ID"
 				},
 				{
 					"col":"text",
 					"def":"",
 					"len":0,
+					"required":true,
 					"type":0,
-					"intro":"私信内容",
-					"required":true
+					"intro":"私信内容"
 				}
 			],
 			"intro":"私信"
@@ -72,30 +72,20 @@
 					"col":"user_id",
 					"def":0,
 					"len":0,
+					"required":true,
 					"type":4,
-					"intro":"用户id",
-					"required":true
+					"intro":"用户id"
 				},
 				{
-					"col":"inbox_ids",
-					"def":[
-						
-					],
-					"len":0,
-					"type":3,
-					"intro":"inbox消息id集合",
-					"required":true
-				},
-				{
-					"col":"inbox_ids.*",
+					"col":"msg_id",
 					"def":0,
 					"len":0,
+					"required":true,
 					"type":4,
-					"intro":"inbox消息id",
-					"required":false
+					"intro":"inbox消息id"
 				}
 			],
-			"intro":"用户收到的所有消息,每条1000个记录"
+			"intro":"用户收到的所有消息"
 		},
 		"wb_favourite":{
 			"dao":{
@@ -128,30 +118,20 @@
 					"col":"user_id",
 					"def":0,
 					"len":0,
+					"required":true,
 					"type":4,
-					"intro":"用户id",
-					"required":true
+					"intro":"用户id"
 				},
 				{
-					"col":"favourite_ids",
-					"def":[
-						
-					],
-					"len":0,
-					"type":3,
-					"intro":"用户favourite消息id集合",
-					"required":true
-				},
-				{
-					"col":"favourite_ids.*",
+					"col":"msg_id",
 					"def":0,
 					"len":0,
+					"required":true,
 					"type":4,
-					"intro":"favourite消息id",
-					"required":false
+					"intro":"favourite消息id"
 				}
 			],
-			"intro":"用户的所有收藏消息,每条1000个记录"
+			"intro":"用户的所有收藏消息"
 		},
 		"wb_sent":{
 			"dao":{
@@ -184,30 +164,160 @@
 					"col":"user_id",
 					"def":0,
 					"len":0,
+					"required":true,
 					"type":4,
-					"intro":"用户id",
-					"required":true
+					"intro":"用户id"
 				},
 				{
-					"col":"sent_ids",
+					"col":"msg_id",
+					"def":0,
+					"len":0,
+					"required":true,
+					"type":4,
+					"intro":"sent消息id"
+				}
+			],
+			"intro":"用户发送的所有消息"
+		},
+		"wbcomm":{
+			"dao":{
+				"tableName":"wbComm",
+				"newDaoName":"wbCommDao",
+				"daoName":"mongoDao",
+				"props":{
+					"id":62,
+					"type":"single"
+				}
+			},
+			"indexes":[
+				{
+					"col":"createTime",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"intro"
+				},
+				{
+					"col":"re_msg_id",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"原msgid索引"
+				}
+			],
+			"columns":[
+				{
+					"col":"text",
+					"def":"",
+					"len":0,
+					"required":true,
+					"type":0,
+					"intro":"消息内容"
+				},
+				{
+					"col":"source",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"来自"
+				},
+				{
+					"col":"place",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"地点"
+				},
+				{
+					"col":"re_user_id",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":4,
+					"intro":"回复\/评论针对的用户ID"
+				},
+				{
+					"col":"re_msg_id",
+					"def":0,
+					"len":0,
+					"required":true,
+					"type":4,
+					"intro":"回复\/评论针对的消息ID"
+				},
+				{
+					"col":"re_screen",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"回复\/评论针对的用户显示名"
+				},
+				{
+					"col":"urls",
 					"def":[
 						
 					],
 					"len":0,
+					"required":false,
 					"type":3,
-					"intro":"sent消息id集合",
-					"required":true
+					"intro":"提到的URL(未使用)"
 				},
 				{
-					"col":"sent_ids.*",
+					"col":"user_id",
 					"def":0,
 					"len":0,
+					"required":true,
 					"type":4,
-					"intro":"sent消息id",
-					"required":false
+					"intro":"发表人Id"
+				},
+				{
+					"col":"mentions",
+					"def":[
+						
+					],
+					"len":0,
+					"required":false,
+					"type":3,
+					"intro":"提到的用户"
+				},
+				{
+					"col":"mentions.*",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":4,
+					"intro":"提到的用户ID"
+				},
+				{
+					"col":"tags",
+					"def":[
+						
+					],
+					"len":0,
+					"required":false,
+					"type":3,
+					"intro":"提到的话题"
+				},
+				{
+					"col":"tags.*",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":4,
+					"intro":"提到的话题ID"
+				},
+				{
+					"col":"isRT",
+					"def":false,
+					"len":0,
+					"required":false,
+					"type":5,
+					"intro":"是否为转发"
 				}
 			],
-			"intro":"用户发送的所有消息,每条1000个记录"
+			"intro":"转发或评论,用于获取某消息的所有相关消息"
 		},
 		"wbmsg":{
 			"dao":{
@@ -220,56 +330,52 @@
 				}
 			},
 			"indexes":[
-				
+				{
+					"col":"createTime",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"createTime"
+				},
+				{
+					"col":"state",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"state index"
+				},
+				{
+					"col":"author_id",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"author_id index"
+				}
 			],
 			"columns":[
 				{
 					"col":"text",
 					"def":"",
 					"len":0,
+					"required":true,
 					"type":0,
-					"intro":"消息内容",
-					"required":true
+					"intro":"消息内容"
 				},
 				{
 					"col":"source",
 					"def":"",
 					"len":0,
+					"required":false,
 					"type":0,
-					"intro":"来自",
-					"required":false
+					"intro":"来自"
 				},
 				{
 					"col":"place",
 					"def":"",
 					"len":0,
+					"required":false,
 					"type":0,
-					"intro":"地点",
-					"required":false
-				},
-				{
-					"col":"re_user_id",
-					"def":0,
-					"len":0,
-					"type":4,
-					"intro":"回复\/评论针对的用户ID",
-					"required":false
-				},
-				{
-					"col":"re_msg_id",
-					"def":0,
-					"len":0,
-					"type":4,
-					"intro":"回复\/评论针对的消息ID",
-					"required":false
-				},
-				{
-					"col":"re_screen",
-					"def":"",
-					"len":0,
-					"type":0,
-					"intro":"回复\/评论针对的用户显示名",
-					"required":false
+					"intro":"地点"
 				},
 				{
 					"col":"urls",
@@ -277,17 +383,9 @@
 						
 					],
 					"len":0,
+					"required":false,
 					"type":3,
-					"intro":"消息中涉及的urls",
-					"required":false
-				},
-				{
-					"col":"urls.*",
-					"def":"",
-					"len":0,
-					"type":0,
-					"intro":"涉及的urls",
-					"required":false
+					"intro":"消息中涉及的urls(未使用)"
 				},
 				{
 					"col":"mentions",
@@ -295,43 +393,17 @@
 						
 					],
 					"len":0,
+					"required":false,
 					"type":3,
-					"intro":"提到的用户",
-					"required":false
+					"intro":"提到的用户"
 				},
 				{
 					"col":"mentions.*",
-					"def":{
-						
-					},
-					"len":0,
-					"type":2,
-					"intro":"提到的用户对象",
-					"required":false
-				},
-				{
-					"col":"mentions.*.uid",
-					"def":0,
-					"len":0,
-					"type":4,
-					"intro":"提到的用户id",
-					"required":false
-				},
-				{
-					"col":"mentions.*.screen",
 					"def":"",
 					"len":0,
+					"required":false,
 					"type":0,
-					"intro":"提到的用户screen_name",
-					"required":false
-				},
-				{
-					"col":"mentions.*.name",
-					"def":"",
-					"len":0,
-					"type":0,
-					"intro":"提到的用户name",
-					"required":false
+					"intro":"提到的用户name"
 				},
 				{
 					"col":"tags",
@@ -339,17 +411,17 @@
 						
 					],
 					"len":0,
+					"required":false,
 					"type":3,
-					"intro":"提到的话题",
-					"required":false
+					"intro":"提到的话题"
 				},
 				{
 					"col":"tags.*",
 					"def":"",
 					"len":0,
+					"required":false,
 					"type":0,
-					"intro":"提到的话题string",
-					"required":false
+					"intro":"提到的话题string"
 				},
 				{
 					"col":"comments",
@@ -357,25 +429,73 @@
 						
 					],
 					"len":0,
+					"required":false,
 					"type":3,
-					"intro":"评论\/转播的消息id列表",
-					"required":false
-				},
-				{
-					"col":"comments.*",
-					"def":0,
-					"len":0,
-					"type":4,
-					"intro":"评论\/转播的消息id",
-					"required":false
+					"intro":"评论\/转播的消息id列表(未使用)"
 				},
 				{
 					"col":"pic_url",
 					"def":"",
 					"len":0,
+					"required":false,
 					"type":0,
-					"intro":"图片地址",
-					"required":false
+					"intro":"图片地址"
+				},
+				{
+					"col":"author_screen",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"发表者screen name"
+				},
+				{
+					"col":"isRT",
+					"def":false,
+					"len":0,
+					"required":false,
+					"type":5,
+					"intro":"是否转发"
+				},
+				{
+					"col":"rt_id",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":4,
+					"intro":"转发消息ID"
+				},
+				{
+					"col":"rt_comm_count",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":1,
+					"intro":"转发或评论消息次数"
+				},
+				{
+					"col":"state",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":1,
+					"intro":"0为正常,-1为删除,1为不显示"
+				},
+				{
+					"col":"creatorName",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"发表者name"
+				},
+				{
+					"col":"creatorId",
+					"def":0,
+					"len":0,
+					"required":true,
+					"type":4,
+					"intro":"发表者id"
 				}
 			],
 			"intro":"msgs"
@@ -404,22 +524,16 @@
 					"col":"text",
 					"def":"",
 					"len":0,
+					"required":true,
 					"type":0,
-					"intro":"关键词",
-					"required":true
+					"intro":"关键词"
 				}
 			],
 			"intro":"关键词"
 		},
 		"wbuser":{
 			"dao":{
-				"tableName":"wbUser",
-				"newDaoName":"wbUserDao",
-				"daoName":"mongoDao",
-				"props":{
-					"id":51,
-					"type":"single"
-				}
+				"daoName":"wbUserDao"
 			},
 			"indexes":[
 				{
@@ -442,153 +556,153 @@
 					"col":"location",
 					"def":"",
 					"len":0,
+					"required":false,
 					"type":0,
-					"intro":"所在地",
-					"required":false
+					"intro":"所在地"
 				},
 				{
 					"col":"email",
 					"def":"",
 					"len":0,
+					"required":true,
 					"type":0,
-					"intro":"用户邮箱",
-					"required":true
+					"intro":"用户邮箱"
 				},
 				{
 					"col":"sex",
 					"def":0,
 					"len":0,
+					"required":false,
 					"type":1,
-					"intro":"用户性别,0为不明,1男,2女",
-					"required":false
+					"intro":"用户性别,0为不明,1男,2女"
 				},
 				{
 					"col":"birthday",
 					"def":"",
 					"len":0,
+					"required":false,
 					"type":0,
-					"intro":"生日",
-					"required":false
+					"intro":"生日"
 				},
 				{
 					"col":"Industry",
 					"def":"",
 					"len":0,
+					"required":false,
 					"type":0,
-					"intro":"行业",
-					"required":false
+					"intro":"行业"
 				},
 				{
 					"col":"real_name",
 					"def":"",
 					"len":0,
+					"required":false,
 					"type":0,
-					"intro":"真实姓名",
-					"required":false
+					"intro":"真实姓名"
 				},
 				{
 					"col":"user_url",
 					"def":"",
 					"len":0,
+					"required":false,
 					"type":0,
-					"intro":"用户主页网址",
-					"required":false
+					"intro":"用户主页网址"
 				},
 				{
 					"col":"favourites_count",
 					"def":0,
 					"len":0,
+					"required":false,
 					"type":1,
-					"intro":"收藏总数",
-					"required":false
+					"intro":"收藏总数"
 				},
 				{
 					"col":"protected",
 					"def":false,
 					"len":0,
+					"required":false,
 					"type":5,
-					"intro":"设置隐私保护",
-					"required":false
+					"intro":"设置隐私保护"
 				},
 				{
 					"col":"followers_count",
 					"def":0,
 					"len":0,
+					"required":false,
 					"type":1,
-					"intro":"follower总数",
-					"required":false
+					"intro":"follower总数"
 				},
 				{
 					"col":"lang",
 					"def":"",
 					"len":0,
+					"required":false,
 					"type":0,
-					"intro":"语言",
-					"required":false
+					"intro":"语言"
 				},
 				{
 					"col":"verified",
 					"def":false,
 					"len":0,
+					"required":false,
 					"type":5,
-					"intro":"认证用户",
-					"required":false
+					"intro":"认证用户"
 				},
 				{
 					"col":"description",
 					"def":"",
 					"len":0,
+					"required":false,
 					"type":0,
-					"intro":"自我简介",
-					"required":false
+					"intro":"自我简介"
 				},
 				{
 					"col":"friends_count",
 					"def":0,
 					"len":0,
+					"required":false,
 					"type":1,
-					"intro":"好友数",
-					"required":false
+					"intro":"好友数"
 				},
 				{
 					"col":"statuses_count",
 					"def":0,
 					"len":0,
+					"required":false,
 					"type":1,
-					"intro":"消息数",
-					"required":false
+					"intro":"sent消息数"
 				},
 				{
 					"col":"screen_name",
 					"def":"",
 					"len":0,
+					"required":false,
 					"type":0,
-					"intro":"显示名称",
-					"required":false
+					"intro":"显示名称"
 				},
 				{
 					"col":"icon_url",
 					"def":"",
 					"len":0,
+					"required":false,
 					"type":0,
-					"intro":"用户的头像url",
-					"required":false
+					"intro":"用户的头像url"
 				},
 				{
 					"col":"templet_id",
 					"def":0,
 					"len":0,
+					"required":false,
 					"type":1,
-					"intro":"模板id",
-					"required":false
+					"intro":"模板id"
 				},
 				{
 					"col":"hot_level",
 					"def":0,
 					"len":0,
+					"required":false,
 					"type":1,
-					"intro":"热度",
-					"required":false
+					"intro":"热度"
 				},
 				{
 					"col":"inbox",
@@ -596,17 +710,17 @@
 						
 					],
 					"len":0,
+					"required":false,
 					"type":3,
-					"intro":"消息(状态)收件箱",
-					"required":false
+					"intro":"消息(状态)收件箱"
 				},
 				{
 					"col":"inbox.*",
 					"def":0,
 					"len":0,
+					"required":false,
 					"type":4,
-					"intro":"消息(状态)收件箱中的消息ID",
-					"required":false
+					"intro":"消息(状态)收件箱中的消息ID"
 				},
 				{
 					"col":"sent",
@@ -614,17 +728,17 @@
 						
 					],
 					"len":0,
+					"required":false,
 					"type":3,
-					"intro":"发件箱",
-					"required":false
+					"intro":"发件箱"
 				},
 				{
 					"col":"sent.*",
 					"def":0,
 					"len":0,
+					"required":false,
 					"type":4,
-					"intro":"发件箱中的消息ID",
-					"required":false
+					"intro":"发件箱中的消息ID"
 				},
 				{
 					"col":"favourites",
@@ -632,17 +746,17 @@
 						
 					],
 					"len":0,
+					"required":false,
 					"type":3,
-					"intro":"收藏的消息",
-					"required":false
+					"intro":"收藏的消息"
 				},
 				{
 					"col":"favourites.*",
 					"def":0,
 					"len":0,
+					"required":false,
 					"type":4,
-					"intro":"收藏的消息中的消息ID",
-					"required":false
+					"intro":"收藏的消息中的消息ID"
 				},
 				{
 					"col":"mentions",
@@ -650,17 +764,17 @@
 						
 					],
 					"len":0,
+					"required":false,
 					"type":3,
-					"intro":"提到用户的消息",
-					"required":false
+					"intro":"提到用户的消息"
 				},
 				{
 					"col":"mentions.*",
 					"def":0,
 					"len":0,
+					"required":false,
 					"type":4,
-					"intro":"提到用户的消息中的消息ID",
-					"required":false
+					"intro":"提到用户的消息中的消息ID"
 				},
 				{
 					"col":"direct_msgs",
@@ -668,77 +782,59 @@
 						
 					],
 					"len":0,
+					"required":false,
 					"type":3,
-					"intro":"私信",
-					"required":false
+					"intro":"私信"
 				},
 				{
 					"col":"direct_msgs.*",
 					"def":0,
 					"len":0,
+					"required":false,
 					"type":4,
-					"intro":"私信中的消息ID",
-					"required":false
+					"intro":"私信中的消息ID"
 				},
 				{
 					"col":"pwd",
-					"validator":"com.k99k.khunter.StringValidator,2,5,30",
 					"def":"",
+					"validator":"com.k99k.khunter.StringValidator,2,5,30",
 					"len":0,
+					"required":true,
 					"type":0,
-					"intro":"密码",
-					"required":true
+					"intro":"密码"
 				},
 				{
 					"col":"name",
-					"validator":"com.k99k.khunter.StringValidator,2,3,20",
 					"def":"",
+					"validator":"com.k99k.khunter.StringValidator,2,3,20",
 					"len":0,
+					"required":true,
 					"type":0,
-					"intro":"用户名",
-					"required":true
+					"intro":"用户名"
 				},
 				{
 					"col":"phone",
 					"def":"",
 					"len":0,
+					"required":false,
 					"type":0,
-					"intro":"电话",
-					"required":false
+					"intro":"电话"
 				},
 				{
 					"col":"lastLogin",
 					"def":"",
 					"len":0,
+					"required":false,
 					"type":0,
-					"intro":"上次登录时间",
-					"required":false
+					"intro":"上次登录时间"
 				},
 				{
 					"col":"lastMsg",
 					"def":"",
 					"len":0,
+					"required":false,
 					"type":0,
-					"intro":"最新发表的消息",
-					"required":false
-				},
-				{
-					"col":"notify",
-					"def":[
-						
-					],
-					"len":0,
-					"type":3,
-					"intro":"新的消息,好友,私信通知数量",
-					"required":false
-				},
-				{
-					"col":"notify.*",
-					"def":0,
-					"len":0,
-					"type":1,
-					"intro":"新的消息,好友,私信通知数量",
-					"required":false
+					"intro":"最新发表的消息"
 				},
 				{
 					"col":"follows",
@@ -746,29 +842,217 @@
 						
 					],
 					"len":0,
+					"required":false,
 					"type":3,
-					"intro":"关注对象id集",
-					"required":false
+					"intro":"关注对象id集"
 				},
 				{
 					"col":"follows.*",
+					"def":{
+						
+					},
+					"len":0,
+					"required":false,
+					"type":2,
+					"intro":"关注对象的相关属性"
+				},
+				{
+					"col":"follows.*.id",
 					"def":0,
 					"len":0,
+					"required":false,
 					"type":4,
-					"intro":"关注对象id",
-					"required":false
+					"intro":"关注对象的id"
+				},
+				{
+					"col":"follows.*.screen",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"关注对象的screen name"
+				},
+				{
+					"col":"follows.*.both",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":1,
+					"intro":"1为双方关注,0则否"
+				},
+				{
+					"col":"follows.*.name",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"关注对象的name"
 				},
 				{
 					"col":"fans",
+					"def":[
+						
+					],
+					"len":0,
+					"required":false,
+					"type":3,
+					"intro":"fans的id集"
+				},
+				{
+					"col":"fans.*",
+					"def":{
+						
+					},
+					"len":0,
+					"required":false,
+					"type":2,
+					"intro":"fans的相关属性"
+				},
+				{
+					"col":"fans.*.id",
 					"def":0,
 					"len":0,
+					"required":false,
 					"type":4,
-					"intro":"fans的id",
-					"required":false
+					"intro":"fans的id"
+				},
+				{
+					"col":"fans.*.screen",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"fans的screen name"
+				},
+				{
+					"col":"fans.*.both",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":1,
+					"intro":"1为双方关注,0则否"
+				},
+				{
+					"col":"fans.*.name",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"fans的name"
+				},
+				{
+					"col":"fans.*.hot",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":1,
+					"intro":"fans的hot"
+				},
+				{
+					"col":"emailcheck",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"邮箱验证字符串"
+				},
+				{
+					"col":"notify_msg",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":1,
+					"intro":"新的消息数"
+				},
+				{
+					"col":"notify_fan",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":1,
+					"intro":"新的好友数"
+				},
+				{
+					"col":"notify_dmsg",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":1,
+					"intro":"新的私信数"
+				},
+				{
+					"col":"notify_mention",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":1,
+					"intro":"新的提到消息数"
+				},
+				{
+					"col":"inbox_count",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":4,
+					"intro":"inbox消息数"
+				},
+				{
+					"col":"dmsg_count",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":1,
+					"intro":"私信数"
+				},
+				{
+					"col":"mention_count",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":1,
+					"intro":"提到的消息数"
 				}
 			],
-			"kobjInnerRequiredCols":["name"],
 			"intro":"wb's user"
+		},
+		"wbfeedback":{
+			"dao":{
+				"tableName":"wbFeedback",
+				"newDaoName":"wbFeedbackDao",
+				"daoName":"mongoDao",
+				"props":{
+					"id":54,
+					"type":"single"
+				}
+			},
+			"indexes":[
+				{
+					"col":"from_id",
+					"unique":false,
+					"asc":true,
+					"type":"normal",
+					"intro":"from_id index"
+				}
+			],
+			"columns":[
+				{
+					"col":"from_id",
+					"def":0,
+					"len":0,
+					"required":true,
+					"type":4,
+					"intro":"发送方用户id"
+				},
+				{
+					"col":"text",
+					"def":"",
+					"len":0,
+					"required":true,
+					"type":0,
+					"intro":"反馈内容"
+				}
+			],
+			"intro":"举报与反馈"
 		},
 		"hello":{
 			"dao":{
@@ -795,17 +1079,17 @@
 					"def":"defaultname",
 					"validator":"com.k99k.khunter.StringValidator,0,5",
 					"len":20,
+					"required":false,
 					"type":0,
-					"intro":"hello name",
-					"required":false
+					"intro":"hello name"
 				},
 				{
 					"col":"cc",
 					"def":1,
 					"len":4,
+					"required":false,
 					"type":1,
-					"intro":"intro of cc",
-					"required":false
+					"intro":"intro of cc"
 				},
 				{
 					"col":"comms",
@@ -813,17 +1097,17 @@
 						
 					},
 					"len":5,
+					"required":false,
 					"type":2,
-					"intro":"intro of comms",
-					"required":false
+					"intro":"intro of comms"
 				},
 				{
 					"col":"comms.say",
 					"def":"someone say",
 					"len":15,
+					"required":false,
 					"type":0,
-					"intro":"say something",
-					"required":false
+					"intro":"say something"
 				},
 				{
 					"col":"arr",
@@ -831,67 +1115,28 @@
 						
 					],
 					"len":15,
+					"required":false,
 					"type":3,
-					"intro":"arr",
-					"required":false
+					"intro":"arr"
 				},
 				{
 					"col":"arr.*",
 					"def":"arr string",
 					"len":15,
+					"required":false,
 					"type":0,
-					"intro":"one of arr is string",
-					"required":false
+					"intro":"one of arr is string"
 				},
 				{
 					"col":"def",
 					"def":5,
 					"len":4,
+					"required":false,
 					"type":1,
-					"intro":"intro of cc",
-					"required":false
+					"intro":"intro of cc"
 				}
 			],
 			"intro":"intro of hello"
-		},
-		"wbfeedback":{
-			"dao":{
-				"tableName":"wbFeedback",
-				"newDaoName":"wbFeedbackDao",
-				"daoName":"mongoDao",
-				"props":{
-					"id":54,
-					"type":"single"
-				}
-			},
-			"indexes":[
-				{
-					"col":"from_id",
-					"unique":false,
-					"asc":true,
-					"type":"normal",
-					"intro":"from_id index"
-				}
-			],
-			"columns":[
-				{
-					"col":"from_id",
-					"def":0,
-					"len":0,
-					"type":4,
-					"intro":"发送方用户id",
-					"required":true
-				},
-				{
-					"col":"text",
-					"def":"",
-					"len":0,
-					"type":0,
-					"intro":"反馈内容",
-					"required":true
-				}
-			],
-			"intro":"举报与反馈"
 		},
 		"wb_follow":{
 			"dao":{
@@ -924,30 +1169,20 @@
 					"col":"user_id",
 					"def":0,
 					"len":0,
+					"required":true,
 					"type":4,
-					"intro":"用户id",
-					"required":true
+					"intro":"用户id"
 				},
 				{
-					"col":"follow_ids",
-					"def":[
-						
-					],
-					"len":0,
-					"type":3,
-					"intro":"follow用户id集合",
-					"required":true
-				},
-				{
-					"col":"follow_ids.*",
+					"col":"follow_id",
 					"def":0,
 					"len":0,
+					"required":true,
 					"type":4,
-					"intro":"follow用户id",
-					"required":false
+					"intro":"follow用户id"
 				}
 			],
-			"intro":"用户关注的所有用户,每条1000个记录"
+			"intro":"用户关注的所有用户"
 		},
 		"wb_fans":{
 			"dao":{
@@ -968,6 +1203,13 @@
 					"intro":"createTime index"
 				},
 				{
+					"col":"hot",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"hot index"
+				},
+				{
 					"col":"user_id",
 					"unique":false,
 					"asc":false,
@@ -980,30 +1222,28 @@
 					"col":"user_id",
 					"def":0,
 					"len":0,
+					"required":true,
 					"type":4,
-					"intro":"用户id",
-					"required":true
+					"intro":"用户id"
 				},
 				{
-					"col":"fans_ids",
-					"def":[
-						
-					],
-					"len":0,
-					"type":3,
-					"intro":"fans用户id集合",
-					"required":true
-				},
-				{
-					"col":"fans_ids.*",
+					"col":"fans_id",
 					"def":0,
 					"len":0,
+					"required":true,
 					"type":4,
-					"intro":"fans用户id",
-					"required":false
+					"intro":"fans用户id"
+				},
+				{
+					"col":"hot",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":1,
+					"intro":"热度,用于排序,发MSG时优时发送hot值高的"
 				}
 			],
-			"intro":"用户的所有fans,每条1000个记录"
+			"intro":"用户的所有fans"
 		},
 		"kuser":{
 			"dao":{
@@ -1024,17 +1264,17 @@
 					"def":"",
 					"validator":"com.k99k.khunter.StringValidator,0,5",
 					"len":10,
+					"required":false,
 					"type":0,
-					"intro":"the imei of handset",
-					"required":false
+					"intro":"the imei of handset"
 				},
 				{
 					"col":"pwd",
 					"def":"qwertnm",
 					"len":10,
+					"required":false,
 					"type":0,
-					"intro":"password",
-					"required":false
+					"intro":"password"
 				},
 				{
 					"col":"tags",
@@ -1042,25 +1282,25 @@
 						
 					},
 					"len":10,
+					"required":false,
 					"type":2,
-					"intro":"tagss",
-					"required":false
+					"intro":"tagss"
 				},
 				{
 					"col":"tags.tagName",
 					"def":"",
 					"len":10,
+					"required":false,
 					"type":0,
-					"intro":"tagName",
-					"required":false
+					"intro":"tagName"
 				},
 				{
 					"col":"tags.tagId",
 					"def":0,
 					"len":10,
+					"required":false,
 					"type":4,
-					"intro":"tagId",
-					"required":false
+					"intro":"tagId"
 				},
 				{
 					"col":"comms",
@@ -1068,41 +1308,41 @@
 						
 					],
 					"len":10,
+					"required":false,
 					"type":3,
-					"intro":"password",
-					"required":false
+					"intro":"password"
 				},
 				{
 					"col":"comms.*",
 					"def":null,
 					"len":10,
+					"required":false,
 					"type":2,
-					"intro":"comms element is a map schema",
-					"required":false
+					"intro":"comms element is a map schema"
 				},
 				{
 					"col":"comms.*.content",
 					"def":"",
 					"len":10,
+					"required":false,
 					"type":0,
-					"intro":"comment content",
-					"required":false
+					"intro":"comment content"
 				},
 				{
 					"col":"comms.*.writer",
 					"def":"",
 					"len":10,
+					"required":false,
 					"type":0,
-					"intro":"comment writer",
-					"required":false
+					"intro":"comment writer"
 				},
 				{
 					"col":"comms.*.addTime",
 					"def":"",
 					"len":10,
+					"required":false,
 					"type":0,
-					"intro":"comment addTime",
-					"required":false
+					"intro":"comment addTime"
 				}
 			],
 			"intro":"用户"
@@ -1140,36 +1380,43 @@
 						
 					],
 					"len":0,
+					"required":false,
 					"type":3,
-					"intro":"话题对应的消息id集合",
-					"required":false
+					"intro":"话题对应的消息id集合"
 				},
 				{
 					"col":"tag_ids.*",
 					"def":0,
 					"len":0,
+					"required":false,
 					"type":4,
-					"intro":"消息id",
-					"required":false
+					"intro":"消息id"
 				},
 				{
 					"col":"sum",
 					"def":0,
 					"len":0,
+					"required":false,
 					"type":4,
-					"intro":"此话题的消息总数",
-					"required":false
+					"intro":"此话题的消息总数"
 				},
 				{
 					"col":"hot",
 					"def":0,
 					"len":0,
+					"required":false,
 					"type":1,
-					"intro":"此话题的热度",
-					"required":false
+					"intro":"此话题的热度"
+				},
+				{
+					"col":"name",
+					"def":"",
+					"len":0,
+					"required":true,
+					"type":0,
+					"intro":"话题名"
 				}
 			],
-			"kobjInnerRequiredCols":["name"],
 			"intro":"tags,话题(标签)"
 		},
 		"wb_mention":{
@@ -1184,49 +1431,39 @@
 			},
 			"indexes":[
 				{
+					"col":"user_name",
+					"unique":false,
+					"asc":false,
+					"type":"normal",
+					"intro":"user_name index"
+				},
+				{
 					"col":"createTime",
 					"unique":false,
 					"asc":false,
 					"type":"normal",
 					"intro":"createTime index"
-				},
-				{
-					"col":"user_id",
-					"unique":false,
-					"asc":false,
-					"type":"normal",
-					"intro":"user_id index"
 				}
 			],
 			"columns":[
 				{
-					"col":"user_id",
+					"col":"msg_id",
 					"def":0,
 					"len":0,
+					"required":true,
 					"type":4,
-					"intro":"用户id",
-					"required":true
+					"intro":"消息id"
 				},
 				{
-					"col":"mention_ids",
-					"def":[
-						
-					],
+					"col":"user_name",
+					"def":"",
 					"len":0,
-					"type":3,
-					"intro":"提到用户的消息id集合",
-					"required":true
-				},
-				{
-					"col":"mention_ids.*",
-					"def":0,
-					"len":0,
-					"type":4,
-					"intro":"消息id",
-					"required":false
+					"required":true,
+					"type":0,
+					"intro":"用户name"
 				}
 			],
-			"intro":"所有提到用户的消息,每条1000个记录"
+			"intro":"所有提到用户的消息,用于获取某用户被提到的消息集"
 		},
 		"wb_dmsg":{
 			"dao":{
@@ -1259,30 +1496,20 @@
 					"col":"user_id",
 					"def":0,
 					"len":0,
+					"required":true,
 					"type":4,
-					"intro":"用户id",
-					"required":true
+					"intro":"用户id"
 				},
 				{
-					"col":"dmsg_ids",
-					"def":[
-						
-					],
-					"len":0,
-					"type":3,
-					"intro":"用户私信消息id集合",
-					"required":true
-				},
-				{
-					"col":"dmsg_ids.*",
+					"col":"msg_id",
 					"def":0,
 					"len":0,
+					"required":true,
 					"type":4,
-					"intro":"消息id",
-					"required":false
+					"intro":"消息id"
 				}
 			],
-			"intro":"所有私信,每条1000个记录"
+			"intro":"所有私信"
 		}
 	}
 }
