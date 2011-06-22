@@ -4,6 +4,7 @@
 package com.k99k.khunter.dao;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import com.k99k.khunter.KObjManager;
 import com.k99k.khunter.KObjSchema;
 import com.k99k.khunter.KObject;
 import com.k99k.khunter.MongoDao;
+import com.k99k.tools.StringUtil;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -208,6 +210,7 @@ public class WBUserDao extends MongoDao {
 	
 	//以下属性是用于查询的静态条件,节省开销
 	private static final BasicDBObject prop_msg_id = new BasicDBObject("msg_id",1);
+	private static final BasicDBObject prop_msg_rt_id = new BasicDBObject("msg_id",1).append("rt_id", 1);
 	private static final BasicDBObject prop_fans_id = new BasicDBObject("fans_id",1);
 	private static final BasicDBObject prop_sum = new BasicDBObject("sum",1);
 	private static final BasicDBObject prop_notify_msg = new BasicDBObject("notify_msg",1).append("inbox_count", 1);
@@ -294,11 +297,33 @@ public class WBUserDao extends MongoDao {
 		
 		KObject msg = wbMsgDao.findOne(msgId);
 		int msgCount = Integer.parseInt(msg.getProp("rt_comm_count").toString());
-		if (msgCount<=0 || pageSize<=0) {
+		int skip = pagedSkip(page,msgCount,pageSize);
+		if (skip < 0) {
 			return null;
 		}
-		int pageCount = msgCount/pageSize;
-		int mod = msgCount%pageSize;
+		
+		ArrayList<KObject> list = new ArrayList<KObject>(pageSize);
+		List<Map<String,Object>> msgIds = wbCommDao.query(new BasicDBObject("re_msg_id",msgId).append("state", 0), wbcommProp,prop_id_desc, skip, pageSize, null);
+		for (Iterator<Map<String, Object>> it = msgIds.iterator(); it.hasNext();) {
+			Map<String, Object> m = it.next();
+			list.add(new KObject(m));
+		}
+		return list;
+	}
+	
+	/**
+	 * 由页码,总数,每页项目数计算skip数
+	 * @param page
+	 * @param sum
+	 * @param pageSize
+	 * @return
+	 */
+	public static int pagedSkip(int page,int sum,int pageSize){
+		if (sum<=0 || pageSize<=0) {
+			return -1;
+		}
+		int pageCount = sum/pageSize;
+		int mod = sum%pageSize;
 		if (mod != 0) {
 			pageCount++;
 		}
@@ -310,13 +335,7 @@ public class WBUserDao extends MongoDao {
 		}
 		int skip = pageSize*(page-1);
 		
-		ArrayList<KObject> list = new ArrayList<KObject>(pageSize);
-		List<Map<String,Object>> msgIds = wbCommDao.query(new BasicDBObject("re_msg_id",msgId).append("state", 0), wbcommProp,prop_id_desc, skip, pageSize, null);
-		for (Iterator<Map<String, Object>> it = msgIds.iterator(); it.hasNext();) {
-			Map<String, Object> m = it.next();
-			list.add(new KObject(m));
-		}
-		return list;
+		return skip;
 	}
 	
 	/**
@@ -342,21 +361,10 @@ public class WBUserDao extends MongoDao {
 	public static final ArrayList<Map<String, Object>> getFans(long userId,int page,int pageSize){
 		KObject user = wbUserDao.findOne(userId);
 		int msgCount = Integer.parseInt(user.getProp("followers_count").toString());
-		if (msgCount<=0 || pageSize<=0) {
+		int skip = pagedSkip(page,msgCount,pageSize);
+		if (skip < 0) {
 			return null;
 		}
-		int pageCount = msgCount/pageSize;
-		int mod = msgCount%pageSize;
-		if (mod != 0) {
-			pageCount++;
-		}
-		if (page<=0) {
-			page = 1;
-		}
-		if (page > pageCount) {
-			page = pageCount;
-		}
-		int skip = pageSize*(page-1);
 		ArrayList<Map<String, Object>> userIdList = new ArrayList<Map<String, Object>>(pageSize);
 		BasicDBObject fields = new BasicDBObject();
 		fields.append("fans", new BasicDBObject("$slice",new int[]{0-skip,pageSize}));
@@ -371,21 +379,10 @@ public class WBUserDao extends MongoDao {
 	public static final ArrayList<Map<String, Object>> getFollows(long userId,int page,int pageSize){
 		KObject user = wbUserDao.findOne(userId);
 		int msgCount = Integer.parseInt(user.getProp("friends_count").toString());
-		if (msgCount<=0 || pageSize<=0) {
+		int skip = pagedSkip(page,msgCount,pageSize);
+		if (skip < 0) {
 			return null;
 		}
-		int pageCount = msgCount/pageSize;
-		int mod = msgCount%pageSize;
-		if (mod != 0) {
-			pageCount++;
-		}
-		if (page<=0) {
-			page = 1;
-		}
-		if (page > pageCount) {
-			page = pageCount;
-		}
-		int skip = pageSize*(page-1);
 		ArrayList<Map<String, Object>> userIdList = new ArrayList<Map<String, Object>>(pageSize);
 		BasicDBObject fields = new BasicDBObject();
 		fields.append("follow", new BasicDBObject("$slice",new int[]{0-skip,pageSize}));
@@ -409,21 +406,10 @@ public class WBUserDao extends MongoDao {
 	public static final ArrayList<KObject> readOneTopicList(String topic,int page,int pageSize){
 		Map<String,Object> t = wbTagsDao.findOneMap(new BasicDBObject("name",topic),new BasicDBObject("sum",1));
 		int msgCount = Integer.parseInt(t.get("sum").toString());
-		if (msgCount<=0 || pageSize<=0) {
+		int skip = pagedSkip(page,msgCount,pageSize);
+		if (skip < 0) {
 			return null;
 		}
-		int pageCount = msgCount/pageSize;
-		int mod = msgCount%pageSize;
-		if (mod != 0) {
-			pageCount++;
-		}
-		if (page<=0) {
-			page = 1;
-		}
-		if (page > pageCount) {
-			page = pageCount;
-		}
-		int skip = pageSize*(page-1);
 		
 		ArrayList<Long> msgIdList = new ArrayList<Long>(pageSize);
 		ArrayList<Map<String, Object>> userIdList = new ArrayList<Map<String, Object>>(pageSize);
@@ -446,34 +432,7 @@ public class WBUserDao extends MongoDao {
 	 * @return ArrayList<KObject>
 	 */
 	public static final ArrayList<KObject> readFavList(long userId,int page,int pageSize){
-		KObject user = wbUserDao.findOne(userId);
-		int msgCount = Integer.parseInt(user.getProp("favourites_count").toString());
-		if (msgCount<=0 || pageSize<=0) {
-			return null;
-		}
-		int pageCount = msgCount/pageSize;
-		int mod = msgCount%pageSize;
-		if (mod != 0) {
-			pageCount++;
-		}
-		if (page<=0) {
-			page = 1;
-		}
-		if (page > pageCount) {
-			page = pageCount;
-		}
-		int skip = pageSize*(page-1);
-		
-		ArrayList<Long> msgIdList = new ArrayList<Long>(pageSize);
-		List<Map<String,Object>> msgIds = wbFavDao.query(new BasicDBObject("user_id",userId), prop_msg_id,prop_id_desc, skip, pageSize, null);
-		for (Iterator<Map<String, Object>> it = msgIds.iterator(); it.hasNext();) {
-			Map<String, Object> m = it.next();
-			msgIdList.add((Long)m.get("msg_id"));
-		}
-		
-		ArrayList<KObject> list = getMsgList(msgIdList,pageSize);	
-		
-		return list;
+		return readPagedList(wbFavDao,"favourites_count",userId,page,pageSize);
 	}
 	
 	/**
@@ -520,30 +479,12 @@ public class WBUserDao extends MongoDao {
 	public static final ArrayList<KObject> readMentionList(long userId,int page,int pageSize){
 		KObject user = wbUserDao.findOne(userId);
 		int msgCount = Integer.parseInt(user.getProp("mention_count").toString());
-		if (msgCount<=0 || pageSize<=0) {
+		int skip = pagedSkip(page,msgCount,pageSize);
+		if (skip < 0) {
 			return null;
 		}
-		int pageCount = msgCount/pageSize;
-		int mod = msgCount%pageSize;
-		if (mod != 0) {
-			pageCount++;
-		}
-		if (page<=0) {
-			page = 1;
-		}
-		if (page > pageCount) {
-			page = pageCount;
-		}
-		int skip = pageSize*(page-1);
 		
-		ArrayList<Long> msgIdList = new ArrayList<Long>(pageSize);
-		List<Map<String,Object>> msgIds = wbMentionDao.query(new BasicDBObject("user_name",user.getName()), prop_msg_id,prop_id_desc, skip, pageSize, null);
-		for (Iterator<Map<String, Object>> it = msgIds.iterator(); it.hasNext();) {
-			Map<String, Object> m = it.next();
-			msgIdList.add((Long)m.get("msg_id"));
-		}
-		
-		ArrayList<KObject> list = getMsgList(msgIdList,pageSize);	
+		ArrayList<KObject> list = getMsgListWithRT(wbMentionDao,new BasicDBObject("user_name",user.getName()),skip,pageSize);
 		wbUserDao.updateOne(new BasicDBObject("_id",userId), prop_notify_mention_reset);
 		return list;
 	}
@@ -551,21 +492,10 @@ public class WBUserDao extends MongoDao {
 	public static final ArrayList<KObject> readDMsg(long userId,int page,int pageSize){
 		KObject user = wbUserDao.findOne(userId);
 		int msgCount = Integer.parseInt(user.getProp("dmsg_count").toString());
-		if (msgCount<=0 || pageSize<=0) {
+		int skip = pagedSkip(page,msgCount,pageSize);
+		if (skip < 0) {
 			return null;
 		}
-		int pageCount = msgCount/pageSize;
-		int mod = msgCount%pageSize;
-		if (mod != 0) {
-			pageCount++;
-		}
-		if (page<=0) {
-			page = 1;
-		}
-		if (page > pageCount) {
-			page = pageCount;
-		}
-		int skip = pageSize*(page-1);
 		
 		ArrayList<Long> msgIdList = new ArrayList<Long>(pageSize);
 		List<Map<String,Object>> msgIds = wbDMsgDao.query(new BasicDBObject("user_id",userId), prop_msg_id,prop_id_desc, skip, pageSize, null);
@@ -697,24 +627,7 @@ public class WBUserDao extends MongoDao {
 	}
 	
 	public static final ArrayList<KObject> readSentMsgs(long userId,int page,int pageSize){
-		KObject user = wbUserDao.findOne(userId);
-		int msgCount = Integer.parseInt(user.getProp("statuses_count").toString());
-		if (msgCount<=0 || pageSize<=0) {
-			return null;
-		}
-		int pageCount = msgCount/pageSize;
-		int mod = msgCount%pageSize;
-		if (mod != 0) {
-			pageCount++;
-		}
-		if (page<=0) {
-			page = 1;
-		}
-		if (page > pageCount) {
-			page = pageCount;
-		}
-		int skip = pageSize*(page-1);
-		return getSentMsgList(userId,skip,pageSize);
+		return readPagedList(wbSentDao,"statuses_count",userId,page,pageSize);
 		
 	}
 	
@@ -742,24 +655,7 @@ public class WBUserDao extends MongoDao {
 	 * @return 若无则返回null,有则返回指定数量的ArrayList<KObject>
 	 */
 	public static final ArrayList<KObject> readOnePageMsgs(long userId,int page,int pageSize){
-		KObject user = wbUserDao.findOne(userId);
-		int msgCount = Integer.parseInt(user.getProp("inbox_count").toString());
-		if (msgCount<=0 || pageSize<=0) {
-			return null;
-		}
-		int pageCount = msgCount/pageSize;
-		int mod = msgCount%pageSize;
-		if (mod != 0) {
-			pageCount++;
-		}
-		if (page<=0) {
-			page = 1;
-		}
-		if (page > pageCount) {
-			page = pageCount;
-		}
-		int skip = pageSize*(page-1);
-		return getInboxMsgList(userId,skip,pageSize);
+		return readPagedList(wbInboxDao,"inbox_count",userId,page,pageSize);
 	}
 	
 	/**
@@ -770,17 +666,68 @@ public class WBUserDao extends MongoDao {
 	 * @return ArrayList<KObject> 
 	 */
 	private static final ArrayList<KObject> getInboxMsgList(long userId,int skip,int max){
-		ArrayList<Long> msgIdList = new ArrayList<Long>(max);
-		List<Map<String,Object>> msgIds = wbInboxDao.query(new BasicDBObject("user_id",userId), prop_msg_id,prop_id_desc, skip, max, null);
-		for (Iterator<Map<String, Object>> it = msgIds.iterator(); it.hasNext();) {
-			Map<String, Object> m = it.next();
-			msgIdList.add((Long)m.get("msg_id"));
-		}
-		
-		ArrayList<KObject> list = getMsgList(msgIdList,max);	
+		ArrayList<KObject> list = getMsgListWithRT(wbInboxDao,new BasicDBObject("user_id",userId),skip,max);
 		wbUserDao.updateOne(new BasicDBObject("_id",userId), prop_notify_msg_reset);
 		return list;
 	}
+	
+	private static final ArrayList<KObject> readPagedList(DaoInterface dao,String countPropName,long userId,int page,int pageSize){
+		KObject user = wbUserDao.findOne(userId);
+		int msgCount = Integer.parseInt(user.getProp(countPropName).toString());
+		int skip = pagedSkip(page,msgCount,pageSize);
+		if (skip < 0) {
+			return null;
+		}
+		
+		ArrayList<KObject> list = getMsgListWithRT(dao,new BasicDBObject("user_id",userId),skip,pageSize);
+		
+		return list;
+	}
+	
+	
+	/**
+	 * 获取带RT的消息列表,KObject中rtmsg属性保留原RT的KObject对象
+	 * @param dao 用于获取msgId列表的dao
+	 * @param query 用于获取msgId列表的查询条件,如:new BasicDBObject("user_id",userId)
+	 * @param skip
+	 * @param initSize
+	 * @return
+	 */
+	private static final ArrayList<KObject> getMsgListWithRT(DaoInterface dao,BasicDBObject query,int skip,int initSize){
+		ArrayList<Long> msgIdList = new ArrayList<Long>(initSize);
+		ArrayList<Long> allIdList = new ArrayList<Long>(initSize*2);
+		List<Map<String,Object>> msgIds = dao.query(query, prop_msg_rt_id,prop_id_desc, skip, initSize, null);
+		for (Iterator<Map<String, Object>> it = msgIds.iterator(); it.hasNext();) {
+			Map<String, Object> m = it.next();
+			long msg_id = (Long)m.get("msg_id");
+			msgIdList.add(msg_id);
+			allIdList.add(msg_id);
+			Object rto = m.get("rt_id");
+			long rt = (rto==null)?0:(Long)m.get("rt_id");
+			if (rt > 0) {
+				allIdList.add(rt);
+			}
+		}
+		//如果算上转发的,大小应该x2
+		int max = initSize*2;
+		HashMap<Long,KObject> map = getMsgMap(allIdList,max);
+		ArrayList<KObject> list = new ArrayList<KObject>(initSize);
+		for (Iterator<Long> it = msgIdList.iterator(); it.hasNext();) {
+			long m_id = it.next();
+			KObject kobj = map.get(m_id);
+			Object rto = kobj.getProp("rt_id");
+			if (StringUtil.isDigits(rto)) {
+				long rt = (Long)rto;
+				if (rt > 0) {
+					//设置原msg为kobj中的rtmsg
+					kobj.setProp("rtmsg", map.get(rt));
+				}
+			}
+			list.add(kobj);
+		}
+		return list;
+	}
+	
 	
 	/**
 	 * 从msgId列表中取出MSG对象列表(state==0的对象)
@@ -801,21 +748,33 @@ public class WBUserDao extends MongoDao {
 	}
 	
 	/**
+	 * 从msgId列表中取出MSG对象Map(state==0的对象)
+	 * @param msgIdList ArrayList<Long>
+	 * @param initSize 初始化list的大小,一般为每页的size大小
+	 * @return ArrayList<KObject>
+	 */
+	@SuppressWarnings("unchecked")
+	private static final HashMap<Long,KObject> getMsgMap(ArrayList<Long> msgIdList,int initSize){
+		HashMap<Long,KObject> map = new HashMap<Long,KObject>(initSize);		
+		DBCollection coll = wbMsgDao.getColl();
+		DBCursor cur = coll.find(new BasicDBObject("_id",new BasicDBObject("$in",msgIdList)).append("state", 0));
+		while (cur.hasNext()) {
+			Map<String,Object> m = (Map<String,Object>) cur.next();
+			KObject ko = new KObject(m);
+			map.put(ko.getId(), ko);
+		}
+		return map;
+	}
+	
+	/**
 	 * 获取用户的sent msg列表
 	 * @param userId
 	 * @param skip
 	 * @param max
 	 * @return ArrayList<KObject> 
 	 */
-	private static final ArrayList<KObject> getSentMsgList(long userId,int skip,int max){
-		ArrayList<Long> msgIdList = new ArrayList<Long>(max);
-		List<Map<String,Object>> msgIds = wbSentDao.query(new BasicDBObject("user_id",userId), prop_msg_id,prop_id_desc, skip, max, null);
-		for (Iterator<Map<String, Object>> it = msgIds.iterator(); it.hasNext();) {
-			Map<String, Object> m = it.next();
-			msgIdList.add((Long)m.get("msg_id"));
-		}
-		
-		ArrayList<KObject> list = getMsgList(msgIdList,30);	
+	public static final ArrayList<KObject> getSentMsgList(long userId,int skip,int max){
+		ArrayList<KObject> list = getMsgListWithRT(wbSentDao,new BasicDBObject("user_id",userId),skip,max);
 		return list;
 	}
 	
@@ -847,7 +806,7 @@ public class WBUserDao extends MongoDao {
 	}
 	
 	/**
-	 * 在提到的用户中添加相关的msgId,提到的用户增到一个提到消息数
+	 * 在提到的用户中添加相关的msgId,提到的用户增加一个提到消息数
 	 * @param mentionUserName 提到的用户名
 	 * @param talkId 原消息id
 	 */
@@ -941,7 +900,7 @@ public class WBUserDao extends MongoDao {
 		return list;
 	}
 	
-	public static final void updateUserAndSentForNewMsg(long userId,String msg,long msgId,boolean isRT){
+	public static final void updateUserAndSentForNewMsg(long userId,String msg,long msgId,boolean isRT,long rt_id){
 		BasicDBObject u = new BasicDBObject("$inc", prop_statuses_count);
 		if (!isRT) {
 			u.append("$set",new BasicDBObject("lastMsg",msg));
@@ -950,6 +909,7 @@ public class WBUserDao extends MongoDao {
 		KObject newSent = wbSentConfig.getKobjSchema().createEmptyKObj(wbSentDao);
 		newSent.setProp("user_id", userId);
 		newSent.setProp("msg_id", msgId);
+		newSent.setProp("rt_id", rt_id);
 		wbSentDao.save(newSent);
 	}
 	
@@ -958,14 +918,16 @@ public class WBUserDao extends MongoDao {
 	 * TODO 推送消息最好的实现:只更新fans的wbuser表的inbox[]字段,在相关fans进行消息查看操作时,由异步任务将新消息处理到wb_inbox表中
 	 * @param userId
 	 * @param msgId
+	 * @param rt_id 被转的id
 	 */
-	public static final void pushMsgToFans(long userId,long msgId,int state){
+	public static final void pushMsgToFans(long userId,long msgId,int state,long rt_id){
 		
 		ArrayList<Long> fansIds = getAllFans(userId);
 		//先向自己推送
 		KObject in = wbInboxConfig.getKobjSchema().createEmptyKObj(wbInboxDao);
 		in.setProp("user_id", userId);
 		in.setProp("msg_id", msgId);
+		in.setProp("rt_id", rt_id);
 		in.setState(state);
 		wbInboxDao.save(in);
 		wbUserDao.updateOne(new BasicDBObject("_id",userId), new BasicDBObject("$inc",prop_notify_msg));
@@ -974,8 +936,9 @@ public class WBUserDao extends MongoDao {
 		for (Iterator<Long> it = fansIds.iterator(); it.hasNext();) {
 			long fanId = it.next();
 			KObject inbox = wbInboxConfig.getKobjSchema().createEmptyKObj(wbInboxDao);
-			in.setProp("user_id", userId);
-			in.setProp("msg_id", msgId);
+			inbox.setProp("user_id", userId);
+			inbox.setProp("msg_id", msgId);
+			inbox.setProp("rt_id", rt_id);
 			wbInboxDao.save(inbox);
 			wbUserDao.updateOne(new BasicDBObject("_id",fanId), new BasicDBObject("$inc",prop_notify_msg));
 		}

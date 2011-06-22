@@ -271,16 +271,16 @@ public class JSONFormatWriter {
         add('"');
         CharacterIterator it = new StringCharacterIterator(obj.toString());
         for (char c = it.first(); c != CharacterIterator.DONE; c = it.next()) {
-            if (c == '"') {add("\\\"");break;}
-            else if (c == '\\') {add("\\\\");break;}
-            else if (c == '/') {add("\\/");break;}
-            else if (c == '\b') {add("\\b");break;}
-            else if (c == '\f') {add("\\f");break;}
-            else if (c == '\n') {add("\\n");break;}
-            else if (c == '\r') {add("\\r");break;}
-            else if (c == '\t') {add("\\t");break;}
+            if (c == '"') {add("\\\"");continue;}
+            else if (c == '\\') {add("\\\\");continue;}
+            else if (c == '/') {add("\\/");continue;}
+            else if (c == '\b') {add("\\b");continue;}
+            else if (c == '\f') {add("\\f");continue;}
+            else if (c == '\n') {add("\\n");continue;}
+            else if (c == '\r') {add("\\r");continue;}
+            else if (c == '\t') {add("\\t");continue;}
             else if (Character.isISOControl(c)) {
-                unicode(c);break;
+                unicode(c);continue;
             } else {
                 add(c);
             }

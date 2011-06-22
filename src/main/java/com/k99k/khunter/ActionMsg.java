@@ -94,6 +94,14 @@ public class ActionMsg {
 		return this.data.get(key);
 	}
 
+	/**
+	 * 是否存在
+	 * @param key
+	 * @return
+	 */
+	public boolean containsData(String key){
+		return this.data.containsKey(key);
+	}
 	
 	/**
 	 * 增加数据

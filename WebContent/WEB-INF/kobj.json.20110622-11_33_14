@@ -1485,6 +1485,14 @@
 					"required":true,
 					"type":0,
 					"intro":"用户name"
+				},
+				{
+					"col":"rt_id",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":4,
+					"intro":"rt_id"
 				}
 			],
 			"intro":"所有提到用户的消息,用于获取某用户被提到的消息集"

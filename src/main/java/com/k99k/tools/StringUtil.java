@@ -112,7 +112,22 @@ public final class StringUtil {
 		}
 		return true;
 	}
-
+	/**
+	 * 判断一个Object的toString是不是数字组成
+	 * @param o Object
+	 * @return
+	 */
+	public static final boolean isDigits(Object o){
+		if (o == null) {
+			return false;
+		}
+		String s = o.toString();
+		if(s.length()==0)return false;
+		for(int i=0,j=s.length();i<j;i++){
+			if(!Character.isDigit(s.charAt(i)))return false;
+		}
+		return true;
+	}
 	/**
 	 * 判断String是否达到指定长度(>=len)
 	 * @param str

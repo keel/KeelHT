@@ -42,11 +42,13 @@ public class WBTalkAct extends Action {
 		long msgId = (Long)msg.getData("msgId");
 		boolean isRT = (Boolean)msg.getData("isRT");
 		int state = (Integer)msg.getData("state");
+		Object rt_o = msg.getData("rt_id");
+		long rt_id = (rt_o==null)?0:(Long)rt_o;
 		//更新消息发表者和sent
-		WBUserDao.updateUserAndSentForNewMsg(userId, txt,msgId,isRT);
+		WBUserDao.updateUserAndSentForNewMsg(userId, txt,msgId,isRT,rt_id);
 
 		if (isRT) {
-			long rt_id = (Long)msg.getData("rt_id");
+			
 			String rt_name = (String) msg.getData("rt_name");
 			String source = (String)msg.getData("source");
 			String place = (String)msg.getData("place");
@@ -58,7 +60,7 @@ public class WBTalkAct extends Action {
 			WBUserDao.addComm(WBUserDao.newComm(), msgId, rt_id, userId, txt, source, place, ts, ms,true);
 		}
 		//向所有的fans发送消息,处理fans的inbox
-		WBUserDao.pushMsgToFans(userId, msgId,state);
+		WBUserDao.pushMsgToFans(userId, msgId,state,rt_id);
 		
 		
 		return super.act(msg);

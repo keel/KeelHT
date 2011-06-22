@@ -197,16 +197,16 @@ public class KObject {
         sb.append('"');
         CharacterIterator it = new StringCharacterIterator(obj.toString());
         for (char c = it.first(); c != CharacterIterator.DONE; c = it.next()) {
-            if (c == '"') {sb.append("\\\"");break;}
-            else if (c == '\\') {sb.append("\\\\");break;}
-            else if (c == '/') {sb.append("\\/");break;}
-            else if (c == '\b') {sb.append("\\b");break;}
-            else if (c == '\f') {sb.append("\\f");break;}
-            else if (c == '\n') {sb.append("\\n");break;}
-            else if (c == '\r') {sb.append("\\r");break;}
-            else if (c == '\t') {sb.append("\\t");break;}
+            if (c == '"') {sb.append("\\\"");continue;}
+            else if (c == '\\') {sb.append("\\\\");continue;}
+            else if (c == '/') {sb.append("\\/");continue;}
+            else if (c == '\b') {sb.append("\\b");continue;}
+            else if (c == '\f') {sb.append("\\f");continue;}
+            else if (c == '\n') {sb.append("\\n");continue;}
+            else if (c == '\r') {sb.append("\\r");continue;}
+            else if (c == '\t') {sb.append("\\t");continue;}
             else if (Character.isISOControl(c)) {
-                unicode(sb,c);break;
+                unicode(sb,c);continue;
             } else {
             	sb.append(c);
             }
