@@ -22,5 +22,21 @@
 		"topicReplace":"<a href='###'>###</a>",
 		"mentionReplace":"<a href='###'>###</a>",
 		"urlReplace":"<a href='###' target='_blank'>###</a>"
+	},
+	"wbMsg":{
+		"pageSize":20
+	},
+	"wbFollow":{
+		"pageSize":20
+	},
+	"wbDMsg":{
+		"pageSize":20,
+		"mentionReplace":"<a href='###'>###</a>"
+	},
+	"wbFavor":{
+		"pageSize":20
+	},
+	"wbTopic":{
+		"pageSize":30
 	}
 }

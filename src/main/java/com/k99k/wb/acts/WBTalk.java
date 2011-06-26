@@ -113,15 +113,18 @@ public class WBTalk extends Action {
 			JOut.err(401, httpmsg);
 			return super.act(msg);
 		}
-		
+		String re = "true";
 		String talk = httpmsg.getHttpReq().getParameter("talk");
 		String pic_url = httpmsg.getHttpReq().getParameter("pic_url");
 		String source = "web";
 		String place = "";
 		//是否转发
-		boolean isRT = httpmsg.getHttpReq().getParameter("isRT")!=null && StringUtil.isDigits(httpmsg.getHttpReq().getParameter("rt_id")) && httpmsg.getHttpReq().getParameter("isRT").equals("true") && httpmsg.getHttpReq().getParameter("rt_name")!=null;
+		boolean isRT = httpmsg.getHttpReq().getParameter("isRT")!=null && StringUtil.isDigits(httpmsg.getHttpReq().getParameter("rt_id")) 
+		&& httpmsg.getHttpReq().getParameter("isRT").equals("true") && StringUtil.isDigits(httpmsg.getHttpReq().getParameter("rt_userId")) 
+		&& httpmsg.getHttpReq().getParameter("rt_name")!=null;
 		long rt_id = (isRT)?Long.parseLong(httpmsg.getHttpReq().getParameter("rt_id")):0;
-		String rt_name = (isRT)?(String)httpmsg.getHttpReq().getParameter("rt_name"):null;
+		long rt_userId = (isRT)?Long.parseLong(httpmsg.getHttpReq().getParameter("rt_userId")):0;
+		String rt_name = (isRT)?(String)httpmsg.getHttpReq().getParameter("rt_name"):"";
 		//消息状态,控制其是否显示,如进行评论但不转发时会将此state置为1，默认为0
 		int state = (StringUtil.isDigits(httpmsg.getHttpReq().getParameter("talk_state")))?Integer.parseInt((String)httpmsg.getHttpReq().getParameter("talk_state")):0;
 		
@@ -141,10 +144,10 @@ public class WBTalk extends Action {
 		if (rt_id != 0  && state == 1) {
 			//仅评论，无转发时,不加入到wbmsg表中,仅在wbcomm中添加
 		}else{
-			WBUserDao.addTalk(newMsg,txt, user.getId(),user.getName(), (String)user.getProp("screen"),source, place,pic_url, us,ts,ms,isRT,rt_id,state);
+			re = ""+WBUserDao.addTalk(newMsg,txt, user.getId(),user.getName(), (String)user.getProp("screen"),source, place,pic_url, us,ts,ms,isRT,rt_id,state);
 		}
 		//生成异步任务
-		ActionMsg task = new ActionMsg("talkact");
+		ActionMsg task = new ActionMsg("talkTask");
 		task.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
 		task.addData("userId", user.getId());
 		task.addData("txt", txt);
@@ -153,6 +156,7 @@ public class WBTalk extends Action {
 		task.addData("state", state);
 		if (isRT) {
 			task.addData("rt_id", rt_id);
+			task.addData("rt_userId", rt_userId);
 			task.addData("rt_name", rt_name);
 			task.addData("source", source);
 			task.addData("place", place);
@@ -161,8 +165,8 @@ public class WBTalk extends Action {
 		}
 		
 		
-		TaskManager.makeNewTask("WBTalkAct:"+msgId, task);
-		
+		TaskManager.makeNewTask("WBTalkTask:"+msgId, task);
+		msg.addData("[print]", re);
 		return super.act(msg);
 	}
 
@@ -201,12 +205,12 @@ public class WBTalk extends Action {
 		}
 		matcher.appendTail(buffer);
 		if (topics != null) {
-			ActionMsg task = new ActionMsg("topic");
+			ActionMsg task = new ActionMsg("topicTask");
 			//注意topic任务必须是单个队列的
 			task.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_SINGLE);
 			task.addData("topics", topics);
 			task.addData("msgId", msgId);
-			TaskManager.makeNewTask("topic", task);
+			TaskManager.makeNewTask("topicTask", task);
 		}
 		sb.delete(0, sb.length()).append(buffer);
 		return topics;

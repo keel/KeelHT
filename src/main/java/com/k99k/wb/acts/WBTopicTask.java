@@ -15,12 +15,12 @@ import com.k99k.khunter.dao.WBUserDao;
  * @author keel
  *
  */
-public class WBTopic extends Action {
+public class WBTopicTask extends Action {
 
 	/**
 	 * @param name
 	 */
-	public WBTopic(String name) {
+	public WBTopicTask(String name) {
 		super(name);
 	}
 	
@@ -44,30 +44,5 @@ public class WBTopic extends Action {
 		return super.act(msg);
 	}
 
-
-
-	/* (non-Javadoc)
-	 * @see com.k99k.khunter.Action#exit()
-	 */
-	@Override
-	public void exit() {
-
-	}
-
-	/* (non-Javadoc)
-	 * @see com.k99k.khunter.Action#getIniPath()
-	 */
-	@Override
-	public String getIniPath() {
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.k99k.khunter.Action#init()
-	 */
-	@Override
-	public void init() {
-
-	}
 
 }

@@ -54,6 +54,7 @@ public class WBUrl extends Action {
 		String reqUserStr = getCookieValue(httpmsg.getHttpReq().getCookies(),"wbu","");
 		//String auto = getCookieValue(httpmsg.getHttpReq().getCookies(),"al","false");
 		boolean hasName = (!reqUserStr.equals(""));
+		//访问根域名时在有cookie授权时转到自己的inbox页
 		if (actName.equals("")) {
 			if (hasName) {
 				String[] u_p = Base64Coder.decodeString(reqUserStr).split(":");

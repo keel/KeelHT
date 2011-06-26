@@ -86,9 +86,10 @@ $("#jsonNameSet").click(function(){
 	}
 });
 //ajax submit
-$("#testForm").submit(function(){
+$("#testForm").submit(function(event){
 	// stop form from submitting normally
 	event.preventDefault();
+	$("#re").text("");
 	//check
 	if($("#testUrl").val() == 'console/test' || $("#json").attr('name')=='json'){
 		alert("url or json is not ready.");
@@ -109,7 +110,10 @@ $("#testForm").submit(function(){
 	      $("#re").addClass("re").text(data);
 	      submitBt.removeAttr("disabled");
 	  }
-	);
+	).error(function(data){
+		submitBt.removeAttr("disabled");
+		$("#re").addClass("re").text("err:"+data);
+	});
 	
 });
 	

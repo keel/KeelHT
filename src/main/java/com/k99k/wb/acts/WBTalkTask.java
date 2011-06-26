@@ -18,12 +18,12 @@ import com.k99k.khunter.dao.WBUserDao;
  * @author keel
  *
  */
-public class WBTalkAct extends Action {
+public class WBTalkTask extends Action {
 
 	/**
 	 * @param name
 	 */
-	public WBTalkAct(String name) {
+	public WBTalkTask(String name) {
 		super(name);
 	}
 
@@ -48,7 +48,7 @@ public class WBTalkAct extends Action {
 		WBUserDao.updateUserAndSentForNewMsg(userId, txt,msgId,isRT,rt_id);
 
 		if (isRT) {
-			
+			long rt_userId = (Long)msg.getData("rt_userId");
 			String rt_name = (String) msg.getData("rt_name");
 			String source = (String)msg.getData("source");
 			String place = (String)msg.getData("place");
@@ -57,10 +57,13 @@ public class WBTalkAct extends Action {
 			//被转用户提到消息+1,addMention
 			WBUserDao.addMention(rt_name, rt_id);
 			//更新原消息的转发次数,addComm
-			WBUserDao.addComm(WBUserDao.newComm(), msgId, rt_id, userId, txt, source, place, ts, ms,true);
+			WBUserDao.addComm(WBUserDao.newComm(), rt_id, rt_userId, userId, txt, source, place, ts, ms,true);
 		}
-		//向所有的fans发送消息,处理fans的inbox
-		WBUserDao.pushMsgToFans(userId, msgId,state,rt_id);
+		if (state == 0) {
+			//向所有的fans发送消息,处理fans的inbox
+			WBUserDao.pushMsgToFans(userId, msgId,state,rt_id);
+		}
+		
 		
 		
 		return super.act(msg);

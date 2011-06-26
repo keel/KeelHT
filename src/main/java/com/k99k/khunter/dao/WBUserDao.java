@@ -21,6 +21,7 @@ import com.k99k.khunter.KObjSchema;
 import com.k99k.khunter.KObject;
 import com.k99k.khunter.MongoDao;
 import com.k99k.tools.StringUtil;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -49,7 +50,8 @@ public class WBUserDao extends MongoDao {
 	private static DaoInterface wbSentDao;
 	private static DaoInterface wbUserDao;
 	private static DaoInterface wbCommDao;
-	private static DaoInterface wbDMsgDao;
+	//private static DaoInterface wbDMsgDao;
+	private static DaoInterface wbDMsgTBDao;
 	private static DaoInterface wbFavDao;
 	
 	private static KObjConfig wbTagConfig;
@@ -59,7 +61,8 @@ public class WBUserDao extends MongoDao {
 	//private static KObjConfig wbFansConfig;
 	private static KObjConfig wbInboxConfig;
 	private static KObjConfig wbSentConfig;
-	private static KObjConfig wbDMsgConfig;
+	//private static KObjConfig wbDMsgConfig;
+	private static KObjConfig wbDMsgTBConfig;
 	//private static KObjConfig wbFanConfig;
 	private static KObjConfig wbFavConfig;
 	//private static KObjConfig wbFollowConfig;
@@ -88,10 +91,11 @@ public class WBUserDao extends MongoDao {
 		//wbFansConfig = KObjManager.findKObjConfig("wb_fans");
 		wbInboxConfig = KObjManager.findKObjConfig("wb_inbox");
 		wbSentConfig = KObjManager.findKObjConfig("wb_sent");
-		wbDMsgConfig = KObjManager.findKObjConfig("wb_dmsg");
+		//wbDMsgConfig = KObjManager.findKObjConfig("wb_dmsg");
 		//wbFanConfig = KObjManager.findKObjConfig("wb_fans");
 		wbFavConfig = KObjManager.findKObjConfig("wb_favourite");
-		 
+		wbDMsgTBConfig =  KObjManager.findKObjConfig("wbmsg_d");
+		
 		wbTagsDao = DaoManager.findDao("wbTagsDao");
 		wbMentionDao = DaoManager.findDao("wbMentionDao");
 		wbMsgDao = DaoManager.findDao("wbMsgDao");
@@ -101,8 +105,8 @@ public class WBUserDao extends MongoDao {
 		wbUserDao = DaoManager.findDao("wbUserDao");
 		wbSentDao = DaoManager.findDao("wbSentDao");
 		wbInboxDao = DaoManager.findDao("wbInboxDao");
-		wbDMsgDao = DaoManager.findDao("wbAllDMsgDao");
-		
+		//wbDMsgDao = DaoManager.findDao("wbAllDMsgDao");
+		wbDMsgTBDao = DaoManager.findDao("wbDMsgDao");
 		
 		Object[] kcs = new Object[]{
 				wbTagConfig,wbMentionConfig,wbMsgConfig,wbInboxConfig,wbSentConfig,
@@ -209,7 +213,7 @@ public class WBUserDao extends MongoDao {
 	}
 	
 	//以下属性是用于查询的静态条件,节省开销
-	private static final BasicDBObject prop_msg_id = new BasicDBObject("msg_id",1);
+	private static final BasicDBObject prop_id = new BasicDBObject("_id",1);
 	private static final BasicDBObject prop_msg_rt_id = new BasicDBObject("msg_id",1).append("rt_id", 1);
 	private static final BasicDBObject prop_fans_id = new BasicDBObject("fans_id",1);
 	private static final BasicDBObject prop_sum = new BasicDBObject("sum",1);
@@ -219,22 +223,25 @@ public class WBUserDao extends MongoDao {
 	private static final BasicDBObject prop_notify_msg_reset = new BasicDBObject("$set",new BasicDBObject("notify_msg",0));
 	private static final BasicDBObject prop_notify_dmsg_reset = new BasicDBObject("$set",new BasicDBObject("notify_dmsg",0));
 	private static final BasicDBObject prop_notify_mention_reset = new BasicDBObject("$set",new BasicDBObject("notify_mention",0));
-	private static final BasicDBObject prop_followers_count_inc = new BasicDBObject("followers_count",1);
+	private static final BasicDBObject prop_followers_count_inc = new BasicDBObject("friends_count",1);
 	private static final BasicDBObject prop_fans_count_inc = new BasicDBObject("followers_count",1).append("notify_fan", 1);
-	private static final BasicDBObject prop_followers_count_dec = new BasicDBObject("followers_count",-1);
-	private static final BasicDBObject prop_fans_count_dec = new BasicDBObject("friends_count",-1);
+	private static final BasicDBObject prop_followers_count_dec = new BasicDBObject("friends_count",-1);
+	private static final BasicDBObject prop_fans_count_dec = new BasicDBObject("followers_count",-1);
 	private static final BasicDBObject prop_statuses_count = new BasicDBObject("statuses_count",1);
 	private static final BasicDBObject prop_notify_mention_inc = new BasicDBObject("$inc",new BasicDBObject("notify_mention",1).append("mention_count",1));
 	private static final BasicDBObject prop_del_my_msg = new BasicDBObject("$inc",new BasicDBObject("statuses_count",-1).append("inbox_count", -1));
 	private static final BasicDBObject prop_dmsg_inc = new BasicDBObject("$inc", new BasicDBObject("notify_dmsg",1).append("dmsg_count", 1));
 	private static final BasicDBObject prop_rt_comm_inc = new BasicDBObject("$inc", new BasicDBObject("rt_comm_count",1));
 	private static final BasicDBObject prop_del_dmsg = new BasicDBObject("$inc",new BasicDBObject("dmsg_count",-1));
+	private static final BasicDBObject prop_follows_both = new BasicDBObject("follows.$.both",1);
+	private static final BasicDBObject prop_fans_both =new BasicDBObject("$set", new BasicDBObject("fans.$.both",1));
+	private static final BasicDBObject prop_fans_both_clear =new BasicDBObject("$set", new BasicDBObject("fans.$.both",0));
 	
 	
 	/**
 	 * 添加评论的同步操作,同时在原消息的转发数加一
 	 * @param newComm 带ID的新评论
-	 * @param msgId 原消息ID
+	 * @param rt_id 原消息ID
 	 * @param re_userId 原消息用户ID
 	 * @param userId 发表者ID
 	 * @param msg 评论内容
@@ -244,14 +251,13 @@ public class WBUserDao extends MongoDao {
 	 * @param mentions
 	 * @return
 	 */
-	public static final boolean addComm(KObject newComm,long msgId,long re_userId,long userId,String msg,String source,String place,ArrayList<String> topics,ArrayList<String> mentions,boolean isRT){
+	public static final boolean addComm(KObject newComm,long rt_id,long re_userId,long userId,String msg,String source,String place,ArrayList<String> topics,ArrayList<String> mentions,boolean isRT){
 		//添加一个comm
 		newComm.setProp("text", msg);
 		newComm.setProp("source", source);
 		newComm.setProp("place", place);
 		newComm.setProp("user_id", userId);
-		newComm.setProp("re_msg_id", msgId);
-		newComm.setProp("re_user_id", re_userId);
+		newComm.setProp("re_msg_id", rt_id);
 		newComm.setProp("re_user_id", re_userId);
 		
 		if (topics != null) {
@@ -267,24 +273,27 @@ public class WBUserDao extends MongoDao {
 //			newComm.setProp("urls", urls);
 //		}
 		boolean re = wbCommDao.save(newComm);
-		incMsgRTorComm(msgId);
+		incMsgRTorComm(rt_id);
 		return re;
 	}
 	
-	public static final void incMsgRTorComm(long msgId){
-		BasicDBObject q = new BasicDBObject("_id",msgId);
+	public static final void incMsgRTorComm(long rt_id){
+		BasicDBObject q = new BasicDBObject("_id",rt_id);
 		wbMsgDao.updateOne(q, prop_rt_comm_inc);
 	}
 	
-	public static final void addDMsg(long userId,long dMsgId){
+	public static final boolean addDMsg(long userId,long targetId,String talkMsg,String userName){
+		
+		KObject newMsg = wbDMsgTBConfig.getKobjSchema().createEmptyKObj(wbDMsgTBDao);
+		newMsg.setProp("text", talkMsg);
+		newMsg.setProp("creatorId", userId);
+		newMsg.setProp("to_id", targetId);
+		newMsg.setProp("creatorName", userName);
+		wbDMsgTBDao.save(newMsg);
+		
 		BasicDBObject q = new BasicDBObject("_id",userId);
-		wbUserDao.updateOne(q, prop_dmsg_inc);
-		KObject n = wbDMsgConfig.getKobjSchema().createEmptyKObj(wbDMsgDao);
-		n.setProp("user_id", userId);
-		n.setProp("msg_id", dMsgId);
-		wbDMsgDao.save(n);
+		return wbUserDao.updateOne(q, prop_dmsg_inc);
 	}
-	
 	
 	/**
 	 * 获取某消息的评论和转发
@@ -350,7 +359,7 @@ public class WBUserDao extends MongoDao {
 		KObject org_msg = wbMsgDao.findOne(msgId);
 		list.add(org_msg);
 		ArrayList<KObject> sub = WBUserDao.readComms(msgId, page, pageSize);
-		if (sub != null) {
+		if (sub != null &&  !sub.isEmpty()) {
 			list.addAll(sub);
 		}
 		return list;
@@ -358,6 +367,7 @@ public class WBUserDao extends MongoDao {
 	
 	
 	
+	@SuppressWarnings("unchecked")
 	public static final ArrayList<Map<String, Object>> getFans(long userId,int page,int pageSize){
 		KObject user = wbUserDao.findOne(userId);
 		int msgCount = Integer.parseInt(user.getProp("followers_count").toString());
@@ -366,16 +376,21 @@ public class WBUserDao extends MongoDao {
 			return null;
 		}
 		ArrayList<Map<String, Object>> userIdList = new ArrayList<Map<String, Object>>(pageSize);
-		BasicDBObject fields = new BasicDBObject();
+		BasicDBObject fields = prop_id;
 		fields.append("fans", new BasicDBObject("$slice",new int[]{0-skip,pageSize}));
-		List<Map<String,Object>> msgIds = wbUserDao.query(new BasicDBObject("user_id",userId), fields,null, 0, 1, null);
-		for (Iterator<Map<String, Object>> it = msgIds.iterator(); it.hasNext();) {
-			Map<String, Object> m = it.next();
-			userIdList.add(m);
+		List<Map<String,Object>> msgIds = wbUserDao.query(new BasicDBObject("_id",userId),fields,null, 0, 1, null);
+		if (!msgIds.isEmpty()) {
+			Map<String, Object> u = msgIds.get(0);
+			List<Map<String,Object>> msgIdList = (List<Map<String, Object>>) u.get("fans");
+			for (Iterator<Map<String, Object>> it = msgIdList.iterator(); it.hasNext();) {
+				Map<String, Object> m = it.next();
+				userIdList.add(m);
+			}
 		}
 		return userIdList;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static final ArrayList<Map<String, Object>> getFollows(long userId,int page,int pageSize){
 		KObject user = wbUserDao.findOne(userId);
 		int msgCount = Integer.parseInt(user.getProp("friends_count").toString());
@@ -384,13 +399,18 @@ public class WBUserDao extends MongoDao {
 			return null;
 		}
 		ArrayList<Map<String, Object>> userIdList = new ArrayList<Map<String, Object>>(pageSize);
-		BasicDBObject fields = new BasicDBObject();
-		fields.append("follow", new BasicDBObject("$slice",new int[]{0-skip,pageSize}));
-		List<Map<String,Object>> msgIds = wbUserDao.query(new BasicDBObject("user_id",userId), fields,null, 0, 1, null);
-		for (Iterator<Map<String, Object>> it = msgIds.iterator(); it.hasNext();) {
-			Map<String, Object> m = it.next();
-			userIdList.add(m);
+		BasicDBObject fields = prop_id;
+		fields.append("follows", new BasicDBObject("$slice",new int[]{0-skip,pageSize}));
+		List<Map<String,Object>> msgIds = wbUserDao.query(new BasicDBObject("_id",userId),fields,null, 0, 1, null);
+		if (!msgIds.isEmpty()) {
+			Map<String, Object> u = msgIds.get(0);
+			List<Map<String,Object>> msgIdList = (List<Map<String, Object>>) u.get("follows");
+			for (Iterator<Map<String, Object>> it = msgIdList.iterator(); it.hasNext();) {
+				Map<String, Object> m = it.next();
+				userIdList.add(m);
+			}
 		}
+		
 		return userIdList;
 	}
 	
@@ -403,6 +423,7 @@ public class WBUserDao extends MongoDao {
 	 * @param pageSize
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static final ArrayList<KObject> readOneTopicList(String topic,int page,int pageSize){
 		Map<String,Object> t = wbTagsDao.findOneMap(new BasicDBObject("name",topic),new BasicDBObject("sum",1));
 		int msgCount = Integer.parseInt(t.get("sum").toString());
@@ -412,15 +433,16 @@ public class WBUserDao extends MongoDao {
 		}
 		
 		ArrayList<Long> msgIdList = new ArrayList<Long>(pageSize);
-		ArrayList<Map<String, Object>> userIdList = new ArrayList<Map<String, Object>>(pageSize);
-		BasicDBObject fields = new BasicDBObject();
+		BasicDBObject fields = prop_id;
 		fields.append("tag_ids", new BasicDBObject("$slice",new int[]{0-skip,pageSize}));
 		List<Map<String,Object>> msgIds = wbTagsDao.query(new BasicDBObject("name",topic), fields,null, 0, 1, null);
-		for (Iterator<Map<String, Object>> it = msgIds.iterator(); it.hasNext();) {
-			Map<String, Object> m = it.next();
-			userIdList.add(m);
+		if (!msgIds.isEmpty()) {
+			Map<String,Object> mm = msgIds.get(0);
+			ArrayList<Long> ll = (ArrayList<Long>) mm.get("tag_ids");
+			msgIdList = ll;
 		}
-		ArrayList<KObject> list = getMsgList(msgIdList,pageSize);	
+		
+		ArrayList<KObject> list = getMsgList(msgIdList,pageSize,prop_id_desc);	
 		return list;
 	}
 	
@@ -484,11 +506,12 @@ public class WBUserDao extends MongoDao {
 			return null;
 		}
 		
-		ArrayList<KObject> list = getMsgListWithRT(wbMentionDao,new BasicDBObject("user_name",user.getName()),skip,pageSize);
+		ArrayList<KObject> list = getMsgListWithRT(wbMentionDao,new BasicDBObject("user_name",user.getName()).append("state", 0),skip,pageSize);
 		wbUserDao.updateOne(new BasicDBObject("_id",userId), prop_notify_mention_reset);
 		return list;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static final ArrayList<KObject> readDMsg(long userId,int page,int pageSize){
 		KObject user = wbUserDao.findOne(userId);
 		int msgCount = Integer.parseInt(user.getProp("dmsg_count").toString());
@@ -496,23 +519,25 @@ public class WBUserDao extends MongoDao {
 		if (skip < 0) {
 			return null;
 		}
-		
-		ArrayList<Long> msgIdList = new ArrayList<Long>(pageSize);
-		List<Map<String,Object>> msgIds = wbDMsgDao.query(new BasicDBObject("user_id",userId), prop_msg_id,prop_id_desc, skip, pageSize, null);
-		for (Iterator<Map<String, Object>> it = msgIds.iterator(); it.hasNext();) {
-			Map<String, Object> m = it.next();
-			msgIdList.add((Long)m.get("msg_id"));
+		ArrayList<KObject> list = new ArrayList<KObject>();
+		DBCollection coll = wbDMsgTBDao.getColl();
+		BasicDBObject q = new BasicDBObject("state", 0);
+		BasicDBList or = new BasicDBList();
+		or.add(new BasicDBObject("to_id",userId));
+		or.add(new BasicDBObject("creatorId",userId));
+		q.append("$or", or);
+		DBCursor cur = coll.find(q).skip(skip).limit(pageSize);
+		while (cur.hasNext()) {
+			Map<String,Object> m = (Map<String,Object>) cur.next();
+			list.add(new KObject(m));
 		}
-		
-		ArrayList<KObject> list = getMsgList(msgIdList,pageSize);	
 		wbUserDao.updateOne(new BasicDBObject("_id",userId), prop_notify_dmsg_reset);
 		return list;
 	}
 	
 	public static final boolean delDMsg(long userId,long msgId){
 		wbUserDao.updateOne(new BasicDBObject("_id",userId), prop_del_dmsg);
-		
-		return wbDMsgDao.deleteOne(msgId);
+		return wbDMsgTBDao.deleteOne(msgId);
 	}
 	
 	/**
@@ -543,6 +568,9 @@ public class WBUserDao extends MongoDao {
 	 * @return 是否成功
 	 */
 	public static final boolean follow(long userId,long targetId){
+		if (userId == targetId) {
+			return false;
+		}
 		KObject user = wbUserDao.findOne(userId);
 		KObject target = wbUserDao.findOne(targetId);
 		if (user == null || target== null) {
@@ -568,8 +596,9 @@ public class WBUserDao extends MongoDao {
 			BasicDBObject update2 =  new BasicDBObject("$addToSet",new BasicDBObject("fans",new BasicDBObject("id",userId).append("both",isTargetFans).append("name",user.getName()).append("screen", user.getProp("screen_name"))));
 			update2.put("$inc", prop_fans_count_inc);
 			if (isTargetFans == 1) {
-				update2.put("$set", new BasicDBObject("follows.$.both",1));
+				update2.put("$set", prop_follows_both);
 				wbUserDao.updateOne(new BasicDBObject("_id",targetId).append("follows.id", userId),update2);
+				wbUserDao.updateOne(new BasicDBObject("_id",userId).append("fans.id", targetId),prop_fans_both);
 			}else{
 				wbUserDao.updateOne(new BasicDBObject("_id",targetId),update2);
 			}
@@ -588,6 +617,9 @@ public class WBUserDao extends MongoDao {
 	 * @return 是否成功
 	 */
 	public static final boolean unFollow(long userId,long targetId){
+		if (userId == targetId) {
+			return false;
+		}
 		KObject user = wbUserDao.findOne(userId);
 		KObject target = wbUserDao.findOne(targetId);
 		if (user == null || target== null) {
@@ -606,15 +638,16 @@ public class WBUserDao extends MongoDao {
 			}
 			
 			//更新原用户
-			BasicDBObject update =  new BasicDBObject("$pull",new BasicDBObject("follows.id",targetId));
+			BasicDBObject update =  new BasicDBObject("$pull",new BasicDBObject("follows",new BasicDBObject("id",targetId)));
 			update.put("$inc", prop_followers_count_dec);
 			wbUserDao.updateOne(new BasicDBObject("_id",userId),update);
 			//更新目标用户
-			BasicDBObject update2 =  new BasicDBObject("$pull",new BasicDBObject("fans.id",userId));
+			BasicDBObject update2 =  new BasicDBObject("$pull",new BasicDBObject("fans",new BasicDBObject("id",userId)));
 			update2.put("$inc", prop_fans_count_dec);
 			if (isTargetFans == 1) {
 				update2.put("$set", new BasicDBObject("follows.$.both",0));
 				wbUserDao.updateOne(new BasicDBObject("_id",targetId).append("follows.id", userId),update2);
+				wbUserDao.updateOne(new BasicDBObject("_id",userId).append("fans.id", targetId), prop_fans_both_clear);
 			}else{
 				wbUserDao.updateOne(new BasicDBObject("_id",targetId),update2);
 			}
@@ -666,7 +699,7 @@ public class WBUserDao extends MongoDao {
 	 * @return ArrayList<KObject> 
 	 */
 	private static final ArrayList<KObject> getInboxMsgList(long userId,int skip,int max){
-		ArrayList<KObject> list = getMsgListWithRT(wbInboxDao,new BasicDBObject("user_id",userId),skip,max);
+		ArrayList<KObject> list = getMsgListWithRT(wbInboxDao,new BasicDBObject("user_id",userId).append("state", 0),skip,max);
 		wbUserDao.updateOne(new BasicDBObject("_id",userId), prop_notify_msg_reset);
 		return list;
 	}
@@ -679,7 +712,7 @@ public class WBUserDao extends MongoDao {
 			return null;
 		}
 		
-		ArrayList<KObject> list = getMsgListWithRT(dao,new BasicDBObject("user_id",userId),skip,pageSize);
+		ArrayList<KObject> list = getMsgListWithRT(dao,new BasicDBObject("user_id",userId).append("state", 0),skip,pageSize);
 		
 		return list;
 	}
@@ -697,6 +730,9 @@ public class WBUserDao extends MongoDao {
 		ArrayList<Long> msgIdList = new ArrayList<Long>(initSize);
 		ArrayList<Long> allIdList = new ArrayList<Long>(initSize*2);
 		List<Map<String,Object>> msgIds = dao.query(query, prop_msg_rt_id,prop_id_desc, skip, initSize, null);
+		if (msgIds==null || msgIds.isEmpty()) {
+			return null;
+		}
 		for (Iterator<Map<String, Object>> it = msgIds.iterator(); it.hasNext();) {
 			Map<String, Object> m = it.next();
 			long msg_id = (Long)m.get("msg_id");
@@ -708,6 +744,7 @@ public class WBUserDao extends MongoDao {
 				allIdList.add(rt);
 			}
 		}
+		
 		//如果算上转发的,大小应该x2
 		int max = initSize*2;
 		HashMap<Long,KObject> map = getMsgMap(allIdList,max);
@@ -736,10 +773,15 @@ public class WBUserDao extends MongoDao {
 	 * @return ArrayList<KObject>
 	 */
 	@SuppressWarnings("unchecked")
-	private static final ArrayList<KObject> getMsgList(ArrayList<Long> msgIdList,int initSize){
+	private static final ArrayList<KObject> getMsgList(ArrayList<Long> msgIdList,int initSize,DBObject sort){
 		ArrayList<KObject> list = new ArrayList<KObject>(initSize);		
 		DBCollection coll = wbMsgDao.getColl();
-		DBCursor cur = coll.find(new BasicDBObject("_id",new BasicDBObject("$in",msgIdList)).append("state", 0));
+		DBCursor cur = null;
+		if (sort == null) {
+			cur = coll.find(new BasicDBObject("_id",new BasicDBObject("$in",msgIdList)).append("state", 0));
+		}else{
+			cur = coll.find(new BasicDBObject("_id",new BasicDBObject("$in",msgIdList)).append("state", 0)).sort(sort);
+		}
 		while (cur.hasNext()) {
 			Map<String,Object> m = (Map<String,Object>) cur.next();
 			list.add(new KObject(m));
@@ -774,7 +816,7 @@ public class WBUserDao extends MongoDao {
 	 * @return ArrayList<KObject> 
 	 */
 	public static final ArrayList<KObject> getSentMsgList(long userId,int skip,int max){
-		ArrayList<KObject> list = getMsgListWithRT(wbSentDao,new BasicDBObject("user_id",userId),skip,max);
+		ArrayList<KObject> list = getMsgListWithRT(wbSentDao,new BasicDBObject("user_id",userId).append("state", 0),skip,max);
 		return list;
 	}
 	
@@ -861,8 +903,8 @@ public class WBUserDao extends MongoDao {
 	public static final boolean addTalk(KObject newMsg,String talkMsg,long userId,String userName,String screenName,String source,String place,String pic_url,ArrayList<String> urls,ArrayList<String> topics,ArrayList<String> mentions,boolean isRT,long rt_id,int talk_state){
 		//KObject newO = newMsg;
 		newMsg.setProp("text", talkMsg);
-		newMsg.setProp("author_id", userId);
-		newMsg.setProp("author_name", userName);
+		newMsg.setProp("creatorId", userId);
+		newMsg.setProp("creatorName", userName);
 		newMsg.setProp("author_screen", screenName);
 		newMsg.setProp("source", source);
 		newMsg.setProp("place", place);
@@ -889,15 +931,30 @@ public class WBUserDao extends MongoDao {
 		//return newMsg.getId();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static final ArrayList<Long> getAllFans(long userId){
-		DBCollection coll = wbFansDao.getColl();
-		ArrayList<Long> list = new ArrayList<Long>();
-		//List<Map<String, Object>> re = wbFansDao.query(new BasicDBObject("user_id",userId), new BasicDBObject("fans_id",1), new BasicDBObject("hot",-1), 0, 0, null);
-		DBCursor cur = coll.find(prop_fans_id, new BasicDBObject("user_id",userId)).sort(new BasicDBObject("hot",-1));
-		while (cur.hasNext()) {
-			list.add((Long)(cur.next().get("fans_id")));
+//		DBCollection coll = wbFansDao.getColl();
+//		ArrayList<Long> list = new ArrayList<Long>();
+//		//List<Map<String, Object>> re = wbFansDao.query(new BasicDBObject("user_id",userId), new BasicDBObject("fans_id",1), new BasicDBObject("hot",-1), 0, 0, null);
+//		DBCursor cur = coll.find(prop_fans_id, new BasicDBObject("user_id",userId)).sort(new BasicDBObject("hot",-1));
+//		while (cur.hasNext()) {
+//			list.add((Long)(cur.next().get("fans_id")));
+//		}
+		
+		KObject user = wbUserDao.findOne(userId);
+		int msgCount = Integer.parseInt(user.getProp("followers_count").toString());
+		ArrayList<Long> userIdList = new ArrayList<Long>(msgCount);
+		List<Map<String,Object>> msgIds = wbUserDao.query(new BasicDBObject("_id",userId),new BasicDBObject("fans",1),null, 0, 1, null);
+		if (!msgIds.isEmpty()) {
+			Map<String, Object> u = msgIds.get(0);
+			List<Map<String,Object>> msgIdList = (List<Map<String, Object>>) u.get("fans");
+			for (Iterator<Map<String, Object>> it = msgIdList.iterator(); it.hasNext();) {
+				Map<String, Object> m = it.next();
+				userIdList.add((Long)m.get("id"));
+			}
 		}
-		return list;
+		
+		return userIdList;
 	}
 	
 	public static final void updateUserAndSentForNewMsg(long userId,String msg,long msgId,boolean isRT,long rt_id){
@@ -922,7 +979,8 @@ public class WBUserDao extends MongoDao {
 	 */
 	public static final void pushMsgToFans(long userId,long msgId,int state,long rt_id){
 		
-		ArrayList<Long> fansIds = getAllFans(userId);
+		
+		
 		//先向自己推送
 		KObject in = wbInboxConfig.getKobjSchema().createEmptyKObj(wbInboxDao);
 		in.setProp("user_id", userId);
@@ -932,13 +990,18 @@ public class WBUserDao extends MongoDao {
 		wbInboxDao.save(in);
 		wbUserDao.updateOne(new BasicDBObject("_id",userId), new BasicDBObject("$inc",prop_notify_msg));
 		
+		ArrayList<Long> fansIds = getAllFans(userId);
+		if (fansIds.isEmpty()) {
+			return;
+		}
 		//向fans推送
 		for (Iterator<Long> it = fansIds.iterator(); it.hasNext();) {
 			long fanId = it.next();
 			KObject inbox = wbInboxConfig.getKobjSchema().createEmptyKObj(wbInboxDao);
-			inbox.setProp("user_id", userId);
+			inbox.setProp("user_id", fanId);
 			inbox.setProp("msg_id", msgId);
 			inbox.setProp("rt_id", rt_id);
+			inbox.setProp("creatorId", userId);
 			wbInboxDao.save(inbox);
 			wbUserDao.updateOne(new BasicDBObject("_id",fanId), new BasicDBObject("$inc",prop_notify_msg));
 		}

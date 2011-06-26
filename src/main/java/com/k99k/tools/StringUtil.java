@@ -101,13 +101,14 @@ public final class StringUtil {
 //	}
 	
 	/**
-	 * 判断一个字符串是不是数字组成
+	 * 判断一个字符串是不是数字组成,可以为负数
 	 * @param s 字符。
 	 * @return
 	 */
 	public static final boolean isDigits(String s){
 		if(s==null||s.length()==0)return false;
-		for(int i=0;i<s.length();i++){
+		int begin = (s.charAt(0) == '-')?1:0;
+		for(int i=begin;i<s.length();i++){
 			if(!Character.isDigit(s.charAt(i)))return false;
 		}
 		return true;

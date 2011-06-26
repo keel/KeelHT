@@ -97,12 +97,12 @@ public abstract class Action {
 	/**
 	 * 处理退出时的操作,一般在ActionManager关闭时处理
 	 */
-	public abstract void exit();
+	public void exit(){};
 	
 	/**
 	 * 处理初化化操作,注意初始化不要太复杂,时间过长
 	 */
-	public abstract void init();
+	public void init(){};
 	
 	/**
 	 * 重新载入
@@ -116,5 +116,7 @@ public abstract class Action {
 	 * 返回此Action所用到的配置文件路径
 	 * @return
 	 */
-	public abstract String getIniPath();
+	public String getIniPath(){
+		return null;
+	}
 }

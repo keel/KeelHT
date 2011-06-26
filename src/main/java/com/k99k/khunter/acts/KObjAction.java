@@ -24,6 +24,7 @@ import com.k99k.khunter.KObjSchema;
 import com.k99k.khunter.KObject;
 import com.k99k.tools.JSONTool;
 import com.k99k.tools.StringUtil;
+import com.mongodb.BasicDBObject;
 
 /**
  * KObj的管理和查询
@@ -262,14 +263,27 @@ public class KObjAction extends Action{
 						HashMap nk = JSONTool.readJsonString(kobj_json);
 						KObjSchema ks = kc.getKobjSchema();
 						DaoInterface dao = kc.getDaoConfig().findDao();
+						//去掉不存在的属性
+						for (Iterator<String> iterator = nk.keySet().iterator(); iterator.hasNext();) {
+							String prop = iterator.next();
+							if (!ks.containsColumn(prop)) {
+								nk.remove(prop);
+							}
+						}
+						
+						
 						KObject newKObj = (StringUtil.isDigits(kobj_id))?dao.findOne(Long.parseLong(kobj_id)):ks.createEmptyKObj();
 						boolean re = false;
 						if (newKObj != null) {
 							if (isAdd) {
 								re = ks.setPropFromMapForCreate(nk, newKObj) && dao.save(newKObj);
 							}else{
-								re = ks.setPropFromMap(nk, newKObj) && dao.save(newKObj);
+								re = dao.update(new BasicDBObject("_id",Long.parseLong(kobj_id)),new BasicDBObject("$set",nk),false,false);
 							}
+						}else{
+							//kobj_id未找到
+							msg.addData("[print]", "{\"re\":\"err\",\"kobj_json\":{\"id\":"+kobj_id+" can't find!}}");
+							return super.act(msg);
 						}
 						if(re){
 							msg.addData("[print]", "{\"re\":\"ok\",\"d\":{\"id\":"+newKObj.getId()+"}}");

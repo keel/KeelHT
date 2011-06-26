@@ -6,6 +6,8 @@ package com.k99k.wb.acts;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.DaoManager;
@@ -13,6 +15,7 @@ import com.k99k.khunter.KObjManager;
 import com.k99k.khunter.KObjSchema;
 import com.k99k.khunter.KObject;
 import com.k99k.khunter.dao.WBUserDao;
+import com.k99k.tools.encrypter.Base64Coder;
 
 /**
  * wb用户类,获取用户信息,修改用户信息
@@ -35,6 +38,27 @@ public class WBUser extends Action {
 	private static WBUserDao wbUserDao = null;
 	
 	private static KObjSchema wbUserSchema = null;
+	
+	/**
+	 * 
+	 * @param req
+	 * @return KObject User
+	 */
+	public static final KObject authCookie(HttpServletRequest req){
+		String reqUserStr = WBUrl.getCookieValue(req.getCookies(),"wbu","");
+		boolean hasName = (!reqUserStr.equals(""));
+		if (!hasName) {
+			return null;
+		}
+		String[] u_p = Base64Coder.decodeString(reqUserStr).split(":");
+		if (u_p.length >= 2) {
+			KObject wbUser = WBLogin.auth(u_p[0], u_p[1]);
+			if (wbUser != null) {
+				return wbUser;
+			}
+		}
+		return null;
+	}
 	
 	/**
 	 * 此act不一定使用,直接使用静态方法即可

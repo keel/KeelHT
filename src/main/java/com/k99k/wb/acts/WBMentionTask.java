@@ -15,12 +15,12 @@ import com.k99k.khunter.dao.WBUserDao;
  * @author keel
  *
  */
-public class WBMention extends Action {
+public class WBMentionTask extends Action {
 
 	/**
 	 * @param name
 	 */
-	public WBMention(String name) {
+	public WBMentionTask(String name) {
 		super(name);
 	}
 
@@ -47,30 +47,5 @@ public class WBMention extends Action {
 	}
 
 
-
-
-	/* (non-Javadoc)
-	 * @see com.k99k.khunter.Action#exit()
-	 */
-	@Override
-	public void exit() {
-
-	}
-
-	/* (non-Javadoc)
-	 * @see com.k99k.khunter.Action#getIniPath()
-	 */
-	@Override
-	public String getIniPath() {
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.k99k.khunter.Action#init()
-	 */
-	@Override
-	public void init() {
-
-	}
 
 }

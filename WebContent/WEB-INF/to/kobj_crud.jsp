@@ -190,7 +190,7 @@ $(function(){
 			url = url+"&act_add=true";
 		}
 		var a = {kobj_json:$("#a_area").val()};
-		console.log(a);
+		//console.log(a);
 		$.post(url,a,function(data){
 			$("#re").text(data);
 			$("#reTable").html("");
