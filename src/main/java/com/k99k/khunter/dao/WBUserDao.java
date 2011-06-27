@@ -238,6 +238,7 @@ public class WBUserDao extends MongoDao {
 	private static final BasicDBObject prop_fans_both_clear =new BasicDBObject("$set", new BasicDBObject("fans.$.both",0));
 	
 	
+	
 	/**
 	 * 添加评论的同步操作,同时在原消息的转发数加一
 	 * @param newComm 带ID的新评论
@@ -347,6 +348,32 @@ public class WBUserDao extends MongoDao {
 		return skip;
 	}
 	
+	public static int[] pagedSkipForSlice(int page,int sum,int pageSize){
+		if (sum<=0 || pageSize<=0) {
+			return null;
+		}
+		int[] ii = new int[2];
+		int pageCount = sum/pageSize;
+		int mod = sum%pageSize;
+		if (mod != 0) {
+			pageCount++;
+		}
+		
+		if (page<=0) {
+			page = 1;
+		}
+		if (page >= pageCount) {
+			//最后一页
+			ii[0] = 0-sum;
+			ii[1] = (mod==0)?pageSize:mod;
+			return ii;
+		}
+		
+		ii[0] = 0-pageSize*page;
+		ii[1] = pageSize;
+		return ii;
+	}
+	
 	/**
 	 * 获取某一个msg及其一页的comm/rt列表
 	 * @param msgId
@@ -371,13 +398,11 @@ public class WBUserDao extends MongoDao {
 	public static final ArrayList<Map<String, Object>> getFans(long userId,int page,int pageSize){
 		KObject user = wbUserDao.findOne(userId);
 		int msgCount = Integer.parseInt(user.getProp("followers_count").toString());
-		int skip = pagedSkip(page,msgCount,pageSize);
-		if (skip < 0) {
-			return null;
-		}
+		
+		int[] slice = pagedSkipForSlice(page,msgCount,pageSize);
 		ArrayList<Map<String, Object>> userIdList = new ArrayList<Map<String, Object>>(pageSize);
 		BasicDBObject fields = prop_id;
-		fields.append("fans", new BasicDBObject("$slice",new int[]{0-skip,pageSize}));
+		fields.append("fans", new BasicDBObject("$slice",slice));
 		List<Map<String,Object>> msgIds = wbUserDao.query(new BasicDBObject("_id",userId),fields,null, 0, 1, null);
 		if (!msgIds.isEmpty()) {
 			Map<String, Object> u = msgIds.get(0);
@@ -394,13 +419,10 @@ public class WBUserDao extends MongoDao {
 	public static final ArrayList<Map<String, Object>> getFollows(long userId,int page,int pageSize){
 		KObject user = wbUserDao.findOne(userId);
 		int msgCount = Integer.parseInt(user.getProp("friends_count").toString());
-		int skip = pagedSkip(page,msgCount,pageSize);
-		if (skip < 0) {
-			return null;
-		}
+		int[] slice = pagedSkipForSlice(page,msgCount,pageSize);
 		ArrayList<Map<String, Object>> userIdList = new ArrayList<Map<String, Object>>(pageSize);
 		BasicDBObject fields = prop_id;
-		fields.append("follows", new BasicDBObject("$slice",new int[]{0-skip,pageSize}));
+		fields.append("follows", new BasicDBObject("$slice",slice));
 		List<Map<String,Object>> msgIds = wbUserDao.query(new BasicDBObject("_id",userId),fields,null, 0, 1, null);
 		if (!msgIds.isEmpty()) {
 			Map<String, Object> u = msgIds.get(0);
@@ -425,16 +447,16 @@ public class WBUserDao extends MongoDao {
 	 */
 	@SuppressWarnings("unchecked")
 	public static final ArrayList<KObject> readOneTopicList(String topic,int page,int pageSize){
-		Map<String,Object> t = wbTagsDao.findOneMap(new BasicDBObject("name",topic),new BasicDBObject("sum",1));
-		int msgCount = Integer.parseInt(t.get("sum").toString());
-		int skip = pagedSkip(page,msgCount,pageSize);
-		if (skip < 0) {
+		Map<String,Object> t = wbTagsDao.findOneMap(new BasicDBObject("name",topic),prop_sum);
+		if (t == null || t.isEmpty()) {
 			return null;
 		}
+		int msgCount = Integer.parseInt(t.get("sum").toString());
+		int[] slice = pagedSkipForSlice(page,msgCount,pageSize);
 		
 		ArrayList<Long> msgIdList = new ArrayList<Long>(pageSize);
 		BasicDBObject fields = prop_id;
-		fields.append("tag_ids", new BasicDBObject("$slice",new int[]{0-skip,pageSize}));
+		fields.append("tag_ids", new BasicDBObject("$slice",slice));
 		List<Map<String,Object>> msgIds = wbTagsDao.query(new BasicDBObject("name",topic), fields,null, 0, 1, null);
 		if (!msgIds.isEmpty()) {
 			Map<String,Object> mm = msgIds.get(0);
@@ -457,6 +479,11 @@ public class WBUserDao extends MongoDao {
 		return readPagedList(wbFavDao,"favourites_count",userId,page,pageSize);
 	}
 	
+	
+	private static final BasicDBObject prop_favourites_count_inc =new BasicDBObject("$inc",new BasicDBObject("favourites_count",1));
+	private static final BasicDBObject prop_favourites_count_dec =new BasicDBObject("$inc",new BasicDBObject("favourites_count",-1));
+	private static final BasicDBObject prop_state_del_set =new BasicDBObject("$set",new BasicDBObject("state",-1));
+	
 	/**
 	 * 收藏一条消息
 	 * @param msgId
@@ -468,7 +495,7 @@ public class WBUserDao extends MongoDao {
 		fav.setProp("msg_id", msgId);
 		fav.setProp("user_id", userId);
 		boolean re = wbFavDao.save(fav);
-		wbUserDao.updateOne(new BasicDBObject("_id",userId), new BasicDBObject("$inc",new BasicDBObject("favourites_count",1)));
+		wbUserDao.updateOne(new BasicDBObject("_id",userId),prop_favourites_count_inc);
 		return re;
 	}
 	
@@ -479,8 +506,8 @@ public class WBUserDao extends MongoDao {
 	 * @return
 	 */
 	public static final boolean delFavor(long favId,long userId){
-		boolean re = wbFavDao.updateOne(new BasicDBObject("_id",favId), new BasicDBObject("$set",new BasicDBObject("state",-1)));
-		wbUserDao.updateOne(new BasicDBObject("_id",userId), new BasicDBObject("$inc",new BasicDBObject("favourites_count",-1)));
+		boolean re = wbFavDao.updateOne(new BasicDBObject("_id",favId), prop_state_del_set);
+		wbUserDao.updateOne(new BasicDBObject("_id",userId), prop_favourites_count_dec);
 		return re;
 	}
 	
