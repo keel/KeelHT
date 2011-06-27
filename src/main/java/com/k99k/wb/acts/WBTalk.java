@@ -236,11 +236,12 @@ public class WBTalk extends Action {
 	}
 	
 	/**
-	 * 处理提到的用户
+	 * 处理提到的用户,这里匹配@后最长12个非空字符
+	 * TODO 这里未验证@后的用户名是否存在
 	 * @return
 	 */
 	public static final ArrayList<String> dealMention(StringBuffer sb,long msgId){
-		Pattern pattern = Pattern.compile("@((\\S+))");
+		Pattern pattern = Pattern.compile("@((\\S{3,12}))");
 		Matcher matcher = pattern.matcher(sb);
 		StringBuffer buffer = new StringBuffer();
 		ArrayList<String> mentions = null;

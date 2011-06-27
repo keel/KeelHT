@@ -553,7 +553,7 @@ public class WBUserDao extends MongoDao {
 		or.add(new BasicDBObject("to_id",userId));
 		or.add(new BasicDBObject("creatorId",userId));
 		q.append("$or", or);
-		DBCursor cur = coll.find(q).skip(skip).limit(pageSize);
+		DBCursor cur = coll.find(q).sort(prop_id_desc).skip(skip).limit(pageSize);
 		while (cur.hasNext()) {
 			Map<String,Object> m = (Map<String,Object>) cur.next();
 			list.add(new KObject(m));

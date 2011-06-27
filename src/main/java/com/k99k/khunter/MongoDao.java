@@ -184,12 +184,15 @@ public class MongoDao implements DaoInterface{
 		}
 	}
 	
+	private static final BasicDBObject prop_id_desc = new BasicDBObject("_id",-1);
+	private static final BasicDBObject prop_id = new BasicDBObject("_id",1);
+	
 	
 	@Override
 	public boolean checkName(String name) {
 		try {
 			DBCollection coll = this.dataSource.getColl(tableName);
-			DBCursor cur = coll.find(new BasicDBObject("name", name),new BasicDBObject("_id", 1));
+			DBCursor cur = coll.find(new BasicDBObject("name", name),prop_id);
 			if (cur.hasNext()) {
 				return true;
 			}
@@ -426,6 +429,8 @@ public class MongoDao implements DaoInterface{
 		return true;
 	}
 	
+	private static final BasicDBObject prop_state_del_set = new BasicDBObject("$set",new BasicDBObject("state",-1));
+	
 	/**
 	 * 标记删除,即将state置为-1
 	 * @param id
@@ -435,7 +440,7 @@ public class MongoDao implements DaoInterface{
 		try {
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
-			coll.update(new BasicDBObject("_id",id),new BasicDBObject("$set",new BasicDBObject("state",-1)),false,false);
+			coll.update(new BasicDBObject("_id",id),prop_state_del_set,false,false);
 		} catch (Exception e) {
 			log.error("delete error!", e);
 			return false;
@@ -454,7 +459,7 @@ public class MongoDao implements DaoInterface{
 			BasicDBObject q = new BasicDBObject(query);
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
-			coll.update(q,new BasicDBObject("$set",new BasicDBObject("state",-1)),false,multi);
+			coll.update(q,prop_state_del_set,false,multi);
 		} catch (Exception e) {
 			log.error("delete error!", e);
 			return false;
@@ -504,7 +509,7 @@ public class MongoDao implements DaoInterface{
 	 */
 	long initIDM(String tableName){
 		DBCollection coll = this.dataSource.getColl(tableName);
-		DBCursor cur = coll.find(emptyBasicDBObject,new BasicDBObject("_id",1)).sort(new BasicDBObject("_id",-1)).limit(1);
+		DBCursor cur = coll.find(emptyBasicDBObject,prop_id).sort(prop_id_desc).limit(1);
 		if (cur.hasNext()) {
 			DBObject o = cur.next();
 			return Long.parseLong(o.get("_id").toString());

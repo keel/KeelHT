@@ -65,7 +65,8 @@ public class WBDMsg extends Action {
 				return super.act(msg);
 			}
 			long targetId = Long.parseLong(targetId_str);
-			re = String.valueOf(WBUserDao.addDMsg(user.getId(), targetId, dmsg_str, user.getName()));
+			String txt = dealMention(dmsg_str).toString();
+			re = String.valueOf(WBUserDao.addDMsg(user.getId(), targetId, txt, user.getName()));
 		}else if(subact.equals("del")){
 			String dmsgId_str = httpmsg.getHttpReq().getParameter("dmsgId");
 			if (!StringUtil.isDigits(dmsgId_str)) {
@@ -83,12 +84,11 @@ public class WBDMsg extends Action {
 	/**
 	 * 处理提到的用户
 	 * @param sb
-	 * @param msgId
 	 * @return
 	 */
-	public static final StringBuffer dealMention(StringBuffer sb,long msgId){
-		Pattern pattern = Pattern.compile("@((\\S+))");
-		Matcher matcher = pattern.matcher(sb);
+	public static final StringBuffer dealMention(String str){
+		Pattern pattern = Pattern.compile("@((\\S{3,12}))");
+		Matcher matcher = pattern.matcher(str);
 		StringBuffer buffer = new StringBuffer();
 		while(matcher.find()){   
 			//TODO 处理@号的链接
