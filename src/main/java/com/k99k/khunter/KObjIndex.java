@@ -6,7 +6,7 @@ package com.k99k.khunter;
 import java.util.HashMap;
 
 /**
- * KObj索引
+ * KObj索引,暂不支持复合索引
  * @author keel
  *
  */

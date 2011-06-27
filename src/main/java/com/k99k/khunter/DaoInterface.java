@@ -146,11 +146,18 @@ public interface DaoInterface extends Cloneable{
 	public boolean update(HashMap<String,Object> query,HashMap<String,Object> set,boolean upset,boolean multi);
 	
 	/**
-	 * 标记删除,即将state置为-1,顺序号为13
+	 * 标记删除,即将state置为-1,顺序号为13,用于确认被删除对象是否存在
 	 * @param id
-	 * @return
+	 * @return Object 原对象,不存在则返回null
 	 */
-	public boolean deleteOne(long id);
+	public Object deleteOne(long id);
+	
+	/**
+	 * 标记删除,即将state置为-1,顺序号为13,用于确认被删除对象是否存在
+	 * @param query
+	 * @return Object 原对象,不存在则返回null
+	 */
+	public Object deleteOne(HashMap<String,Object> query);
 	
 	/**
 	 * 标记删除,即将state置为-1,顺序号为14

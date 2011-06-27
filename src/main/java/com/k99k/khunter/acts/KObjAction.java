@@ -237,7 +237,7 @@ public class KObjAction extends Action{
 				if (StringUtil.isDigits(kobj_id)) {
 					long kid = Long.parseLong(kobj_id);
 					if (httpmsg.getHttpReq().getParameter("delforever") == null) {
-						if(kc.getDaoConfig().findDao().deleteOne(kid)){
+						if(kc.getDaoConfig().findDao().deleteOne(kid) != null){
 							msg.addData("[print]", "{\"re\":\"ok\",\"d\":{\"id\":"+kid+"}}");
 							return super.act(msg);
 						}

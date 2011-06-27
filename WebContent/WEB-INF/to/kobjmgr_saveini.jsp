@@ -22,7 +22,7 @@ String prefix = KFilter.getPrefix();
 <script type="text/javascript">
 $(function(){
 	//json样式
-	$("#kobjmgr_ini").snippet("javascript",{style:"ide-eclipse",transparent:false,showNum:false});
+	$("#kobjmgr_ini").snippet("javascript",{style:"ide-eclipse",transparent:false,showNum:false,collapse:true,menu:false});
 	//保存动作
 	$("#saveIni").click(function(){
 		var $saveBT = $(this);

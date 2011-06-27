@@ -63,13 +63,13 @@ public class WBFavor extends Action {
 			boolean f = WBUserDao.addFavor(msgId, user.getId());
 			re = String.valueOf(f);
 		}else if(subact.equals("del")){
-			String msg_str = httpmsg.getHttpReq().getParameter("msgid");
-			if (!StringUtil.isDigits(msg_str)) {
+			String fav_str = httpmsg.getHttpReq().getParameter("favid");
+			if (!StringUtil.isDigits(fav_str)) {
 				JOut.err(400, httpmsg);
 				return super.act(msg);
 			}
-			long msgId = Long.parseLong(msg_str);
-			boolean f = WBUserDao.delFavor(msgId, user.getId());
+			long favId = Long.parseLong(fav_str);
+			boolean f = WBUserDao.delFavor(favId, user.getId());
 			re = String.valueOf(f);
 		}
 		msg.addData("[print]", re);

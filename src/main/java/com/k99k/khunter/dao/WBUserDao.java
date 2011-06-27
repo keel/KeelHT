@@ -503,11 +503,13 @@ public class WBUserDao extends MongoDao {
 	 * 取消一条消息的收藏
 	 * @param favId wbFavourite 中的_id
 	 * @param userId
-	 * @return
+	 * @return 删除失败或未找到删除对象返回false
 	 */
 	public static final boolean delFavor(long favId,long userId){
-		boolean re = wbFavDao.updateOne(new BasicDBObject("_id",favId), prop_state_del_set);
-		wbUserDao.updateOne(new BasicDBObject("_id",userId), prop_favourites_count_dec);
+		boolean re = wbFavDao.deleteOne(favId) != null;
+		if (re) {
+			wbUserDao.updateOne(new BasicDBObject("_id",userId), prop_favourites_count_dec);
+		}
 		return re;
 	}
 	
@@ -562,29 +564,45 @@ public class WBUserDao extends MongoDao {
 		return list;
 	}
 	
-	public static final boolean delDMsg(long userId,long msgId){
-		wbUserDao.updateOne(new BasicDBObject("_id",userId), prop_del_dmsg);
-		return wbDMsgTBDao.deleteOne(msgId);
-	}
-	
 	/**
-	 * 删除消息,将state置为-1
-	 * @param msgId
-	 * @return
-	 */
-	public static final boolean delMsg(long msgId){
-		return wbMsgDao.deleteOne(msgId);
-	}
-	
-	/**
-	 * 删除一个用户自己发的消息(inbox和sent均减少)
+	 * 删除私信
 	 * @param userId
 	 * @param msgId
-	 * @return
+	 * @return 删除失败或未找到删除对象返回false
+	 */
+	public static final boolean delDMsg(long userId,long msgId){
+		if (wbDMsgTBDao.deleteOne(msgId) == null) {
+			return false;
+		}
+		wbUserDao.updateOne(new BasicDBObject("_id",userId), prop_del_dmsg);
+		return true;
+	}
+	
+	/**
+	 * 删除消息,将state置为-1，仅影响wbmsg表 
+	 * @param msgId
+	 * @return 删除失败或未找到删除对象返回false
+	 */
+	public static final boolean delMsg(long msgId){
+		return wbMsgDao.deleteOne(msgId) != null;
+	}
+	
+	/**
+	 * 删除一个用户自己发的消息(inbox和sent均减少),
+	 * TODO 未验证用户是否已发此消息 
+	 * @param userId
+	 * @param msgId
+	 * @return 删除失败或未找到删除对象返回false
 	 */
 	public static final boolean delSentMsg(long userId,long msgId){
-		wbUserDao.updateOne(new BasicDBObject("_id",userId), prop_del_my_msg);
-		return wbMsgDao.deleteOne(msgId);
+		BasicDBObject q = new BasicDBObject("user_id",userId).append("msg_id",msgId);
+		boolean re = (wbSentDao.deleteOne(q) !=null);
+		if (re) {
+			wbInboxDao.deleteOne(q);
+			wbMsgDao.deleteOne(msgId);
+			wbUserDao.updateOne(new BasicDBObject("_id",userId), prop_del_my_msg);
+		}
+		return re;
 	}
 	
 	/**
@@ -779,6 +797,9 @@ public class WBUserDao extends MongoDao {
 		for (Iterator<Long> it = msgIdList.iterator(); it.hasNext();) {
 			long m_id = it.next();
 			KObject kobj = map.get(m_id);
+			if (kobj == null) {
+				continue;
+			}
 			Object rto = kobj.getProp("rt_id");
 			if (StringUtil.isDigits(rto)) {
 				long rt = (Long)rto;

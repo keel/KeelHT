@@ -376,7 +376,7 @@ public class MongoDao implements DaoInterface{
 	 */
 	public boolean updateOne(HashMap<String,Object> query,KObject newObj,boolean upset) {
 		try {
-			BasicDBObject q = new BasicDBObject(query);
+			DBObject q = (query instanceof DBObject)?(DBObject)query:new BasicDBObject(query);
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
 			coll.update(q,new MongoWrapper(newObj),upset,false);
@@ -395,7 +395,7 @@ public class MongoDao implements DaoInterface{
 	 */
 	public boolean updateOne(HashMap<String,Object> query,HashMap<String,Object> set) {
 		try {
-			BasicDBObject q = new BasicDBObject(query);
+			DBObject q = (query instanceof DBObject)?(DBObject)query:new BasicDBObject(query);
 			BasicDBObject s = new BasicDBObject(set);
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
@@ -417,7 +417,7 @@ public class MongoDao implements DaoInterface{
 	 */
 	public boolean update(HashMap<String,Object> query,HashMap<String,Object> set,boolean upset,boolean multi) {
 		try {
-			BasicDBObject q = new BasicDBObject(query);
+			DBObject q = (query instanceof DBObject)?(DBObject)query:new BasicDBObject(query);
 			BasicDBObject s = new BasicDBObject(set);
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
@@ -432,32 +432,53 @@ public class MongoDao implements DaoInterface{
 	private static final BasicDBObject prop_state_del_set = new BasicDBObject("$set",new BasicDBObject("state",-1));
 	
 	/**
-	 * 标记删除,即将state置为-1
+	 * 标记删除,即将state置为-1,
 	 * @param id
-	 * @return
+	 * @return Object 被删除对象不存在则返回null
 	 */
-	public boolean deleteOne(long id){
+	public Object deleteOne(long id){
 		try {
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
-			coll.update(new BasicDBObject("_id",id),prop_state_del_set,false,false);
+			DBObject re = coll.findAndModify(new BasicDBObject("_id",id), prop_state_del_set);
+			return re;
+			//coll.update(new BasicDBObject("_id",id),prop_state_del_set,false,false);
 		} catch (Exception e) {
 			log.error("delete error!", e);
-			return false;
+			return null;
 		}
-		return true;
 	}
 	
 	/**
-	 * 标记删除,即将state置为-1
+	 * 标记删除,即将state置为-1,
+	 * @param query
+	 * @return Object 被删除对象不存在则返回null
+	 */
+	public Object deleteOne(HashMap<String,Object> query){
+		try {
+			//coll = checkColl(coll);
+			DBObject q = (query instanceof DBObject)?(DBObject)query:new BasicDBObject(query);
+			DBCollection coll = this.dataSource.getColl(tableName);
+			DBObject re = coll.findAndModify(q, prop_state_del_set);
+			return re;
+			//coll.update(new BasicDBObject("_id",id),prop_state_del_set,false,false);
+		} catch (Exception e) {
+			log.error("delete error!", e);
+			return null;
+		}
+	}
+	
+	
+	/**
+	 * 标记删除,即将state置为-1,支持多项删除,所以结果与deleteOne方法不同
 	 * @param query
 	 * @param multi 是否批量
-	 * @return
+	 * @return 返回false不能确认删除对象是否存在,与deleteOne方法不同
 	 */
 	public boolean delete(HashMap<String,Object> query,boolean multi){
 		try {
-			BasicDBObject q = new BasicDBObject(query);
-			//coll = checkColl(coll);
+			DBObject q = (query instanceof DBObject)?(DBObject)query:new BasicDBObject(query);
+			
 			DBCollection coll = this.dataSource.getColl(tableName);
 			coll.update(q,prop_state_del_set,false,multi);
 		} catch (Exception e) {
@@ -475,7 +496,7 @@ public class MongoDao implements DaoInterface{
 	 */
 	public boolean deleteForever(HashMap<String,Object> query){
 		try {
-			BasicDBObject q = new BasicDBObject(query);
+			DBObject q = (query instanceof DBObject)?(DBObject)query:new BasicDBObject(query);
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
 			coll.remove(q);

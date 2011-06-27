@@ -13,6 +13,7 @@ import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.HTManager;
 import com.k99k.khunter.HttpActionMsg;
+import com.k99k.khunter.KFilter;
 import com.k99k.khunter.KIoc;
 import com.k99k.khunter.KObject;
 import com.k99k.khunter.TaskManager;
@@ -106,6 +107,7 @@ public class WBTalk extends Action {
 	 */
 	@Override
 	public ActionMsg act(ActionMsg msg) {
+		String subact = KFilter.actPath(msg, 2, "talk");
 		HttpActionMsg httpmsg = (HttpActionMsg)msg;
 		//验证用户请求是否合法
 		KObject user = WBLogin.cookieAuth(httpmsg);
@@ -114,58 +116,68 @@ public class WBTalk extends Action {
 			return super.act(msg);
 		}
 		String re = "true";
-		String talk = httpmsg.getHttpReq().getParameter("talk");
-		String pic_url = httpmsg.getHttpReq().getParameter("pic_url");
-		String source = "web";
-		String place = "";
-		//是否转发
-		boolean isRT = httpmsg.getHttpReq().getParameter("isRT")!=null && StringUtil.isDigits(httpmsg.getHttpReq().getParameter("rt_id")) 
-		&& httpmsg.getHttpReq().getParameter("isRT").equals("true") && StringUtil.isDigits(httpmsg.getHttpReq().getParameter("rt_userId")) 
-		&& httpmsg.getHttpReq().getParameter("rt_name")!=null;
-		long rt_id = (isRT)?Long.parseLong(httpmsg.getHttpReq().getParameter("rt_id")):0;
-		long rt_userId = (isRT)?Long.parseLong(httpmsg.getHttpReq().getParameter("rt_userId")):0;
-		String rt_name = (isRT)?(String)httpmsg.getHttpReq().getParameter("rt_name"):"";
-		//消息状态,控制其是否显示,如进行评论但不转发时会将此state置为1，默认为0
-		int state = (StringUtil.isDigits(httpmsg.getHttpReq().getParameter("talk_state")))?Integer.parseInt((String)httpmsg.getHttpReq().getParameter("talk_state")):0;
-		
-		StringBuffer sb = new StringBuffer(talk);
-		KObject newMsg = WBUserDao.newMsg();
-		long msgId = newMsg.getId();
-		//关键词过滤
-		sb = dealKeyWords(sb);
-		//url处理
-		ArrayList<String> us = dealUrl(sb);
-		//topic
-		ArrayList<String> ts = dealTopic(sb,msgId);
-		//mention
-		ArrayList<String> ms = dealMention(sb,msgId);
-		String txt = sb.toString();
-		//发表/转发/评论(评论无转发时仅加入wbcomm)
-		if (rt_id != 0  && state == 1) {
-			//仅评论，无转发时,不加入到wbmsg表中,仅在wbcomm中添加
-		}else{
-			re = ""+WBUserDao.addTalk(newMsg,txt, user.getId(),user.getName(), (String)user.getProp("screen"),source, place,pic_url, us,ts,ms,isRT,rt_id,state);
+		if (subact.equals("talk")) {
+			
+			String talk = httpmsg.getHttpReq().getParameter("talk");
+			String pic_url = httpmsg.getHttpReq().getParameter("pic_url");
+			String source = "web";
+			String place = "";
+			//是否转发
+			boolean isRT = httpmsg.getHttpReq().getParameter("isRT")!=null && StringUtil.isDigits(httpmsg.getHttpReq().getParameter("rt_id")) 
+			&& httpmsg.getHttpReq().getParameter("isRT").equals("true") && StringUtil.isDigits(httpmsg.getHttpReq().getParameter("rt_userId")) 
+			&& httpmsg.getHttpReq().getParameter("rt_name")!=null;
+			long rt_id = (isRT)?Long.parseLong(httpmsg.getHttpReq().getParameter("rt_id")):0;
+			long rt_userId = (isRT)?Long.parseLong(httpmsg.getHttpReq().getParameter("rt_userId")):0;
+			String rt_name = (isRT)?(String)httpmsg.getHttpReq().getParameter("rt_name"):"";
+			//消息状态,控制其是否显示,如进行评论但不转发时会将此state置为1，默认为0
+			int state = (StringUtil.isDigits(httpmsg.getHttpReq().getParameter("talk_state")))?Integer.parseInt((String)httpmsg.getHttpReq().getParameter("talk_state")):0;
+			
+			StringBuffer sb = new StringBuffer(talk);
+			KObject newMsg = WBUserDao.newMsg();
+			long msgId = newMsg.getId();
+			//关键词过滤
+			sb = dealKeyWords(sb);
+			//url处理
+			ArrayList<String> us = dealUrl(sb);
+			//topic
+			ArrayList<String> ts = dealTopic(sb,msgId);
+			//mention
+			ArrayList<String> ms = dealMention(sb,msgId);
+			String txt = sb.toString();
+			//发表/转发/评论(评论无转发时仅加入wbcomm)
+			if (rt_id != 0  && state == 1) {
+				//仅评论，无转发时,不加入到wbmsg表中,仅在wbcomm中添加
+			}else{
+				re = ""+WBUserDao.addTalk(newMsg,txt, user.getId(),user.getName(), (String)user.getProp("screen"),source, place,pic_url, us,ts,ms,isRT,rt_id,state);
+			}
+			//生成异步任务
+			ActionMsg task = new ActionMsg("talkTask");
+			task.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
+			task.addData("userId", user.getId());
+			task.addData("txt", txt);
+			task.addData("msgId", msgId);
+			task.addData("isRT", isRT);
+			task.addData("state", state);
+			if (isRT) {
+				task.addData("rt_id", rt_id);
+				task.addData("rt_userId", rt_userId);
+				task.addData("rt_name", rt_name);
+				task.addData("source", source);
+				task.addData("place", place);
+				task.addData("topics", ts);
+				task.addData("mentions", ms);
+			}
+			TaskManager.makeNewTask("WBTalkTask:"+msgId, task);
+		}else if(subact.equals("del")){
+			String msg_str = httpmsg.getHttpReq().getParameter("msgid");
+			if (!StringUtil.isDigits(msg_str)) {
+				JOut.err(400, httpmsg);
+				return super.act(msg);
+			}
+			long msgid = Long.parseLong(msg_str);
+			boolean f = WBUserDao.delSentMsg(user.getId(), msgid);
+			re = String.valueOf(f);
 		}
-		//生成异步任务
-		ActionMsg task = new ActionMsg("talkTask");
-		task.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
-		task.addData("userId", user.getId());
-		task.addData("txt", txt);
-		task.addData("msgId", msgId);
-		task.addData("isRT", isRT);
-		task.addData("state", state);
-		if (isRT) {
-			task.addData("rt_id", rt_id);
-			task.addData("rt_userId", rt_userId);
-			task.addData("rt_name", rt_name);
-			task.addData("source", source);
-			task.addData("place", place);
-			task.addData("topics", ts);
-			task.addData("mentions", ms);
-		}
-		
-		
-		TaskManager.makeNewTask("WBTalkTask:"+msgId, task);
 		msg.addData("[print]", re);
 		return super.act(msg);
 	}
