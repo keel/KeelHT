@@ -12,6 +12,7 @@ if(o != null ){
 }
 KObject user = (KObject)data.getData("wbUser");
 String uName = user.getName();
+long userId = user.getId();
 out.println(WBJSPCacheOut.out("header1"));
 %>
 <script src="<%=sPrefix %>/js/jquery.json-2.2.min.js" type="text/javascript"></script>
@@ -29,8 +30,8 @@ $(function(){
 	$("#r_location").empty().append("<%=user.getProp("location")%>");
 	
 	$("#logoutBT").click(function(){
-		$.post("<%=sPrefix %>/login/logout", "uName=<%=uName %>" ,function(data) {
-			window.location="<%=sPrefix %>";
+		$.post("<%=prefix %>/login/logout", "uName=<%=uName %>" ,function(data) {
+			window.location="<%=prefix %>";
 		});
 		return false;
 	});
@@ -64,7 +65,7 @@ $(function(){
 		},
 		err:function(){
 			$.fancybox(
-			'<p class="fancyMsgBox2" >消息发送失败.请重新登录!</p>',
+			'<p class="fancyMsgBox2" >消息发送失败.您可能需要重新登录。</p>',
 			{	'autoDimensions'	: false,
 				'width'         	: 300,
 				'height'        	: 'auto',
@@ -85,6 +86,50 @@ $(function(){
 	        }
 	    }
 	});
+
+	$.getJSON("<%=prefix %>/msg/inbox?p=1&pz=5&uid=<%=userId%>",function(data){
+		for(i = 0,j=data.length;i<j;i++){
+			var d = data[i];
+			$("#msgList").append(talkLI(d.creatorName,d.author_screen,d.creatorId,"<%=prefix %>","<%=sPrefix %>",d.isRT,d.source,d.createTime,d.text));
+		}
+		//console.log(data);
+	});
+
+
+	function talkLI(userName,userScreen,userId,prefix,sPrefix,isRT,source,talkTime,txt){
+		var s = "<li><div class=\"userPic\"><a href=\"/";
+		s += userName;
+		s += "\"> <img src=\"";
+		s += sPrefix;
+		s += "/images/upload/";
+		s += userName;
+		s += "_3.jpg\" title=\"";
+		s += userName;
+		s += "\" /></a></div>";
+		s += "<div class=\"msgBox\"><div class=\"userName\" ><a href=\"/";
+		s += userName;
+		s += "\" title=\"";
+		s += userScreen;
+		s += "(@";
+		s += userName;
+		s += ")\" >";
+		s += userScreen;
+		s += "</a>";
+		if(isRT){s+="转播:&nbsp;"};
+		s += "</div><div class=\"msgCnt\">";
+		s += txt;
+		s += "</div><div class=\"pubInfo\"><span class=\"fleft\"><a class=\"time\" target=\"_blank\" href=\"";
+		//oneTopicUrl
+		//s += "/p/t/9579026057805";
+		s += "\" title=\"";
+		s += talkTime;
+		s += "\">";
+		s += "n分钟前";
+		s += "</a> <a href=\"#\" target=\"_blank\">来自";
+		s += source;
+		s += "</a></span><div class=\"funBox\"><a href=\"#\" class=\"relay\">转播</a> <span>|</span> <a href=\"/p/t/39552051902918\" class=\"comt\">评论</a> <span>|</span> <span class=\"mFun\"><a href=\"#\">更多<em class=\"btn_ldrop\"></em></a> <div class=\"mFunDrop\"> <p><a href=\"#\" class=\"reply\">对话</a></p><p><a href=\"#\" class=\"fav\" type=\"1\">收藏</a></p><div class=\"shareBtn\"><p><a href=\"#\">发邮件</a></p></div><p><a href=\"/t/9579026057805\" class=\"detil\" target=\"_blank\">详情</a></p><p><a href=\"#\" class=\"alarm\">举报</a></p> </div> </span> </div></div></div></li>";
+		return $(s);
+	}
 	
 });
 </script>
@@ -167,7 +212,6 @@ $(function(){
 						
 					</div>
 				</li>
-
 			</ul>
 <div class="clear"></div>
 		</div>

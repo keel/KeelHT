@@ -32,8 +32,8 @@ $(function(){
 	
 	
 	$("#logoutBT").click(function(){
-		$.post("<%=sPrefix %>/login/logout", "uName=<%=uName %>" ,function(data) {
-			window.location="<%=sPrefix %>";
+		$.post("<%=prefix %>/login/logout", "uName=<%=uName %>" ,function(data) {
+			window.location="<%=prefix %>";
 		});
 		return false;
 	});

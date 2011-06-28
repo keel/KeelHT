@@ -30,7 +30,7 @@ $(function(){
 	
 	$("#logoutBT").text("登录");
 	$("#logoutBT").click(function(){
-		window.location="<%=sPrefix %>/login";
+		window.location="<%=prefix %>/login";
 		return false;
 	});
 });
