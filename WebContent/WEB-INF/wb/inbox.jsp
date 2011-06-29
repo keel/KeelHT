@@ -20,13 +20,14 @@ out.println(WBJSPCacheOut.out("header1"));
 <script src="<%=sPrefix %>/js/jquery.validate.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.pack.js" type="text/javascript"></script>
 <script type="text/javascript">
+<!-- 
 $(function(){
 	$("#wbUserUrl").empty().append("<%=uName%>");
 	$("#r_follow_num").empty().append("<%=user.getProp("friends_count")%>");
 	$("#r_fans_num").empty().append("<%=user.getProp("followers_count")%>");
 	$("#r_uname").empty().append("<%=uName%>");
 	$("#r_mgs_num").empty().append("<%=user.getProp("statuses_count")%>");
-	$("#r_icon_1").empty().append("<img src='<%=sPrefix+"/images/upload/"+uName+"_2.jpg"%>' height='60' width='60' />");
+	$("#r_icon_1").empty().append("<img src='<%=sPrefix+"/images/upload/"+uName+"_2.jpg"%>' height='60' width='60' alt='' />");
 	$("#r_location").empty().append("<%=user.getProp("location")%>");
 	
 	$("#logoutBT").click(function(){
@@ -88,7 +89,7 @@ $(function(){
 	});
 
 	$.getJSON("<%=prefix %>/msg/inbox?p=1&pz=5&uid=<%=userId%>",function(data){
-		for(i = 0,j=data.length;i<j;i++){
+		for(var i = 0,j=data.length;i<j;i++){
 			var d = data[i];
 			$("#msgList").append(talkLI(d.creatorName,d.author_screen,d.creatorId,"<%=prefix %>","<%=sPrefix %>",d.isRT,d.source,d.createTime,d.text));
 		}
@@ -103,9 +104,9 @@ $(function(){
 		s += sPrefix;
 		s += "/images/upload/";
 		s += userName;
-		s += "_3.jpg\" title=\"";
+		s += "_3.jpg\" alt=\"";
 		s += userName;
-		s += "\" /></a></div>";
+        s += "\" /></a></div>";
 		s += "<div class=\"msgBox\"><div class=\"userName\" ><a href=\"/";
 		s += userName;
 		s += "\" title=\"";
@@ -127,18 +128,19 @@ $(function(){
 		s += "n分钟前";
 		s += "</a> <a href=\"#\" target=\"_blank\">来自";
 		s += source;
-		s += "</a></span><div class=\"funBox\"><a href=\"#\" class=\"relay\">转播</a> <span>|</span> <a href=\"/p/t/39552051902918\" class=\"comt\">评论</a> <span>|</span> <span class=\"mFun\"><a href=\"#\">更多<em class=\"btn_ldrop\"></em></a> <div class=\"mFunDrop\"> <p><a href=\"#\" class=\"reply\">对话</a></p><p><a href=\"#\" class=\"fav\" type=\"1\">收藏</a></p><div class=\"shareBtn\"><p><a href=\"#\">发邮件</a></p></div><p><a href=\"/t/9579026057805\" class=\"detil\" target=\"_blank\">详情</a></p><p><a href=\"#\" class=\"alarm\">举报</a></p> </div> </span> </div></div></div></li>";
+		s += "</a></span><div class=\"funBox\"><a href=\"#\" class=\"relay\">转播</a> | <a href=\"/p/t/39552051902918\" class=\"comt\">评论</a> | <span class=\"mFun\"><a href=\"#\">更多</a> <div class=\"mFunDrop\"> <p><a href=\"#\" class=\"reply\">对话</a></p><p><a href=\"#\" class=\"fav\" type=\"1\">收藏</a></p><div class=\"shareBtn\"><p><a href=\"#\">发邮件</a></p></div><p><a href=\"/t/9579026057805\" class=\"detil\" target=\"_blank\">详情</a></p><p><a href=\"#\" class=\"alarm\">举报</a></p> </div> </span> </div></div></div></li>";
 		return $(s);
 	}
 	
 });
+-->
 </script>
 <% out.println(WBJSPCacheOut.out("@head_main")); %>
 		<div id="sendBox">
 			<form name="talkForm" id="talkForm" action="<%=prefix %>/talk" method="post">
 			<div id="sendBox_title">来，说点什么吧</div>
 			<div id="sendAreaDiv">
-				<textarea name="talk" id="talk"></textarea>
+				<textarea name="talk" id="talk" rows="5" cols="10"></textarea>
 				<input type="hidden" value="" name="pic_url" />
 			</div>
 			<div id="sendsub">
@@ -162,7 +164,7 @@ $(function(){
 			<div id="newsBox"><a href="#">有2条新消息,点击查看</a></div>
 			<ul id="msgList" class="ul_inline">
 				<li>
-					<div class="userPic"><a href="/vivizhang2010"> <img src="<%=sPrefix %>/images/user001.jpg" title="" /></a></div>
+					<div class="userPic"><a href="/vivizhang2010"> <img src="<%=sPrefix %>/images/user001.jpg" alt="" /></a></div>
 						
 					<div class="msgBox">
 						<div class="userName" ><a href="/vivizhang2010" title="饭小团(@vivizhang2010)" >饭小团</a>转播:&nbsp;</div>
@@ -187,19 +189,19 @@ $(function(){
 						
 						
 						<div class="pubInfo"><span class="fleft"><a class="time" target="_blank" href="/p/t/9579026057805" title="2011年4月21日 22:24">7分钟前</a> <a href="#" class="f" target="_blank">来自手机(t.3g.qq.com)</a>    </span>
-							<div class="funBox"><a href="#" class="relay">转播</a> <span>|</span> <a href="/p/t/39552051902918" class="comt">评论</a> <span>|</span> 
-								<span class="mFun"><a href="#">更多<em class="btn_ldrop"></em></a>
+							<div class="funBox"><a href="#" class="relay">转播</a>  <a href="/p/t/39552051902918" class="comt">评论</a>  
+								<div class="mFun"><a href="#">更多 </a>
 									<div class="mFunDrop">
 <p><a href="#" class="reply">对话</a></p><p><a href="#" class="fav" type="1">收藏</a></p><div class="shareBtn"><p><a href="#">发邮件</a></p></div><p><a href="/t/9579026057805" class="detil" target="_blank">详情</a></p><p><a href="#" class="alarm">举报</a></p>
 									</div>
-								</span>
+								</div>
 							</div>
 						</div>
 						
 					</div>
 				</li>
 				<li>
-					<div class="userPic"><a href="/vivizhang2010"> <img src="<%=sPrefix %>/images/user001.jpg" title="" /></a></div>
+					<div class="userPic"><a href="/vivizhang2010"> <img src="<%=sPrefix %>/images/user001.jpg" alt="" /></a></div>
 						
 					<div class="msgBox">
 						<div class="userName" ><a href="/vivizhang2010" title="饭小团(@vivizhang2010)" >饭小团</a>转播:&nbsp;</div>
