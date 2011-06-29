@@ -91,47 +91,64 @@ $(function(){
 	$.getJSON("<%=prefix %>/msg/inbox?p=1&pz=5&uid=<%=userId%>",function(data){
 		for(var i = 0,j=data.length;i<j;i++){
 			var d = data[i];
-			$("#msgList").append(talkLI(d.creatorName,d.author_screen,d.creatorId,"<%=prefix %>","<%=sPrefix %>",d.isRT,d.source,d.createTime,d.text));
+			$("#msgList").append(talkLI(d,"<%=prefix %>","<%=sPrefix %>"));
 		}
 		//console.log(data);
 	});
 
 
-	function talkLI(userName,userScreen,userId,prefix,sPrefix,isRT,source,talkTime,txt){
+	function talkLI(d,prefix,sPrefix){
 		var s = "<li><div class=\"userPic\"><a href=\"/";
-		s += userName;
+		s += d.creatorName;
 		s += "\"> <img src=\"";
 		s += sPrefix;
 		s += "/images/upload/";
-		s += userName;
+		s += d.creatorName;
 		s += "_3.jpg\" alt=\"";
-		s += userName;
+		s += d.creatorName;
         s += "\" /></a></div>";
 		s += "<div class=\"msgBox\"><div class=\"userName\" ><a href=\"/";
-		s += userName;
+		s += d.creatorName;
 		s += "\" title=\"";
-		s += userScreen;
+		s += d.author_screen;
 		s += "(@";
-		s += userName;
+		s += d.creatorName;
 		s += ")\" >";
-		s += userScreen;
+		s += d.author_screen;
 		s += "</a>";
-		if(isRT){s+="转播:&nbsp;"};
+		if(d.isRT){s+="&nbsp;&nbsp;转播:&nbsp;&nbsp;"};
 		s += "</div><div class=\"msgCnt\">";
-		s += txt;
+		s += d.text;
 		s += "</div><div class=\"pubInfo\"><span class=\"fleft\"><a class=\"time\" target=\"_blank\" href=\"";
 		//oneTopicUrl
 		//s += "/p/t/9579026057805";
 		s += "\" title=\"";
-		s += talkTime;
+		s += new Date(d.createTime).format("yyyy-MM-dd hh:mm:ss");
 		s += "\">";
-		s += "n分钟前";
-		s += "</a> <a href=\"#\" target=\"_blank\">来自";
-		s += source;
-		s += "</a></span><div class=\"funBox\"><a href=\"#\" class=\"relay\">转播</a> | <a href=\"/p/t/39552051902918\" class=\"comt\">评论</a> | <span class=\"mFun\"><a href=\"#\">更多</a> <div class=\"mFunDrop\"> <p><a href=\"#\" class=\"reply\">对话</a></p><p><a href=\"#\" class=\"fav\" type=\"1\">收藏</a></p><div class=\"shareBtn\"><p><a href=\"#\">发邮件</a></p></div><p><a href=\"/t/9579026057805\" class=\"detil\" target=\"_blank\">详情</a></p><p><a href=\"#\" class=\"alarm\">举报</a></p> </div> </span> </div></div></div></li>";
+		s += sentTime(d.createTime);
+		s += "</a> 来自";
+		s += d.source;
+		s += "</span><div class=\"funBox\"><a href=\"#\" class=\"relay\">转播</a>&nbsp;&nbsp; |&nbsp;&nbsp; <a href=\"/p/t/39552051902918\" class=\"comt\">评论</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"/p/t/39552051902918\" class=\"comt\">收藏</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"#\" class=\"alarm\">举报</a> </div></div></div></li>";
 		return $(s);
 	}
-	
+
+	function sentTime(ms){
+	　　	var t = new Date(ms);
+	　　var now = new Date();
+	　　var showDate = 172800000;
+	　　var showYestoday = 172800000;
+	　　var lastHour = 172800000;
+	　　var pas = now-t;
+	　　if (pas>=showDate) {
+	　　return (t.format("yyyy-MM-dd hh:mm:ss"));
+	　　}else if(pas>=showYestoday && pas<showDate){
+	　　	return ("昨天:"+t.format("hh:mm:ss"));
+	　　}else if(pas>=lastHour && pas<showYestoday){
+	　　return ("今天:"+t.format("hh:mm:ss"));
+	　　}else{
+	　　return (t.format("mm")+"分钟前");
+	　　}
+	}
 });
 -->
 </script>
