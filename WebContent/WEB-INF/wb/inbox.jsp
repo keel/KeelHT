@@ -15,13 +15,15 @@ String uName = user.getName();
 long userId = user.getId();
 out.println(WBJSPCacheOut.out("header1"));
 %>
+<link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 <script src="<%=sPrefix %>/js/jquery.json-2.2.min.js" type="text/javascript"></script>
-<script src="<%=sPrefix %>/js/hotEdit.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/jquery.validate.min.js" type="text/javascript"></script>
-<script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.pack.js" type="text/javascript"></script>
+<script src="<%=sPrefix %>/js/hotEdit.js" type="text/javascript"></script>
+<script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.js" type="text/javascript"></script>
 <script type="text/javascript">
 <!-- 
 $(function(){
+	
 	$("#wbUserUrl").empty().append("<%=uName%>");
 	$("#r_follow_num").empty().append("<%=user.getProp("friends_count")%>");
 	$("#r_fans_num").empty().append("<%=user.getProp("followers_count")%>");
@@ -53,6 +55,8 @@ $(function(){
 	$.validator.dealAjax = {
 		bt:$("#sendbt"),
 		ok:function(data){
+			//console.log(data);
+			
 			$.fancybox(
 			'<p class="fancyMsgBox1" >消息发送成功!</p>',
 			{	'autoDimensions'	: false,
@@ -62,7 +66,10 @@ $(function(){
 				'transitionOut'		: 'none',
 				'hideOnContentClick': true
 			});
-			setTimeout("$.fancybox.close()",800);
+			$("#talk").val("");
+			setTimeout("$.fancybox.close();",800);
+			
+			setTimeout("readNew();",2800);
 		},
 		err:function(){
 			$.fancybox(
@@ -83,73 +90,87 @@ $(function(){
 	    rules: {
 	        talk: {
 	            required:true,
-	            rangelength:[1,200]
+	            rangelength:[1,140]
 	        }
 	    }
 	});
 
+	
+	
+	//按页载入消息
 	$.getJSON("<%=prefix %>/msg/inbox?p=1&pz=5&uid=<%=userId%>",function(data){
 		for(var i = 0,j=data.length;i<j;i++){
 			var d = data[i];
-			$("#msgList").append(talkLI(d,"<%=prefix %>","<%=sPrefix %>"));
+			$("#msgList").append($(talkLI(d,"<%=prefix %>","<%=sPrefix %>")));
 		}
 		//console.log(data);
 	});
-
-
-	function talkLI(d,prefix,sPrefix){
-		var s = "<li><div class=\"userPic\"><a href=\"/";
-		s += d.creatorName;
-		s += "\"> <img src=\"";
-		s += sPrefix;
-		s += "/images/upload/";
-		s += d.creatorName;
-		s += "_3.jpg\" alt=\"";
-		s += d.creatorName;
-        s += "\" /></a></div>";
-		s += "<div class=\"msgBox\"><div class=\"userName\" ><a href=\"/";
-		s += d.creatorName;
-		s += "\" title=\"";
-		s += d.author_screen;
-		s += "(@";
-		s += d.creatorName;
-		s += ")\" >";
-		s += d.author_screen;
-		s += "</a>";
-		if(d.isRT){s+="&nbsp;&nbsp;转播:&nbsp;&nbsp;"};
-		s += "</div><div class=\"msgCnt\">";
-		s += d.text;
-		s += "</div><div class=\"pubInfo\"><span class=\"fleft\"><a class=\"time\" target=\"_blank\" href=\"";
-		//oneTopicUrl
-		//s += "/p/t/9579026057805";
-		s += "\" title=\"";
-		s += new Date(d.createTime).format("yyyy-MM-dd hh:mm:ss");
-		s += "\">";
-		s += sentTime(d.createTime);
-		s += "</a> 来自";
-		s += d.source;
-		s += "</span><div class=\"funBox\"><a href=\"#\" class=\"relay\">转播</a>&nbsp;&nbsp; |&nbsp;&nbsp; <a href=\"/p/t/39552051902918\" class=\"comt\">评论</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"/p/t/39552051902918\" class=\"comt\">收藏</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"#\" class=\"alarm\">举报</a> </div></div></div></li>";
-		return $(s);
-	}
-
-	function sentTime(ms){
-	　　	var t = new Date(ms);
-	　　var now = new Date();
-	　　var showDate = 172800000;
-	　　var showYestoday = 172800000;
-	　　var lastHour = 172800000;
-	　　var pas = now-t;
-	　　if (pas>=showDate) {
-	　　return (t.format("yyyy-MM-dd hh:mm:ss"));
-	　　}else if(pas>=showYestoday && pas<showDate){
-	　　	return ("昨天:"+t.format("hh:mm:ss"));
-	　　}else if(pas>=lastHour && pas<showYestoday){
-	　　return ("今天:"+t.format("hh:mm:ss"));
-	　　}else{
-	　　return (t.format("mm")+"分钟前");
-	　　}
-	}
 });
+
+function talkLI(d,prefix,sPrefix){
+	var s = "<li><div class=\"userPic\"><a href=\"/";
+	s += d.creatorName;
+	s += "\"> <img src=\"";
+	s += sPrefix;
+	s += "/images/upload/";
+	s += d.creatorName;
+	s += "_3.jpg\" alt=\"";
+	s += d.creatorName;
+       s += "\" /></a></div>";
+	s += "<div class=\"msgBox\"><div class=\"userName\" ><a href=\"/";
+	s += d.creatorName;
+	s += "\" title=\"";
+	s += d.author_screen;
+	s += "(@";
+	s += d.creatorName;
+	s += ")\" >";
+	s += d.author_screen;
+	s += "</a>";
+	if(d.isRT){s+="&nbsp;&nbsp;转播:&nbsp;&nbsp;"};
+	s += "</div><div class=\"msgCnt\">";
+	s += d.text;
+	s += "</div><div class=\"pubInfo\"><span class=\"fleft\"><a class=\"time\" target=\"_blank\" href=\"";
+	//oneTopicUrl
+	//s += "/p/t/9579026057805";
+	s += "\" title=\"";
+	s += new Date(d.createTime).format("yyyy-MM-dd hh:mm:ss");
+	s += "\">";
+	s += sentTime(d.createTime);
+	s += "</a> 来自";
+	s += d.source;
+	s += "</span><div class=\"funBox\"><a href=\"#\" class=\"relay\">转播</a>&nbsp;&nbsp; |&nbsp;&nbsp; <a href=\"/p/t/39552051902918\" class=\"comt\">评论</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"/p/t/39552051902918\" class=\"comt\">收藏</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"#\" class=\"alarm\">举报</a> </div></div></div></li>";
+	return s;
+}
+
+function sentTime(ms){
+　　	var t = new Date(ms);
+　　var now = new Date();
+　　var showDate = 172800000;
+　　var showYestoday = 172800000;
+　　var lastHour = 172800000;
+　　var pas = now-t;
+　　if (pas>=showDate) {
+　　return (t.format("yyyy-MM-dd hh:mm:ss"));
+　　}else if(pas>=showYestoday && pas<showDate){
+　　	return ("昨天:"+t.format("hh:mm:ss"));
+　　}else if(pas>=lastHour && pas<showYestoday){
+　　return ("今天:"+t.format("hh:mm:ss"));
+　　}else{
+　　return (t.format("mm")+"分钟前");
+　　}
+}
+
+function readNew(){
+	$.getJSON("<%=prefix %>/msg/unread?max=15&uid=<%=userId%>",function(data){
+		var s = "";
+		for(var i = 0,j=data.length;i<j;i++){
+			var d = data[i];
+			s += talkLI(d,"<%=prefix %>","<%=sPrefix %>");
+		}
+		$("#msgList").prepend($(s));
+		//console.log(data);
+	});
+}
 -->
 </script>
 <% out.println(WBJSPCacheOut.out("@head_main")); %>
