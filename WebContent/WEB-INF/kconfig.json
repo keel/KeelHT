@@ -128,23 +128,34 @@
 		},
 		{
 			"_actName":"msg",
-			"_class":"com.k99k.wb.acts.WBMsg"
+			"_class":"com.k99k.wb.acts.WBMsg",
+			"pageSize":30
 		},
 		{
 			"_actName":"follow",
-			"_class":"com.k99k.wb.acts.WBFollow"
+			"_class":"com.k99k.wb.acts.WBFollow",
+			"pageSize":20
 		},
 		{
 			"_actName":"dmsg",
-			"_class":"com.k99k.wb.acts.WBDMsg"
+			"_class":"com.k99k.wb.acts.WBDMsg",
+			"pageSize":20,
+			"mentionReStr":["<a href='","'>","</a>"]
 		},
 		{
 			"_actName":"topic",
-			"_class":"com.k99k.wb.acts.WBTopic"
+			"_class":"com.k99k.wb.acts.WBTopic",
+			
 		},
 		{
 			"_actName":"favor",
-			"_class":"com.k99k.wb.acts.WBFavor"
+			"_class":"com.k99k.wb.acts.WBFavor",
+			
+		},
+		{
+			"_actName":"picupload",
+			"_class":"com.k99k.wb.acts.WBPicUpload",
+			"savePath":"F:/works/workspace_keel/KHunter/WebContent/images/upload/"
 		}
 	],
 	"actionsInfo":"以_开头的key不会作为Action属性应用在setProp中。_actName为action的唯一名,对应到url和ActionManager的map中;_actName为*表示为默认Action,匹配所有无法匹配到actName的请求;actions作为数组将按配置中的顺序载入;",

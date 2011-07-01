@@ -3,19 +3,13 @@
  */
 package com.k99k.wb.acts;
 
-import java.util.Map;
-
-import org.apache.log4j.Logger;
 
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
-import com.k99k.khunter.HTManager;
 import com.k99k.khunter.HttpActionMsg;
 import com.k99k.khunter.KFilter;
-import com.k99k.khunter.KIoc;
 import com.k99k.khunter.KObject;
 import com.k99k.khunter.dao.WBUserDao;
-import com.k99k.tools.JSONTool;
 import com.k99k.tools.StringUtil;
 
 /**
@@ -76,31 +70,21 @@ public class WBFavor extends Action {
 		return super.act(msg);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see com.k99k.khunter.Action#getIniPath()
+	/**
+	 * @return the pageSize
 	 */
-	@Override
-	public String getIniPath() {
-		return "wb.json";
-	}
-	/* (non-Javadoc)
-	 * @see com.k99k.khunter.Action#init()
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public void init() {
-		try {
-			String ini = KIoc.readTxtInUTF8(HTManager.getIniPath()+getIniPath());
-			Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
-			Map<String, ?> m = (Map<String, ?>) root.get("wbFavor");
-			this.pageSize = (StringUtil.isDigits(m.get("pageSize")))?Integer.parseInt(m.get("pageSize")+""):20;
-		} catch (Exception e) {
-			log.error("WBTalk init Error!", e);
-		}
+	public final int getPageSize() {
+		return pageSize;
 	}
 
-	static final Logger log = Logger.getLogger(WBFavor.class);
+	/**
+	 * @param pageSize the pageSize to set
+	 */
+	public final void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+
+
 	
 	
 }

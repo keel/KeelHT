@@ -3,19 +3,27 @@
  */
 package com.k99k.khunter.acts;
 
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.UUID;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
+import com.k99k.khunter.HttpActionMsg;
+import com.k99k.tools.StringUtil;
+import com.k99k.wb.acts.JOut;
 
 /**
- * 文件上传
+ * 文件上传动作类
  * @author keel
  *
  */
@@ -29,33 +37,63 @@ public class Uploader extends Action {
 	}
 	
 	
-	private String savePath;
+	/**
+	 * 保存文件的路径
+	 */
+	private String savePath = "";
 	
-	
+	static final Logger log = Logger.getLogger(Uploader.class);
 
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#act(com.k99k.khunter.ActionMsg)
 	 */
 	@Override
 	public ActionMsg act(ActionMsg msg) {
-		
-		
-		
+		HttpActionMsg httpmsg = (HttpActionMsg)msg;
+		HttpServletRequest req = httpmsg.getHttpReq();
+		String file = req.getParameter("f");
+		if (!StringUtil.isStringWithLen(file, 1)) {
+			JOut.err(400, httpmsg);
+			return super.act(msg);
+		}
+		String re = upload(req,this.savePath,file,true);
+		msg.addData("[print]", re);
 		return super.act(msg);
+	}
+	
+	
+	public static final String addFileTail(String tail,String filePath){
+		int po = filePath.lastIndexOf(".");
+		po = (po<0)?0:po;
+		StringBuilder sb = new StringBuilder(filePath.substring(0, po));
+		sb.append(tail);
+		sb.append(filePath.substring(po));
+		return sb.toString();
 	}
 
 	
-	public String upload(HttpServletRequest request,String savePath,String clientPath){
+	/**
+	 * 接收上传文件
+	 * @param request HttpServletRequest
+	 * @param savePath 保存文件的路径,注意末尾要加上/符
+	 * @param fileName 原上传文件名
+	 * @param saveRandomName 是否生成随机的文件名("毫秒数__fileName")
+	 * @return 上传后的文件名
+	 */
+	public final static String upload(HttpServletRequest request,String savePath,String fileName,boolean saveRandomName){
 		FileOutputStream fos = null;
         ServletInputStream  sis = null;
 		try {
-			//TODO 如果是上传任意文件,需要从form中取到上传文件的本地路径来确定文件名
-			int po = clientPath.lastIndexOf("/");
-			po = (po<0)?0:po;
-	    	String filename = UUID.randomUUID().toString()+"__"+clientPath.substring(po); //UUID.randomUUID().toString()+".jpg";
+//			int po = clientPath.lastIndexOf("/");
+//			po = (po<0)?0:po;
+//	    	String filename = UUID.randomUUID().toString()+"__"+clientPath.substring(po); //UUID.randomUUID().toString()+".jpg";
+	    	if (saveRandomName) {
+	    		//fileName = UUID.randomUUID().toString()+"__"+fileName;
+	    		fileName = System.currentTimeMillis()+"__"+fileName;
+			}
 	    	//System.out.println("filename:"+filename);
 			 sis = request.getInputStream();
-			 String toFile = savePath;//this.getServletContext().getRealPath("/") + "/images/upload/temppic/"+filename;
+			 String toFile = savePath+fileName;//this.getServletContext().getRealPath("/") + "/images/upload/temppic/"+filename;
 		 
             fos = new FileOutputStream(new File(toFile));
             
@@ -114,9 +152,10 @@ public class Uploader extends Action {
 	        //System.out.println("basePath+filename:"+basePath+filename); 
 			//out.clear();	
 			//out.print(basePath+"/images/upload/temppic/"+filename);
-			return filename;
+			return fileName;
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			log.error("upload Error!", ex);
+			return null;
 		}finally {
             try {
                 fos.close();
@@ -124,41 +163,73 @@ public class Uploader extends Action {
             } catch (IOException ignored) {
             }
         }
-		return null;
+	}
+	
+	
+	
+	/**
+	 * @return the savePath
+	 */
+	public final String getSavePath() {
+		return savePath;
 	}
 
 
-	/* (non-Javadoc)
-	 * @see com.k99k.khunter.Action#reLoad()
+	/**
+	 * @param savePath the savePath to set
 	 */
-	@Override
-	public void reLoad() {
-		super.reLoad();
+	public final void setSavePath(String savePath) {
+		this.savePath = savePath;
 	}
 
 
-	/* (non-Javadoc)
-	 * @see com.k99k.khunter.Action#exit()
+	/**
+	 * 生成缩略图
+	 * @param srcPicPath 原图的本地地址
+	 * @param targetPicPath 新图的本地地址
+	 * @param newWidth 新的宽度
+	 * @return 是否生成成功
 	 */
-	@Override
-	public void exit() {
+	public static final boolean makeSmallPic(String srcPicPath,String targetPicPath,int newWidth,int maxHeight){
+		try {
+            File fi = new File(srcPicPath); //大图文件
+            File fo = new File(targetPicPath); //将要转换出的小图文件
 
+            AffineTransform transform = new AffineTransform();
+            BufferedImage bis = ImageIO.read(fi);
+
+            int w = bis.getWidth();
+            int h = bis.getHeight();
+           // double scale = (double)w/h;
+
+            int nw = newWidth;
+            int nh = (nw * h) / w;
+            if(nh>maxHeight) {
+                nh = maxHeight;
+                nw = (nh * w) / h;
+            }
+
+            double sx = (double)nw / w;
+            double sy = (double)nh / h;
+
+            transform.setToScale(sx,sy);
+
+            AffineTransformOp ato = new AffineTransformOp(transform, null);
+            BufferedImage bid = new BufferedImage(nw, nh, BufferedImage.TYPE_3BYTE_BGR);
+            ato.filter(bis,bid);
+            ImageIO.write(bid, "jpeg", fo);
+        } catch(Exception e) {
+        	log.error("makeSmallPic failed.",e);
+           return false;
+        }
+		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.k99k.khunter.Action#getIniPath()
-	 */
-	@Override
-	public String getIniPath() {
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.k99k.khunter.Action#init()
-	 */
-	@Override
-	public void init() {
-
+	public static void main(String[] args) {
+		//System.out.println(Uploader.makeSmallPic("g:/460.jpg", "g:/460_s.jpg", 250, 300));
+		String s = "g:/460.jpg";
+		System.out.println(addFileTail("_s", s));
+		
 	}
 
 }

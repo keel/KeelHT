@@ -10,11 +10,11 @@
 <script type="text/javascript" src="../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
 <script type="text/javascript">
 $(function(){
-/*
+/*	
 $("#single_image").fancybox({
 		'hideOnContentClick': true
 	});
-*/	
+
 		$.fancybox(
 		'<p class="fancyMsgBox1" >用户名和密码未通过验证.</p>',
 		{
@@ -26,7 +26,18 @@ $("#single_image").fancybox({
 			'hideOnContentClick': true
 		}
 	);
+*/
 
+$("#single_image").fancybox(
+		{
+        		'autoDimensions'	: false,
+			'width'         		: 300,
+			'height'        		: 'auto',
+			'transitionIn'		: 'none',
+			'transitionOut'		: 'none',
+			'hideOnContentClick': true
+		}
+	);
 });
 </script>
 
