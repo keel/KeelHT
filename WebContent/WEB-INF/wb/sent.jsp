@@ -14,6 +14,7 @@ if(o != null ){
 }
 KObject user = (KObject)data.getData("wbUser");
 String uName = user.getName();
+long userId = user.getId();
 out.println(WBJSPCacheOut.out("header1"));
 %>
 <script src="<%=sPrefix %>/js/jquery.json-2.2.min.js" type="text/javascript"></script>
@@ -33,7 +34,69 @@ $(function(){
 		window.location="<%=prefix %>/login";
 		return false;
 	});
+
+	//按页载入消息
+	$.getJSON("<%=prefix %>/msg/inbox?p=1&pz=5&uid=<%=userId%>",function(data){
+		for(var i = 0,j=data.length;i<j;i++){
+			var d = data[i];
+			$("#msgList").append($(talkLI(d,"<%=prefix %>","<%=sPrefix %>")));
+		}
+		//console.log(data);
+	});
 });
+
+function talkLI(d,prefix,sPrefix){
+	var s = "<li><div class=\"userPic\"><a href=\"/";
+	s += d.creatorName;
+	s += "\"> <img src=\"";
+	s += sPrefix;
+	s += "/images/upload/";
+	s += d.creatorName;
+	s += "_3.jpg\" alt=\"";
+	s += d.creatorName;
+       s += "\" /></a></div>";
+	s += "<div class=\"msgBox\"><div class=\"userName\" ><a href=\"/";
+	s += d.creatorName;
+	s += "\" title=\"";
+	s += d.author_screen;
+	s += "(@";
+	s += d.creatorName;
+	s += ")\" >";
+	s += d.author_screen;
+	s += "</a>";
+	if(d.isRT){s+="&nbsp;&nbsp;转播:&nbsp;&nbsp;"};
+	s += "</div><div class=\"msgCnt\">";
+	s += d.text;
+	s += "</div><div class=\"pubInfo\"><span class=\"fleft\"><a class=\"time\" target=\"_blank\" href=\"";
+	//oneTopicUrl
+	//s += "/p/t/9579026057805";
+	s += "\" title=\"";
+	s += new Date(d.createTime).format("yyyy-MM-dd hh:mm:ss");
+	s += "\">";
+	s += sentTime(d.createTime);
+	s += "</a> 来自";
+	s += d.source;
+	s += "</span><div class=\"funBox\"><a href=\"#\" class=\"relay\">转播</a>&nbsp;&nbsp; |&nbsp;&nbsp; <a href=\"/p/t/39552051902918\" class=\"comt\">评论</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"/p/t/39552051902918\" class=\"comt\">收藏</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"#\" class=\"alarm\">举报</a> </div></div></div></li>";
+	return s;
+}
+
+function sentTime(ms){
+　　	var t = new Date(ms);
+　　var now = new Date();
+　　var showDate = 172800000;
+　　var showYestoday = 172800000;
+　　var lastHour = 172800000;
+　　var pas = now-t;
+　　if (pas>=showDate) {
+　　return (t.format("yyyy-MM-dd hh:mm:ss"));
+　　}else if(pas>=showYestoday && pas<showDate){
+　　	return ("昨天:"+t.format("hh:mm:ss"));
+　　}else if(pas>=lastHour && pas<showYestoday){
+　　return ("今天:"+t.format("hh:mm:ss"));
+　　}else{
+　　return (t.format("mm")+"分钟前");
+　　}
+}
 </script>
 <% out.println(WBJSPCacheOut.out("@head_main")); %>
 		

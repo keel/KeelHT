@@ -18,12 +18,12 @@ import com.k99k.tools.StringUtil;
  * @author keel
  *
  */
-public class WBFollow extends Action {
+public class WBFans extends Action {
 
 	/**
 	 * @param name
 	 */
-	public WBFollow(String name) {
+	public WBFans(String name) {
 		super(name);
 	}
 	
@@ -51,33 +51,15 @@ public class WBFollow extends Action {
 		if (subact.equals("")) {
 			//转到follow页
 			msg.addData("wbUser", user);
-			msg.addData("[jsp]", "/WEB-INF/wb/follow.jsp");
+			msg.addData("[jsp]", "/WEB-INF/wb/fans.jsp");
 			return super.act(msg);
-		}else if(subact.equals("follows")){
+		}else if (subact.equals("fans")) {
 			String p_str = httpmsg.getHttpReq().getParameter("p");
 			String pz_str = httpmsg.getHttpReq().getParameter("pz");
 			int page = StringUtil.isDigits(p_str)?Integer.parseInt(p_str):1;
 			int pz = StringUtil.isDigits(pz_str)?Integer.parseInt(pz_str):this.pageSize;
-			re = JSONTool.writeFormatedJsonString(WBUserDao.getFollows(userId, page, pz));
-		}else if(subact.equals("follow")){
-			//TODO 做一个新任务,将对方新发表的内容也送到自己的inbox
-			String tar_str = httpmsg.getHttpReq().getParameter("tid");
-			if (!StringUtil.isDigits(tar_str)) {
-				JOut.err(400, httpmsg);
-				return super.act(msg);
-			}
-			long targetId = Long.parseLong(tar_str);
-			boolean f = WBUserDao.follow(userId, targetId);
-			re = String.valueOf(f);
-		}else if(subact.equals("unfollow")){
-			String tar_str = httpmsg.getHttpReq().getParameter("tid");
-			if (!StringUtil.isDigits(tar_str)) {
-				JOut.err(400, httpmsg);
-				return super.act(msg);
-			}
-			long targetId = Long.parseLong(tar_str);
-			boolean f = WBUserDao.unFollow(userId, targetId);
-			re = String.valueOf(f);
+			
+			re = JSONTool.writeFormatedJsonString(WBUserDao.getFans(userId, page, pz));
 		}
 		msg.addData("[print]", re);
 		return super.act(msg);

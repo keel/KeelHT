@@ -2,9 +2,9 @@
 		<div id="userInfo">
 			<div id="userHead">
 				<div class="fleft">
-				<a href="#@prefix@#/mine" id="r_icon_1" style="display: block;padding:2px;border:1px solid #ccc;background:#FFF;"></a></div>
+				<a href="#@prefix@#/me" id="r_icon_1" style="display: block;padding:2px;border:1px solid #ccc;background:#FFF;"></a></div>
 				<div id="userNameLocal" class="fright">
-					<a href="#@prefix@#/mine" id="r_uname"></a><br />
+					<a href="#@prefix@#/me" id="r_uname"></a><br />
 					<span id="r_location"></span>
 				</div>
 <div class="clear"></div>
@@ -17,7 +17,7 @@
 					<a href="#@prefix@#/fans"><span class="uNumNum" id="r_fans_num">0</span><br />粉丝</a>
 				</li>
 				<li>
-					<a href="#@prefix@#/mine"><span class="uNumNum" id="r_mgs_num">0</span><br />微博</a>
+					<a href="#@prefix@#/me"><span class="uNumNum" id="r_mgs_num">0</span><br />微博</a>
 				</li>
 
 			</ul>

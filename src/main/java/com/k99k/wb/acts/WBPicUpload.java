@@ -42,10 +42,11 @@ public class WBPicUpload extends Action {
 			return super.act(msg);
 		}
 		String re = Uploader.upload(req,this.savePath,file,true);
-		String small1 = Uploader.addFileTail("_1", re);
-		String small2 = Uploader.addFileTail("_2", re);
-		Uploader.makeSmallPic(re, small1, 250, 300);
-		Uploader.makeSmallPic(re, small2, 150, 100);
+		String org = this.savePath+re;
+		String small1 = this.savePath+Uploader.addFileTail("_1", re);
+		String small2 = this.savePath+Uploader.addFileTail("_2", re);
+		Uploader.makeSmallPic(org, small1, 250, 300);
+		Uploader.makeSmallPic(org, small2, 250, 100);
 		StringBuilder sb = new StringBuilder("[\"");
 		sb.append(re).append("\",\"");
 		sb.append(small1).append("\",");
