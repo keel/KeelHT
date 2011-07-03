@@ -13,7 +13,7 @@ $.validator.dealAjax = {
 	ok:function(data){
 		//200表示成功,data为返回的uName
 		var j = $.parseJSON(data);
-		window.location = ("<%=sPrefix %>/"+j.uName);
+		window.location = ("<%=sPrefix %>/"+j.uName+"/settings");
 	},
 	err:function(){
 		alert('注册用户失败,该用户名已存在.');

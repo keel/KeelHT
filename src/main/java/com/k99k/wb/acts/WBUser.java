@@ -126,6 +126,18 @@ public class WBUser extends Action {
 		return wbUserDao.checkName(uName);
 	}
 	
+	public static final boolean isFollow(long userId,long targetId){
+		return WBUserDao.isFollow(userId, targetId);
+	}
+	
+	public static final boolean isBothFollow(long userId,long targetId){
+		return WBUserDao.isBothFollow(userId, targetId);
+	}
+	
+	public static final boolean isFan(long userId,long targetId){
+		return WBUserDao.isFan(userId, targetId);
+	}
+	
 	/**
 	 * 保存用户的属性
 	 * TODO 后期仅更新用户的属性字段,不直接保存

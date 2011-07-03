@@ -66,6 +66,7 @@ public class WBUrl extends Action {
 			httpmsg.addData("[jsp]", "/WEB-INF/wb/home.jsp");
 			return super.act(msg);
 		}
+		KObject cookieUser = null;
 		if (hasName) {
 			String[] u_p = Base64Coder.decodeString(reqUserStr).split(":");
 			if (u_p.length >= 2 && u_p[0].equals(actName)) {
@@ -77,13 +78,18 @@ public class WBUrl extends Action {
 					httpmsg.addData("[jsp]", "/WEB-INF/wb/inbox.jsp");
 					return super.act(msg);
 				}
+			}else{
+				cookieUser = WBUser.findWBUser(u_p[0]);
 			}
 		}
 		//TODO 是否在客户端发起验证请求？
 		//如存在此用户则显示该用户的sent
 		if (WBUser.checkWBUserName(actName)) {
 			httpmsg.addData("wbUser", WBUser.findWBUser(actName));
-			httpmsg.addData("[jsp]", "/WEB-INF/wb/sent.jsp");
+			if (cookieUser != null) {
+				httpmsg.addData("coUser", cookieUser);
+			}
+			httpmsg.addData("[jsp]", "/WEB-INF/wb/user.jsp");
 		}else{
 			//404
 			JOut.err(404, httpmsg);

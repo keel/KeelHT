@@ -147,5 +147,9 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px
 .cPageNum{font-weight: bold;padding:2px 5px;}
 #pageNav a:hover{text-decoration:none;background: #fff4d8; }
 #pageNav{text-align: right;}
-
-
+.bigTxt{font-size: 120%;font-weight: bold;}
+.smallTxt{font-size: 90%;}
+.icon{padding:3px;background:#fff;border: 1px solid #ccc;display: inline-block;}
+#profile{padding:5px 15px;font-size: 90%;}
+#myIcon{float:left;}
+#myInfo{float: right;width:330px;padding:5px;}

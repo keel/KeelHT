@@ -159,7 +159,8 @@ public class MongoDao implements DaoInterface{
 	 * @return 未找到返回null
 	 */
 	public Map<String,Object> findOneMap(HashMap<String,Object> query){
-		BasicDBObject q = (query==null)?new BasicDBObject():new BasicDBObject(query);
+		BasicDBObject q = (query==null)?emptyBasicDBObject:(query instanceof BasicDBObject)?(BasicDBObject)query:new BasicDBObject(query);
+		
 		return this.findOneMap(q, null);
 	}
 	
@@ -167,19 +168,23 @@ public class MongoDao implements DaoInterface{
 	 * 查找单个对象
 	 * @param query
 	 * @param fields
-	 * @return
+	 * @return 未找则返回null
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Map<String,Object> findOneMap(HashMap<String,Object> query,HashMap<String, Object> fields){
 		try {
-			BasicDBObject q = (query==null)?new BasicDBObject():new BasicDBObject(query);
-			BasicDBObject f = (fields==null)?null:new BasicDBObject(fields);
+			DBObject q = (query==null)?emptyBasicDBObject:((query instanceof DBObject)?(DBObject)query:new BasicDBObject(query));
+			DBObject f = (fields==null)?null:((query instanceof DBObject)?(DBObject)fields:new BasicDBObject(fields));
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
-	        return (Map<String,Object>)coll.findOne(q,f);
+			Object o = coll.findOne(q,f);
+			if (o==null) {
+				return null;
+			}
+	        return (Map<String,Object>)o;
 		} catch (Exception e) {
-			log.error("find error!", e);
+			log.error("findOneMap error!", e);
 			return null;
 		}
 	}
@@ -192,7 +197,7 @@ public class MongoDao implements DaoInterface{
 	public boolean checkName(String name) {
 		try {
 			DBCollection coll = this.dataSource.getColl(tableName);
-			DBCursor cur = coll.find(new BasicDBObject("name", name),prop_id);
+			DBCursor cur = coll.find(new BasicDBObject("name", name),prop_id).limit(1);
 			if (cur.hasNext()) {
 				return true;
 			}
@@ -202,7 +207,6 @@ public class MongoDao implements DaoInterface{
 		}
 		return false;
 	}
-
 
 
 	/**
@@ -218,7 +222,7 @@ public class MongoDao implements DaoInterface{
 	@SuppressWarnings("unchecked")
 	public List<Map<String,Object>> query(HashMap<String,Object> query,HashMap<String,Object> fields,HashMap<String,Object> sortBy,int skip,int len,HashMap<String,Object> hint){
 		try {
-			BasicDBObject q = (query==null)?new BasicDBObject():new BasicDBObject(query);
+			BasicDBObject q = (query==null)?emptyBasicDBObject:(query instanceof BasicDBObject)?(BasicDBObject)query:new BasicDBObject(query);
 			BasicDBObject field = (fields==null)?null:new BasicDBObject(fields);
 			BasicDBObject sort = (sortBy==null)?null:new BasicDBObject(sortBy);
 			BasicDBObject hin = (hint==null)?null:new BasicDBObject(hint);
@@ -258,7 +262,7 @@ public class MongoDao implements DaoInterface{
 	public int count(HashMap<String,Object> query,HashMap<String,Object> hint){
 		
 		try {
-			BasicDBObject q = (query==null)?new BasicDBObject():new BasicDBObject(query);
+			BasicDBObject q = (query==null)?emptyBasicDBObject:(query instanceof BasicDBObject)?(BasicDBObject)query:new BasicDBObject(query);
 			BasicDBObject hin = (hint==null)?null:new BasicDBObject(hint);
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
@@ -278,8 +282,8 @@ public class MongoDao implements DaoInterface{
 	public int count(HashMap<String,Object> query){
 		
 		try {
-			BasicDBObject q = (query==null)?new BasicDBObject():new BasicDBObject(query);
-			//coll = checkColl(coll);
+			BasicDBObject q = (query==null)?emptyBasicDBObject:(query instanceof BasicDBObject)?(BasicDBObject)query:new BasicDBObject(query);
+			
 			DBCollection coll = this.dataSource.getColl(tableName);
 			return coll.find(q).count();
 		} catch (Exception e) {

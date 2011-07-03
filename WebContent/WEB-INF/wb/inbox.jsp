@@ -14,16 +14,15 @@ KObject user = (KObject)data.getData("wbUser");
 String uName = user.getName();
 long userId = user.getId();
 int p = (StringUtil.isDigits(request.getParameter("p")))?Integer.parseInt(request.getParameter("p")):1;
-long cc = (Long)user.getProp("inbox_count");
-long pn = (cc%10>0)?cc/10+1:cc/10;
+int cc = Integer.parseInt(user.getProp("inbox_count")+"");
+int pn = (cc%10>0)?cc/10+1:cc/10;
 out.println(WBJSPCacheOut.out("header1"));
 %>
 <link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
-<script src="<%=sPrefix %>/js/jquery.json-2.2.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/jquery.validate.min.js" type="text/javascript"></script>
-<script src="<%=sPrefix %>/js/hotEdit.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.js" type="text/javascript"></script>
 <script type="text/javascript" src="<%=sPrefix %>/js/pagenav.js"></script>
+<script type="text/javascript" src="<%=sPrefix %>/js/talk.js"></script>
 <script type="text/javascript">
 <!-- 
 $(function(){
@@ -33,7 +32,7 @@ $(function(){
 	$("#r_fans_num").empty().append("<%=user.getProp("followers_count")%>");
 	$("#r_uname").empty().append("<%=uName%>");
 	$("#r_mgs_num").empty().append("<%=user.getProp("statuses_count")%>");
-	$("#r_icon_1").empty().append("<img src='<%=sPrefix+"/images/upload/"+uName+"_2.jpg"%>' height='60' width='60' alt='' />");
+	$("#r_icon_1").empty().append("<img src='<%=sPrefix+"/images/upload/"+uName+"_2.jpg"%>' height='60' width='60' alt='me' />");
 	$("#r_location").empty().append("<%=user.getProp("location")%>");
 
 	
@@ -106,7 +105,7 @@ $(function(){
 			var s = "";
 			for(var i = 0,j=data.length;i<j;i++){
 				var d = data[i];
-				s += talkLI(d,"<%=prefix %>","<%=sPrefix %>");
+				s += talkLI(d,"<%=prefix %>","<%=sPrefix %>",<%=user.getId() %>);
 			}
 			$("#msgList").html(s);
 			
@@ -114,96 +113,6 @@ $(function(){
 	};
 	pageNav.go(<%= p %>,<%= pn %>);
 });
-
-function talkLI(d,prefix,sPrefix){
-	var s = "<li><div class=\"userPic\"><a href=\"/";
-	s += d.creatorName;
-	s += "\"> <img src=\"";
-	s += sPrefix;
-	s += "/images/upload/";
-	s += d.creatorName;
-	s += "_3.jpg\" alt=\"";
-	s += d.creatorName;
-    s += "\" /></a></div>";
-	s += "<div class=\"msgBox\"><div class=\"userName\" ><a href=\"/";
-	s += d.creatorName;
-	s += "\" title=\"";
-	s += d.author_screen;
-	s += "(@";
-	s += d.creatorName;
-	s += ")\" >";
-	s += d.author_screen;
-	s += "</a>";
-	if(d.isRT){s+="&nbsp;&nbsp;转播:&nbsp;&nbsp;"};
-	s += "</div><div class=\"msgCnt\">";
-	s += d.text;
-	s += "</div>";
-	if (d.rtmsg) {
-		var r = d.rtmsg;
-		s += "<div class='replyBox'> <div class='msgBox'><a href=\"/";
-		s += d.creatorName;
-		s += "\" title=\"";
-		s += d.author_screen;
-		s += "(@";
-		s += d.creatorName;
-		s += ")\" >";
-		s += d.author_screen;
-		s += "</a>&nbsp;:&nbsp; <span class='msgCnt'>";
-		s += r.text;
-		s += "</span><div class=\"pubInfo\"><span class=\"fleft\"><a class=\"time\" target=\"_blank\" href=\"";
-		//oneTopicUrl
-		//s += "/p/t/9579026057805";
-		s += "\" title=\"";
-		s += new Date(r.createTime).format("yyyy-MM-dd hh:mm:ss");
-		s += "\">";
-		s += sentTime(r.createTime);
-		s += "</a> 来自";
-		s += r.source;
-		s += "</span> &nbsp; <a href='<%=prefix %>/m?mid=";
-		s += r._id;
-		s += "' target='_blank'>原文转播与评论(";
-		s += r.rt_comm_count;
-		s += ")</a></div></div><div class='clear'></div> </div>";
-	}
-	s += "<div class=\"pubInfo\"><span class=\"fleft\"><a class=\"time\" target=\"_blank\" href=\"";
-	//oneTopicUrl
-	//s += "/p/t/9579026057805";
-	s += "\" title=\"";
-	s += new Date(d.createTime).format("yyyy-MM-dd hh:mm:ss");
-	s += "\">";
-	s += sentTime(d.createTime);
-	s += "</a> 来自";
-	s += d.source;
-	if (d.rt_comm_count > 0) {
-		s += " &nbsp; <a href='#' class=\"readComm\">查看转播与评论(";
-		s += d.rt_comm_count;
-		s += ")</a>";
-	}
-	s += "</span><div class=\"funBox\">";
-	if (d.creatorId == <%=user.getId()%>) {
-		s += "<a href=\"#\" class=\"delMsg\">删除</a>&nbsp;&nbsp; |&nbsp;&nbsp;";
-	}
-	s += "<a href=\"#\" class=\"relay\">转播</a>&nbsp;&nbsp; |&nbsp;&nbsp; <a href=\"#\" class=\"comt\">评论</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"/p/t/39552051902918\" class=\"comt\">收藏</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"#\" class=\"alarm\">举报</a> </div></div></div></li>";
-	return s;
-}
-
-function sentTime(ms){
-　　	var t = new Date(ms);
-　　var now = new Date();
-　　var showDate = 172800000;
-　　var showYestoday = 172800000;
-　　var lastHour = 172800000;
-　　var pas = now-t;
-　　if (pas>=showDate) {
-　　return (t.format("yyyy-MM-dd hh:mm:ss"));
-　　}else if(pas>=showYestoday && pas<showDate){
-　　	return ("昨天:"+t.format("hh:mm:ss"));
-　　}else if(pas>=lastHour && pas<showYestoday){
-　　return ("今天:"+t.format("hh:mm:ss"));
-　　}else{
-　　return (t.format("mm")+"分钟前");
-　　}
-}
 
 function readNew(){
 	$.getJSON("<%=prefix %>/msg/unread?max=15&uid=<%=userId%>",function(data){
@@ -245,9 +154,7 @@ function readNew(){
 			</div>
 			
 			<div id="newsBox"><a href="#">有2条新消息,点击查看</a></div>
-			<ul id="msgList" class="ul_inline">
-				
-			</ul>
+			<ul id="msgList" class="ul_inline"><li></li></ul>
 			<div id="pageNav"></div>
 <div class="clear"></div>
 		</div>

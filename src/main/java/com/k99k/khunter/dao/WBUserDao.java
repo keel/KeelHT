@@ -236,8 +236,16 @@ public class WBUserDao extends MongoDao {
 	private static final BasicDBObject prop_follows_both = new BasicDBObject("follows.$.both",1);
 	private static final BasicDBObject prop_fans_both =new BasicDBObject("$set", new BasicDBObject("fans.$.both",1));
 	private static final BasicDBObject prop_fans_both_clear =new BasicDBObject("$set", new BasicDBObject("fans.$.both",0));
+	private static final BasicDBObject prop_rt_comm_count =new BasicDBObject("rt_comm_count",1);
 	
-	
+	public static final int countMsgComms(long msgId){
+		BasicDBObject q = new BasicDBObject("_id",msgId);
+		Map<String,Object> re = wbMsgDao.findOneMap(q, prop_rt_comm_count);
+		if (re == null) {
+			return 0;
+		}
+		return Integer.parseInt(re.get("rt_comm_count").toString());
+	}
 	
 	/**
 	 * 添加评论的同步操作,同时在原消息的转发数加一
@@ -603,6 +611,24 @@ public class WBUserDao extends MongoDao {
 			wbUserDao.updateOne(new BasicDBObject("_id",userId), prop_del_my_msg);
 		}
 		return re;
+	}
+	
+	public static final boolean isFollow(long userId,long targetId){
+		BasicDBObject q = new BasicDBObject("_id",userId).append("follows.id",targetId);
+		Object o = wbUserDao.findOneMap(q, prop_id);
+		return o!=null;
+	}
+	
+	public static final boolean isFan(long userId,long targetId){
+		BasicDBObject q = new BasicDBObject("_id",userId).append("fans.id",targetId);
+		Object o = wbUserDao.findOneMap(q, prop_id);
+		return o!=null;
+	}
+	
+	public static final boolean isBothFollow(long userId,long targetId){
+		BasicDBObject q = new BasicDBObject("_id",userId).append("follows.id",targetId).append("follows.both",1);
+		Object o = wbUserDao.findOneMap(q, prop_id);
+		return o!=null;
 	}
 	
 	/**
