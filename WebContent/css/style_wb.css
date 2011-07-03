@@ -142,6 +142,10 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px
 .fancyMsgBox3 {border:1px solid #d6d61f;padding:30px 0 30px 37px;background: #ffffd3 url(../images/msg_yellow.png) 10px 30px no-repeat;}
 .fancyMsgBox4 {border:1px solid #b4dbe8;padding:30px 0 30px 37px;background: #e3f2f7 url(../images/msg_blue.png) 10px 30px no-repeat;}
 
-.uploader{border: 1px solid #999;padding:20px;width:400px;height:300px;}
+.uploader{border: 1px solid #999;padding:20px;width:400px;height:300px;background: #FFF;}
+.pageNum{border: 1px solid #999;padding:2px 8px;display: inline-block;}
+.cPageNum{font-weight: bold;padding:2px 5px;}
+#pageNav a:hover{text-decoration:none;background: #fff4d8; }
+#pageNav{text-align: right;}
 
 

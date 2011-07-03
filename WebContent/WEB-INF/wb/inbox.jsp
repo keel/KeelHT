@@ -13,6 +13,9 @@ if(o != null ){
 KObject user = (KObject)data.getData("wbUser");
 String uName = user.getName();
 long userId = user.getId();
+int p = (StringUtil.isDigits(request.getParameter("p")))?Integer.parseInt(request.getParameter("p")):1;
+long cc = (Long)user.getProp("inbox_count");
+long pn = (cc%10>0)?cc/10+1:cc/10;
 out.println(WBJSPCacheOut.out("header1"));
 %>
 <link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
@@ -20,6 +23,7 @@ out.println(WBJSPCacheOut.out("header1"));
 <script src="<%=sPrefix %>/js/jquery.validate.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/hotEdit.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.js" type="text/javascript"></script>
+<script type="text/javascript" src="<%=sPrefix %>/js/pagenav.js"></script>
 <script type="text/javascript">
 <!-- 
 $(function(){
@@ -96,16 +100,19 @@ $(function(){
 	    }
 	});
 
-	
-	
-	//按页载入消息
-	$.getJSON("<%=prefix %>/msg/inbox?p=1&pz=15&uid=<%=userId%>",function(data){
-		for(var i = 0,j=data.length;i<j;i++){
-			var d = data[i];
-			$("#msgList").append($(talkLI(d,"<%=prefix %>","<%=sPrefix %>")));
-		}
-		//console.log(data);
-	});
+	pageNav.fn = function(p,pn){
+		//按页载入消息
+		$.getJSON("<%=prefix %>/msg/inbox?p="+p+"&pz=10&uid=<%=userId%>&r="+new Date(),function(data){
+			var s = "";
+			for(var i = 0,j=data.length;i<j;i++){
+				var d = data[i];
+				s += talkLI(d,"<%=prefix %>","<%=sPrefix %>");
+			}
+			$("#msgList").html(s);
+			
+		});
+	};
+	pageNav.go(<%= p %>,<%= pn %>);
 });
 
 function talkLI(d,prefix,sPrefix){
@@ -172,7 +179,11 @@ function talkLI(d,prefix,sPrefix){
 		s += d.rt_comm_count;
 		s += ")</a>";
 	}
-	s += "</span><div class=\"funBox\"><a href=\"#\" class=\"relay\">转播</a>&nbsp;&nbsp; |&nbsp;&nbsp; <a href=\"/p/t/39552051902918\" class=\"comt\">评论</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"/p/t/39552051902918\" class=\"comt\">收藏</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"#\" class=\"alarm\">举报</a> </div></div></div></li>";
+	s += "</span><div class=\"funBox\">";
+	if (d.creatorId == <%=user.getId()%>) {
+		s += "<a href=\"#\" class=\"delMsg\">删除</a>&nbsp;&nbsp; |&nbsp;&nbsp;";
+	}
+	s += "<a href=\"#\" class=\"relay\">转播</a>&nbsp;&nbsp; |&nbsp;&nbsp; <a href=\"#\" class=\"comt\">评论</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"/p/t/39552051902918\" class=\"comt\">收藏</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"#\" class=\"alarm\">举报</a> </div></div></div></li>";
 	return s;
 }
 
@@ -201,7 +212,7 @@ function readNew(){
 			var d = data[i];
 			s += talkLI(d,"<%=prefix %>","<%=sPrefix %>");
 		}
-		$("#msgList").prepend($(s));
+		$("#msgList").prepend(s);
 		//console.log(data);
 	});
 }
@@ -237,9 +248,7 @@ function readNew(){
 			<ul id="msgList" class="ul_inline">
 				
 			</ul>
-			<div id="pageNav">
-			
-			</div>
+			<div id="pageNav"></div>
 <div class="clear"></div>
 		</div>
 <% out.println(WBJSPCacheOut.out("@foot_inbox")); %>

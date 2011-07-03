@@ -19,7 +19,6 @@
 
 <script type="text/javascript" src="../js/swfupload.js"></script>
 
-<script type="text/javascript" src="../js/pagenav.js"></script>
 
 <script type="text/javascript">
 $(function(){
@@ -67,14 +66,10 @@ $("#single_image").fancybox(
 
 initUpload();
 
-pageNav.fn = function(p,pn){
-	//alert(p+","+pn);
-};
-pageNav.go(-53,10);
+goto(2,14);
+	
 	/*	*/
 });
-
-
 
 var swfu ;
 function initUpload(){
@@ -110,6 +105,86 @@ button_text_top_padding: 3,
 	});
 }
 
+function pageNav(p,pz,fn){
+//显示10个页码
+
+//总是显示第一个页码
+
+//前后补足
+	
+	
+	//只有一页,直接显示1
+	if(pz == 1){
+		return pHtml2(1);
+	}
+	
+
+	var re = "";
+	var pShowed = false;
+	//第一页
+	if(p == 1){
+		pShowed = true;
+		var isAll = false;
+		var max = 10;
+		if((pz-10)<=0){
+			isAll = true;
+			max = pz;
+		}
+		re+=pHtml2(1);
+		for (var i=2; i <= max; i++) {
+			re+=pHtml(i,pz,fn);
+		};
+		if(!isAll){re+="...";};
+		re+=pHtml(p+1,pz,fn,"下一页");
+		return re;
+	}
+	//非第一个10页
+	re+=pHtml(p-1,pz,fn,"上一页");
+	
+	
+	//总是显示第一页页码
+	re+=pHtml(1,pz,fn,"1");
+	//开始页码
+	var start = 2;
+	//ten表示当前是第几个10页
+	var ten =  Math.floor(p/10)*10;
+	//是否显示前置省略号,即大于10的开始页码
+	if(p>=10){
+		re+="...";
+		start = ten;
+	}
+	for (var i=start; i < p; i++) {
+		re+=pHtml(i,pz,fn);
+	};
+	re+=pHtml2(p);
+	var end = ten+10;
+	if(end>pz){end=pz;};
+	for (var i=p+1; i <= end; i++) {
+		re+=pHtml(i,pz,fn);
+	};
+	
+	if (end<pz) {re+="...";};
+	if (p<pz) {re+=pHtml(p+1,pz,fn,"下一页");};
+	
+	return re;
+
+}
+
+function pHtml(pageNo,pz,funcName,showPageNo){
+  	showPageNo = showPageNo || pageNo;
+	var H = " <a href='javascript:"+funcName+"("+ pageNo+","+ pz+  ");' class='pageNum'>"+ showPageNo+"</a> ";
+	return H;
+	
+}
+function pHtml2(pageNo){
+	var H = " <span class='cPageNum'>"+pageNo+"</span> ";
+	return H;
+}
+
+
+function goto(p,pz){
+$("#pageNav").html(pageNav(p,pz,"goto"));
+}
 
 
 </script>
