@@ -119,7 +119,7 @@ function readNew(){
 		var s = "";
 		for(var i = 0,j=data.length;i<j;i++){
 			var d = data[i];
-			s += talkLI(d,"<%=prefix %>","<%=sPrefix %>");
+			s += talkLI(d,"<%=prefix %>","<%=sPrefix %>",<%=user.getId() %>);
 		}
 		$("#msgList").prepend(s);
 		//console.log(data);

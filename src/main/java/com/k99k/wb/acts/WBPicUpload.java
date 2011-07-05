@@ -43,14 +43,17 @@ public class WBPicUpload extends Action {
 		}
 		String re = Uploader.upload(req,this.savePath,file,true);
 		String org = this.savePath+re;
-		String small1 = this.savePath+Uploader.addFileTail("_1", re);
-		String small2 = this.savePath+Uploader.addFileTail("_2", re);
-		Uploader.makeSmallPic(org, small1, 250, 300);
-		Uploader.makeSmallPic(org, small2, 250, 100);
+		String f1 = Uploader.addFileTail("_1", re);
+		String f2 = Uploader.addFileTail("_2", re);
+		
+		String small1 = this.savePath+f1;
+		String small2 = this.savePath+f2;
+		Uploader.makeSmallPic(org, small1, 450, 380);
+		Uploader.makeSmallPic(org, small2, 250, 150);
 		StringBuilder sb = new StringBuilder("[\"");
 		sb.append(re).append("\",\"");
-		sb.append(small1).append("\",");
-		sb.append(small2).append("\"]");
+		sb.append(f1).append("\",\"");
+		sb.append(f2).append("\"]");
 		msg.addData("[print]", sb.toString());
 		return super.act(msg);
 	}

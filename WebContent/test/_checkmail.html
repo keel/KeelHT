@@ -11,15 +11,15 @@
 <script type="text/javascript" src="../fancybox/jquery.fancybox-1.3.4.pack.js"></script>
 
 <style type="text/css" media="screen">
-
-.swfupload{ color: #FF0000;border: 1px solid #999;}
-
+.abox{border: 1px solid #C8DDE9;width:450px;height:250px;background: #FFF;}
+.swfupload{ border: 1px solid #C8DDE9;}
+.aboxTitle{background-color: #E7F2F9;border-bottom:1px solid #C8DDE9;padding:8px; 15px;font-weight: bold;}
+.aboxContent{padding:10px;}
+#swfBT{float:left;}
 </style>
-<script type="text/javascript" src="../js/handlers.js"></script>
-
 <script type="text/javascript" src="../js/swfupload.js"></script>
 
-<script type="text/javascript" src="../js/pagenav.js"></script>
+<script type="text/javascript" src="../js/pagenav.min.js"></script>
 
 <script type="text/javascript">
 $(function(){
@@ -55,22 +55,23 @@ $("#single_image").fancybox({
 $("#single_image").fancybox(
 		{
         		'autoDimensions'	: false,
-			'width'         		: 300,
+			'width'         		: 'auto',
 			'height'        		: 'auto',
 			'transitionIn'		: 'none',
 			'transitionOut'		: 'none',
-			'hideOnContentClick': true
+			'hideOnContentClick': false
 		}
 	);
 	
 	
 
 initUpload();
-
+pageNav.next = "next";
+pageNav.pre = "pre";
 pageNav.fn = function(p,pn){
 	//alert(p+","+pn);
 };
-pageNav.go(-53,10);
+//pageNav.go(-53,25);
 	/*	*/
 });
 
@@ -85,78 +86,134 @@ function initUpload(){
 		use_query_string:true, 
 		
 		
-		button_placeholder_id : "spanSWFUploadButton",
-button_width: "80",
-button_height: "25",
-button_text: '<span class="theFont">选择图片</span>',
+button_placeholder_id : "spanSWFUploadButton",
+button_width: "100",
+button_height: "30",
+button_text: "<span class='aboxTxt1'>选择上传图片</span>",
+button_text_style: ".aboxTxt1 { font-size: 12px; }",
 button_text_left_padding: 12,
-button_text_top_padding: 3,
+button_text_top_padding: 6,
 
 		
 		file_queue_error_handler : fileQueueError,
 		file_dialog_complete_handler : fileDialogComplete,
-		file_queued_handler:fileQueued,
 		upload_progress_handler : uploadProgress,
 		upload_error_handler : uploadError,
 		upload_success_handler : uploadSuccess,
-		upload_complete_handler : uploadComplete,
 
 
 		file_types : "*.jpg;*.png;*.gif",  
           file_types_description : "图片文件", 
-		file_size_limit : "500"
+		file_size_limit : "3000"
 		
 		
 	});
 }
+function swferr(info){
+		$("#uploadInfo").html(info).css("color","red");
+}
+function swfinfo(info){
+		$("#uploadInfo").html(info).css("color","black");
+}
+function swfok(info){
+		$("#uploadInfo").html(info).css("color","green");
+}
+function swfreset(){
+		$.fancybox.close();
+		swfinfo("图片最大不超过3M,图片格式为jpg,png,gif");
+		$("#uploadPreview").html("<div style='background-color: #eee; padding:58px 0 70px 0;color:#999;text-align: center;'>图片预览</div>");
+}
+function fileQueueError(file, errorCode, message) {
+	try {
+		switch (errorCode) {
+		case SWFUpload.QUEUE_ERROR.ZERO_BYTE_FILE:
+			swferr("图片文件大小为空.");
+			break;
+		case SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT:
+			swferr("图片文件超过大小限制.");
+			break;
+		case SWFUpload.QUEUE_ERROR.INVALID_FILETYPE:
+			swferr("无效的文件类型.");
+			break;
+		default:
+			swferr("选择文件错误.");
+			break;
+		}
+	} catch (ex) {
+		swferr("选择文件错误.");
+	}
+}
+
+function fileQueued(file){
+	//this.addPostParam("f",file.name);
+}
+
+function fileDialogComplete(numFilesSelected, numFilesQueued) {
+	try {
+		if (numFilesQueued > 0) {
+			this.startUpload();return;
+		}
+	} catch (ex) {}
+}
+
+function uploadProgress(file, bytesLoaded) {
+
+	try {
+		if(swfu.startProg){
+			var percent = Math.ceil((bytesLoaded / file.size) * 100);
+			$("#swfuploadProgress").text(percent);			
+		}else{
+			swfu.startProg = true;	
+			swfinfo("文件上传中......已上传 [<span id='swfuploadProgress'>0</span> ] % , <a href='javascript:swfu.cancelUpload(\""+file.id+"\");'>取消</a>");
+		}
+	} catch (ex) {}
+}
+
+function uploadSuccess(file, serverData) {
+	try {
+		var re = eval((serverData));
+		if(re.length==3){
+		swfok("上传成功!............[ <a href='javascript:swfreset();'>点击完成</a> ]");
+		$("#uploadPreview").html("<div style='text-align:center;'><img src='../images/upload/"+re[2]+"' alt='"+re[0]+"' /></div>");			
+		}else{swferr("上传后出现错误.");}
+	} catch (ex) {}
+}
 
 
+function uploadError(file, errorCode, message) {
+	try {
+		switch (errorCode) {
+		case SWFUpload.UPLOAD_ERROR.FILE_CANCELLED:
+			swfinfo("上传已取消.");
+			break;
+		case SWFUpload.UPLOAD_ERROR.UPLOAD_STOPPED:
+			swfinfo("上传已停止.");
+		case SWFUpload.UPLOAD_ERROR.UPLOAD_LIMIT_EXCEEDED:
+			swferr("上传文件超过服务器限制.");
+			break;
+		default:
+			swferr("上传失败:"+message);
+			break;
+		}
+	} catch (ex3) {
+	}
+}
+
+//setInterval(getnums, 10000);
 
 </script>
 
 
 </head>
 <body>
-<div id="header">
-	<h1 id="logo"><a href="#">中国江苏网</a></h1>
-	<div id="topNav">
-		<a href="#">广播大厅</a>
-		<a href="#">排行榜</a>
-		<a href="#">找朋友</a>
-		<a href="#">邀请</a>
-		<a href="#">sike</a>
-		<a href="#">模板</a> 
-		<a href="#">设置</a> 
-		<a href="#">私信</a> 
-		<a href="#">退出</a>
-		
-	</div>
 
-   	<div id="topMenu">
-		<a href="#">我的首页</a> | <a href="#">我的微博</a> | <a href="#">关系</a>
-    </div>
-	<div id="searchr">
-	<select id="search_select"><option value="talk">广播</option><option value="user">用户</option></select>
-	<input type="text" id="searchr-input" name="q" value="请输入关键字" onfocus="this.value=''" onkeydown="if(event.keyCode==13){dosearch()}">
-	<input type="button" id="searchr-submit" value="搜 索" onclick="dosearch();">
-	</div>
-</div>
 
 <div id="wrapper">
 
 	<div id="mainContent">
-		<div class="indexh">
-			<div class="taboff"><a href="#">基本设置</a></div>
-			<div class="taboff"><a href="#">修改头像</a></div>
-			<div class="taboff"><a href="#">修改密码</a></div>
-			<div class="tabon"><a href="#">邮箱验证</a></div>
-			<div class="taboff"><a href="#">个性模板</a></div>
-		</div>
+	
 		<div class="mainBox">
-			<div id="pic_big" class="tCenter">
-				<img src="../images/avatar_pic1.jpg" />
-			</div>
-			 
+		
 			
 			
 			<div>
@@ -167,22 +224,22 @@ button_text_top_padding: 3,
 			
 			
 			
-			<div id="data" class="uploader">
+			<div id="data" class="abox">
 				<div class="aboxTitle">
 					图片上传
 				</div>
 				<div class="aboxContent">
 				<form name="picupload" id="picupload" action="../picupload" method="post" enctype="multipart/form-data">
-
-
-<div id="divFileProgressContainer" style="height: 75px;"></div>
-					<span id="spanSWFUploadButton"></span>
+				<div id="swfBT">
+					<span id="spanSWFUploadButton"></span> 
+				</div>
 				
-				
-						
-				
+				<div id="uploadInfo" style='font-size: 12px;background-color: #eee; padding:8px;float: right;width:300px;'>图片最大不超过3M,图片格式为jpg,png,gif</div>
+<div class="clear"></div>
 			</form>
-					
+				<div id="uploadPreview" style='padding-top: 5px;'>
+					<div style='background-color: #eee; padding:58px 0 70px 0;color:#999;text-align: center;'>图片预览</div>
+				</div>
 					
 				</div>
 			
@@ -195,12 +252,12 @@ button_text_top_padding: 3,
 			
 			
 			
-			
+			<br /><br /><br /><br /><br />
 		<div id="pageNav">
 			
 		</div>	
 			
-			
+				<br /><br /><br /><br /><br />	<br /><br /><br /><br /><br />
 			
 			
 		</div>
@@ -208,6 +265,7 @@ button_text_top_padding: 3,
 	
 	
 	<div id="sideNav">
+	<!-- 
 		<div id="userInfo">
 			<div id="userHead">
 				<div class="fleft">
@@ -244,7 +302,7 @@ button_text_top_padding: 3,
 			</ul>
 <div class="clear"></div>
 		</div>
-		
+		-->
 
 	</div>
 

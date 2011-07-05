@@ -247,6 +247,12 @@ public class WBUserDao extends MongoDao {
 		return Integer.parseInt(re.get("rt_comm_count").toString());
 	}
 	
+	//public static final int hasNewInbox(long userId){
+	//	BasicDBObject q = new BasicDBObject("_id",userId);
+		
+	//}
+	
+	
 	/**
 	 * 添加评论的同步操作,同时在原消息的转发数加一
 	 * @param newComm 带ID的新评论

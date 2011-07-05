@@ -3,8 +3,8 @@
  */
 package com.k99k.khunter.acts;
 
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
+//import java.awt.geom.AffineTransform;
+//import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,6 +21,9 @@ import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.HttpActionMsg;
 import com.k99k.tools.StringUtil;
 import com.k99k.wb.acts.JOut;
+import com.sun.image.codec.jpeg.JPEGCodec;
+import com.sun.image.codec.jpeg.JPEGEncodeParam;
+import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
 /**
  * 文件上传动作类
@@ -193,9 +196,9 @@ public class Uploader extends Action {
 	public static final boolean makeSmallPic(String srcPicPath,String targetPicPath,int newWidth,int maxHeight){
 		try {
             File fi = new File(srcPicPath); //大图文件
-            File fo = new File(targetPicPath); //将要转换出的小图文件
+            //File fo = new File(targetPicPath); //将要转换出的小图文件
 
-            AffineTransform transform = new AffineTransform();
+            //AffineTransform transform = new AffineTransform();
             BufferedImage bis = ImageIO.read(fi);
 
             int w = bis.getWidth();
@@ -209,15 +212,24 @@ public class Uploader extends Action {
                 nw = (nh * w) / h;
             }
 
-            double sx = (double)nw / w;
-            double sy = (double)nh / h;
+            //double sx = (double)nw / w;
+            //double sy = (double)nh / h;
 
-            transform.setToScale(sx,sy);
+            //transform.setToScale(sx,sy);
 
-            AffineTransformOp ato = new AffineTransformOp(transform, null);
-            BufferedImage bid = new BufferedImage(nw, nh, BufferedImage.TYPE_3BYTE_BGR);
-            ato.filter(bis,bid);
-            ImageIO.write(bid, "jpeg", fo);
+            //AffineTransformOp ato = new AffineTransformOp(transform, null);
+            BufferedImage bid = new BufferedImage(nw, nh, BufferedImage.TYPE_INT_RGB);
+            bid.getGraphics().drawImage(bis,0,0,nw,nh,null);
+            FileOutputStream out = new FileOutputStream(targetPicPath);
+            
+            JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
+            JPEGEncodeParam jep = JPEGCodec.getDefaultJPEGEncodeParam(bid);
+            jep.setQuality(0.9f, true);
+            encoder.encode(bid,jep);
+            out.close();
+            
+            //ato.filter(bis,bid);
+            //ImageIO.write(bid, "jpeg", fo);
         } catch(Exception e) {
         	log.error("makeSmallPic failed.",e);
            return false;
@@ -226,9 +238,9 @@ public class Uploader extends Action {
 	}
 
 	public static void main(String[] args) {
-		//System.out.println(Uploader.makeSmallPic("g:/460.jpg", "g:/460_s.jpg", 250, 300));
-		String s = "g:/460.jpg";
-		System.out.println(addFileTail("_s", s));
+		System.out.println(Uploader.makeSmallPic("g:/17.png", "g:/17_s.png", 250, 300));
+		//String s = "g:/460.jpg";
+		//System.out.println(addFileTail("_s", s));
 		
 	}
 
