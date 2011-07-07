@@ -237,6 +237,7 @@ public class WBUserDao extends MongoDao {
 	private static final BasicDBObject prop_fans_both =new BasicDBObject("$set", new BasicDBObject("fans.$.both",1));
 	private static final BasicDBObject prop_fans_both_clear =new BasicDBObject("$set", new BasicDBObject("fans.$.both",0));
 	private static final BasicDBObject prop_rt_comm_count =new BasicDBObject("rt_comm_count",1);
+	private static final BasicDBObject prop_user_new =new BasicDBObject("notify_msg",1).append("notify_fan", 1).append("notify_dmsg", 1).append("notify_mention", 1);
 	
 	public static final int countMsgComms(long msgId){
 		BasicDBObject q = new BasicDBObject("_id",msgId);
@@ -247,10 +248,23 @@ public class WBUserDao extends MongoDao {
 		return Integer.parseInt(re.get("rt_comm_count").toString());
 	}
 	
-	//public static final int hasNewInbox(long userId){
-	//	BasicDBObject q = new BasicDBObject("_id",userId);
-		
-	//}
+	public static final String hasNew(String userName){
+		BasicDBObject q = new BasicDBObject("name",userName);
+		Map<String,Object> re = wbUserDao.findOneMap(q, prop_user_new);
+		if (re == null) {
+			return "";
+		}
+		StringBuilder sb = new StringBuilder("[");
+		sb.append(re.get("notify_msg"));
+		sb.append(",");
+		sb.append(re.get("notify_fan"));
+		sb.append(",");
+		sb.append(re.get("notify_dmsg"));
+		sb.append(",");
+		sb.append(re.get("notify_mention"));
+		sb.append("]");
+		return sb.toString();
+	}
 	
 	
 	/**

@@ -60,7 +60,7 @@ $(function(){
 		bt:$("#sendbt"),
 		ok:function(data){
 			//console.log(data);
-			
+			checkNotify = false;
 			$.fancybox(
 			'<p class="fancyMsgBox1" >消息发送成功!</p>',
 			{	'autoDimensions'	: false,
@@ -72,8 +72,7 @@ $(function(){
 			});
 			$("#talk").val("");
 			//setTimeout("$.fancybox.close();",800);
-			
-			setTimeout("readNew();",2500);
+			setTimeout("readNew();",2000);
 		},
 		err:function(){
 			$.fancybox(
@@ -112,9 +111,40 @@ $(function(){
 		});
 	};
 	pageNav.go(<%= p %>,<%= pn %>);
+
+	setInterval(notify, 10000);
 });
+var checkNotify = true;
+function notify(){
+	if(checkNotify){
+		$.getJSON("<%=prefix %>/notify?r="+new Date(),function(data){
+			if(data && data.length == 4){
+				var s = "";
+				if(data[0] > 0){
+					s += "有"+data[0]+"条新消息.";
+				}
+				if(data[1] > 0){
+					s += "有"+data[1]+"个新粉丝.";
+				}
+				if(data[2] > 0){
+					s += "有"+data[2]+"条新私信.";
+				}
+				if(data[3] > 0){
+					s += "有"+data[3]+"条新消息提到您.";
+				}
+				if(s != ""){
+					$("#newsBox a").html(s);$("#newsBox").show();
+				}else{
+					$("#newsBox a").html("");$("#newsBox").hide();
+				}
+				
+			}
+		});
+	}
+}
 
 function readNew(){
+	checkNotify = false;
 	$.getJSON("<%=prefix %>/msg/unread?max=15&uid=<%=userId%>",function(data){
 		var s = "";
 		for(var i = 0,j=data.length;i<j;i++){
@@ -124,6 +154,7 @@ function readNew(){
 		$("#msgList").prepend(s);
 		//console.log(data);
 	});
+	checkNotify = true;
 }
 -->
 </script>
@@ -153,7 +184,7 @@ function readNew(){
 				所有广播：
 			</div>
 			
-			<div id="newsBox"><a href="#">有2条新消息,点击查看</a></div>
+			<div id="newsBox" style="display:none;"><a href="#">有2条新消息,点击查看</a></div>
 			<ul id="msgList" class="ul_inline"><li></li></ul>
 			<div id="pageNav"></div>
 <div class="clear"></div>

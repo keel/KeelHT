@@ -116,6 +116,15 @@ public class WBUser extends Action {
 	public static final KObject findWBUser(long id){
 		return wbUserDao.findOne(id);
 	}
+	
+	/**
+	 * 新通知
+	 * @param userId
+	 * @return
+	 */
+	public static final String hasNew(String userName){
+		return WBUserDao.hasNew(userName);
+	}
 
 	/**
 	 * 验证此用户名是否已存在,存在则返回true

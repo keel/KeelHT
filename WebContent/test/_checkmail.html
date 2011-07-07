@@ -23,34 +23,7 @@
 
 <script type="text/javascript">
 $(function(){
-/*	
-$("#single_image").fancybox({
-		'hideOnContentClick': true
-	});
 
-		$.fancybox(
-		'<p class="fancyMsgBox1" >用户名和密码未通过验证.</p>',
-		{
-        		'autoDimensions'	: false,
-			'width'         		: 300,
-			'height'        		: 'auto',
-			'transitionIn'		: 'none',
-			'transitionOut'		: 'none',
-			'hideOnContentClick': true
-		}
-	);
-          button_width: 80,  
-          button_height: 32,  
-          button_text : "<div class='redText'>选择图片</div>",
-	button_text_style : ".redText { color: #FF0000;}",
-	button_text_left_padding : 8,
-	button_text_top_padding : 8,
-           button_action : SWFUpload.BUTTON_ACTION.SELECT_FILE,  
-                
-                
-		file_types : "*.jpg;*.png;*.gif",  
-          file_types_description : "图片文件",  
-*/
 
 $("#single_image").fancybox(
 		{
@@ -60,6 +33,16 @@ $("#single_image").fancybox(
 			'transitionIn'		: 'none',
 			'transitionOut'		: 'none',
 			'hideOnContentClick': false
+			/*
+			
+			,'onStart':function(){
+			//initUpload();
+			}
+			,'onClosed':function(){
+			$("#swfBT").html("<span id='spanSWFUploadButton'></span>");
+			swfu.loadFlash();
+			}
+			*/
 		}
 	);
 	
@@ -75,53 +58,55 @@ pageNav.fn = function(p,pn){
 	/*	*/
 });
 
-
-
 var swfu ;
 function initUpload(){
  swfu= new SWFUpload({
-		upload_url : "../picupload",
-		flash_url : "../js/swfupload.swf",
-		post_params: {"f":"sike.jpg"},
-		use_query_string:true, 
-		
-		
-button_placeholder_id : "spanSWFUploadButton",
-button_width: "100",
-button_height: "30",
-button_text: "<span class='aboxTxt1'>选择上传图片</span>",
-button_text_style: ".aboxTxt1 { font-size: 12px; }",
-button_text_left_padding: 12,
-button_text_top_padding: 6,
+	upload_url : "../picupload",
+	flash_url : "../js/swfupload.swf",
+	post_params: {"f":"sike.jpg"},
+	use_query_string:true, 
+	
+	button_placeholder_id : "spanSWFUploadButton",
+	button_width: "100",
+	button_height: "30",
+	button_text: "<span class='aboxTxt1'>选择上传图片</span>",
+	button_text_style: ".aboxTxt1 { font-size: 12px; }",
+	button_text_left_padding: 12,
+	button_text_top_padding: 6,
+	
+	//prevent_swf_caching:false,
 
-		
-		file_queue_error_handler : fileQueueError,
-		file_dialog_complete_handler : fileDialogComplete,
-		upload_progress_handler : uploadProgress,
-		upload_error_handler : uploadError,
-		upload_success_handler : uploadSuccess,
+	file_queue_error_handler : fileQueueError,
+	file_dialog_complete_handler : fileDialogComplete,
+	upload_progress_handler : uploadProgress,
+	upload_error_handler : uploadError,
+	upload_success_handler : uploadSuccess,
 
+prevent_swf_caching: 'false',
 
-		file_types : "*.jpg;*.png;*.gif",  
-          file_types_description : "图片文件", 
-		file_size_limit : "3000"
-		
-		
+	file_types : "*.jpg;*.png;*.gif",  
+      file_types_description : "图片文件", 
+	file_size_limit : "3000"
+	//,debug:true
+	
 	});
 }
+
+
 function swferr(info){
-		$("#uploadInfo").html(info).css("color","red");
+	$("#uploadInfo").html(info).css("color","red");
 }
 function swfinfo(info){
-		$("#uploadInfo").html(info).css("color","black");
+	$("#uploadInfo").html(info).css("color","black");
 }
 function swfok(info){
-		$("#uploadInfo").html(info).css("color","green");
+	$("#uploadInfo").html(info).css("color","green");
 }
 function swfreset(){
-		$.fancybox.close();
-		swfinfo("图片最大不超过3M,图片格式为jpg,png,gif");
-		$("#uploadPreview").html("<div style='background-color: #eee; padding:58px 0 70px 0;color:#999;text-align: center;'>图片预览</div>");
+//TODO 将picUrl设置为空
+	$.fancybox.close();
+	swfinfo("图片最大不超过3M,图片格式为jpg,png,gif");
+	$("#uploadPreview").html("<div style='background-color: #eee; padding:58px 0 70px 0;color:#999;text-align: center;'>图片预览</div>");
 }
 function fileQueueError(file, errorCode, message) {
 	try {
@@ -173,7 +158,12 @@ function uploadSuccess(file, serverData) {
 	try {
 		var re = eval((serverData));
 		if(re.length==3){
-		swfok("上传成功!............[ <a href='javascript:swfreset();'>点击完成</a> ]");
+		
+		
+		//TODO 将picUrl设置
+		
+		
+		swfok("上传成功!............[ <a href='javascript:$.fancybox.close();'>点击完成</a> ]  [<a href='javascript:swfreset();'>取消图片</a>]");
 		$("#uploadPreview").html("<div style='text-align:center;'><img src='../images/upload/"+re[2]+"' alt='"+re[0]+"' /></div>");			
 		}else{swferr("上传后出现错误.");}
 	} catch (ex) {}
@@ -222,7 +212,8 @@ function uploadError(file, errorCode, message) {
 			
 			
 			
-			
+					<div style="display:none">
+	
 			
 			<div id="data" class="abox">
 				<div class="aboxTitle">
@@ -244,7 +235,11 @@ function uploadError(file, errorCode, message) {
 				</div>
 			
 			</div>
-			<div style="display:none">
+			
+			
+			
+			
+			
 			</div>
 			
 			
