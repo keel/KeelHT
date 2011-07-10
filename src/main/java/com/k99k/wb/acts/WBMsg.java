@@ -77,18 +77,27 @@ public class WBMsg extends Action {
 			int pageSize = (StringUtil.isDigits(pz_str))?Integer.parseInt(pz_str):this.pageSize;
 			
 			re = writeKObjList(WBUserDao.readSentMsgs(userId, page, pageSize));
-		}else if(subact.equals("one")){
+		}
+//		else if(subact.equals("one")){
+//			String msg_str = httpmsg.getHttpReq().getParameter("mid");
+//			if (!StringUtil.isDigits(msg_str) ) {
+//				JOut.err(400, httpmsg);
+//				return super.act(msg);
+//			}
+//			String p_str = httpmsg.getHttpReq().getParameter("p");
+//			String pz_str = httpmsg.getHttpReq().getParameter("pz");
+//			int page = (StringUtil.isDigits(p_str))?Integer.parseInt(p_str):1;
+//			int pageSize = (StringUtil.isDigits(pz_str))?Integer.parseInt(pz_str):this.pageSize;
+//			
+//			re = writeKObjList(WBUserDao.readOneMsgList(Long.parseLong(msg_str), page, pageSize));
+//		}
+		else if(subact.equals("comms")){
 			String msg_str = httpmsg.getHttpReq().getParameter("mid");
 			if (!StringUtil.isDigits(msg_str) ) {
 				JOut.err(400, httpmsg);
 				return super.act(msg);
 			}
-			String p_str = httpmsg.getHttpReq().getParameter("p");
-			String pz_str = httpmsg.getHttpReq().getParameter("pz");
-			int page = (StringUtil.isDigits(p_str))?Integer.parseInt(p_str):1;
-			int pageSize = (StringUtil.isDigits(pz_str))?Integer.parseInt(pz_str):this.pageSize;
-			
-			re = writeKObjList(WBUserDao.readOneMsgList(Long.parseLong(msg_str), page, pageSize));
+			re = writeKObjList(WBUserDao.readComms(Long.parseLong(msg_str), 1, 10));
 		}
 		
 		msg.addData("[print]", re);

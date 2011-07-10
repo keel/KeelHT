@@ -97,4 +97,4 @@ $(function(){
 <div class="clear"></div>
 		</div>
 
-<% out.println(WBJSPCacheOut.out("@foot_inbox")); %>
+<% out.println(WBJSPCacheOut.out("@foot")); %>

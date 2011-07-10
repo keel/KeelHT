@@ -266,7 +266,7 @@ public class KObjAction extends Action{
 						//去掉不存在的属性
 						for (Iterator<String> iterator = nk.keySet().iterator(); iterator.hasNext();) {
 							String prop = iterator.next();
-							if (!ks.containsColumn(prop)) {
+							if (!ks.containsColumn(prop) && !containsProp(prop)) {
 								nk.remove(prop);
 							}
 						}
@@ -366,6 +366,10 @@ public class KObjAction extends Action{
 		return super.act(msg);
 	}
 
+	private final static KObject kobj = new KObject();
+	private final static boolean containsProp(String prop){
+		return kobj.containsProp(prop);
+	}
 
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#init()

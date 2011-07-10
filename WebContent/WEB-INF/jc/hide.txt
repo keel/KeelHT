@@ -1,0 +1,44 @@
+<div class="clear"></div>
+</div>
+<div id="footer">
+	<div id="copyright">
+		Copyright:&copy;2010-2012 KEEL.SIKE All rights reserved. 
+	</div>
+</div>
+<!-- hide content -->
+<div style="display:none">
+<div id="commsLoading" class="commBox">
+	<div style='text-align: center;padding:5px;'><img border="0" src="#@sPrefix@#/images/loading.gif" /></div>
+</div>	
+					
+<div id="commsDiv" class="commBox">
+<form name="commForm" id="commForm" class="commForm" action="/KHunter/talk" method="post">
+	<div class="commTalk">
+		<textarea name="talk" rows="4" cols="40"></textarea>
+		<input type="hidden" name="isRT" value="true" id="comm_isRT" />
+		<input type="hidden" name="rt_id" value="true" id="comm_rt_id" />
+		<input type="hidden" name="rt_userId" value="true" id="comm_rt_userId" />
+		<input type="hidden" name="rt_name" value="true" id="comm_rt_name" />
+	</div>
+	<div class="sendsub" style="color: #999;text-align: right;padding:6px 0;">
+<span style="float:left;"><input type="checkbox" id="replycheckbox" class="replaycheckbox" name="talk_state" value="0"><label for="replycheckbox">同时转发到我的微博</label></span>
+<span>
+<span class="restTxt">还能输入</span> <span class="countTxt" style="font-size:20px;">125</span> <span class="restTxt">字</span>
+</span>			
+<input type="submit" name="sendbt" value="评论" class="sendbt bt_re">
+
+<div class="clear"></div>
+	</div>
+	</form>
+	<div class="comms">
+		<ul class="ul_inline" id="commsUL">
+			<li class='commsLi'><div style='float:left;padding:0 10px;'><img src="#@sPrefix@#/images/upload/sike_3.jpg" width="40" height="40" /></div> <div style='padding:5px;'><a href="dashed" target="_blank">default</a> <span class='commSubInfo'>##TIME 发表于 ##WEB</span> <br /> 评论主村落村落村在霜霜夺要</div></li>
+			<li class='commsLi'><div style='float:left;padding:0 10px;'><img src="#@sPrefix@#/images/upload/sike_3.jpg" width="40" height="40" /></div> <div style='padding:5px;'><a href="dashed" target="_blank">default</a> <span class='commSubInfo'>##TIME 发表于 ##WEB</span> <br /> 评论主村落村落村在霜霜夺要</div></li>
+			<li class='commsLi'><div style='float:left;padding:0 10px;'><img src="#@sPrefix@#/images/upload/sike_3.jpg" width="40" height="40" /></div> <div style='padding:5px;'><a href="dashed" target="_blank">default</a> <span class='commSubInfo'>##TIME 发表于 ##WEB</span> <br /> 评论主村落村落村在霜霜夺要</div></li>
+		</ul>
+		
+	</div>
+</div>
+</div>
+</body>
+</html>

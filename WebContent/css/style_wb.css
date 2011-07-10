@@ -55,9 +55,10 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px
 #sendBox_title{margin: 0 auto;width: 530px; height: 30px; overflow: hidden; padding-top: 6px; font: normal 18px/29px "MicroSoft YaHei","SimHei"; color: #333;}
 #sendAreaDiv{margin: 0 auto;width: 548px; height: 85px; position: relative; overflow: hidden; }
 #sendsub{width: 540px; margin: 0 auto;padding:0 25px;}
-#sendbt{float: right; margin-left: 14px; color: #999; }
-#sendtip{float: right; color: #999;line-height: 33px;}
-#countTxt{font:26px Georgia,Tahoma,Arial;}
+#sendbt{float: right; margin-left: 14px; color: #fff;border-width: 0;cursor: pointer; background: url('../images/send.png'); width: 112px; height: 30px; line-height: 20px;font-size: 14px; font-weight: bold;} #sendbt:hover { background-position: 0 -30px; }
+.sendtip{float: right; color: #999;line-height: 33px;}
+.countTxt{font:26px Georgia,Tahoma,Arial;}
+.bt_re{border: 0;background: url('../images/sendbtn.gif') no-repeat;width: 60px; height: 19px; text-align: center; font-size: 12px;cursor: pointer; color: #ffffff; line-height: 19px; padding: 0; font-weight: bold;}
 #wbList{padding:5px 15px;}
 #listTools{padding:5px 15px;background:#E3EAEC;}
 #newsBox{position: relative; height: 27px; margin-top: 4px; border: 1px solid #F4E4B4; background-color: #fff4d8;}
@@ -66,12 +67,17 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px
 .bold{font-weight: bold;}
 .txtRight{text-align: right;}
 .ul_inline{float:left;list-style: none;width:100%;padding:10px 0;margin:0;}
-#msgList li{float:left;padding: 12px 0;margin:0;width:100%; border-bottom: 1px dashed #D8D8D8; background: #fff;}
+#msgList>li{float:left;padding: 12px 0;margin:0;width:100%; border-bottom: 1px dashed #D8D8D8; background: #fff;}
 .userPic{float:left;padding: 0 0 12px 12px;}
 .msgBox{float: right; width: 470px; padding-right: 12px; word-wrap: break-word;}
 .msgCnt { display: inline; }
 .replyBox { margin: 4px 0 8px; line-height: 19px; border: 1px solid #DCDCDC; background: #F8F8F8; font-size: 12px; }
 .replyBox .msgBox { width: 444px; padding: 7px 12px; }
+.commBox { float: right; width:470px;border: 1px solid #ebdebc; background: #fffce9; font-size: 12px; }
+.commForm {padding:10px;}
+.commForm textarea{border: 1px solid #ebdebc; background: #fff;width:435px;height:40px;}
+.commsLi{padding:8px;background-color: #fffce9;border-top: 1px dashed #ebdebc;}
+.commSubInfo{color:#888;}
 .mediaWrap { margin: 0 0 6px; }
 .pubInfo{font-size: 12px;line-height: 19px; }
 .funBox{float:right;}

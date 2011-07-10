@@ -21,6 +21,7 @@ import com.k99k.khunter.KObjSchema;
 import com.k99k.khunter.KObject;
 import com.k99k.khunter.MongoDao;
 import com.k99k.tools.StringUtil;
+import com.k99k.wb.acts.WBUser;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -138,6 +139,11 @@ public class WBUserDao extends MongoDao {
 	private static final BasicDBObject createFieldsByScheme(String schema,boolean hasSub){
 		KObjSchema sch = KObjManager.findSchema(schema);
 		BasicDBObject fields = new BasicDBObject();
+		KObject kobj  = new KObject();
+		for (Iterator<String> it = kobj.getPropMap().keySet().iterator(); it.hasNext();) {
+			String k = it.next();
+			fields.append(k, 1);
+		}
 		if (hasSub) {
 			for (Iterator<KObjColumn> iterator = sch.getColList().iterator(); iterator.hasNext();) {
 				KObjColumn kc = iterator.next();
@@ -344,6 +350,9 @@ public class WBUserDao extends MongoDao {
 		List<Map<String,Object>> msgIds = wbCommDao.query(new BasicDBObject("re_msg_id",msgId).append("state", 0), wbcommProp,prop_id_desc, skip, pageSize, null);
 		for (Iterator<Map<String, Object>> it = msgIds.iterator(); it.hasNext();) {
 			Map<String, Object> m = it.next();
+			KObject user = WBUser.findWBUser((Long)m.get("user_id"));
+			m.put("user_name", user.getName());
+			m.put("user_screen", user.getProp("screen_name"));
 			list.add(new KObject(m));
 		}
 		return list;

@@ -81,13 +81,12 @@ $(function(){
 		<div id="wbList">
 			<div id="ad1"></div>
 			<div id="listTools">
-				所有广播：
+				我的所有广播：
 			</div>
 			
-			<div id="newsBox"><a href="#">有2条新消息,点击查看</a></div>
 			<ul id="msgList" class="ul_inline"><li></li></ul>
 			<div id="pageNav"></div>
 <div class="clear"></div>
 		</div>
 
-<% out.println(WBJSPCacheOut.out("@foot_inbox")); %>
+<% out.println(WBJSPCacheOut.out("@foot")); %>

@@ -1,5 +1,7 @@
 function talkLI(d,prefix,sPrefix,userId){
-	var s = "<li><div class=\"userPic\"><a href=\"";
+	var s = "<li id='m_";
+	s+=d._id;
+	s+="'><div class=\"userPic\"><a href=\"";
 	s += prefix;
 	s += "/";
 	s += d.creatorName;
@@ -67,16 +69,27 @@ function talkLI(d,prefix,sPrefix,userId){
 	s += sentTime(d.createTime);
 	s += "</a> 来自";
 	s += d.source;
-	if (d.rt_comm_count > 0) {
-		s += " &nbsp; <a href='#' class=\"readComm\">转播与评论(";
-		s += d.rt_comm_count;
-		s += ")</a>";
-	}
 	s += "</span><div class=\"funBox\">";
 	if (d.creatorId == userId) {
 		s += "<a href=\"#\" class=\"delMsg\">删除</a>&nbsp;&nbsp; |&nbsp;&nbsp;";
 	}
-	s += "<a href=\"#\" class=\"relay\">转播</a>&nbsp;&nbsp; |&nbsp;&nbsp; <a href=\"#\" class=\"comt\">评论</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"/p/t/39552051902918\" class=\"comt\">收藏</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"#\" class=\"alarm\">举报</a> </div></div></div></li>";
+	s += "<a href=\"#\" class=\"relay\">转播</a>&nbsp;&nbsp; |&nbsp;&nbsp; <a href=\"javascript:readComms('";
+	s+=d._id;
+	s+="',";
+	s+=d.rt_comm_count;
+	s+=",'";
+	s+=prefix;
+	s+="','";
+	s+=sPrefix;
+	s+="');\" class='comt'>评论(";
+	s+=d.rt_comm_count;
+	s+=")</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"/p/t/39552051902918\" class=\"comt\">收藏</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"#\" class=\"alarm\">举报</a> </div></div></div>";
+	s+="<input type='hidden' class='r_userId' value='";
+	s+=d.creatorId;
+	s+="' /><input type='hidden' class='r_name' value='";
+	s+=d.creatorName;
+	s+="' />";
+	s+="</li>";
 	return s;
 };
 

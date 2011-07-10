@@ -141,7 +141,7 @@ SWFUpload.prototype.initSettings = function () {
 
 	// Flash Settings
 	this.ensureDefault("flash_url", "swfupload.swf");
-	this.ensureDefault("prevent_swf_caching", true);
+	this.ensureDefault("prevent_swf_caching", false);
 	
 	// Button Settings
 	this.ensureDefault("button_image_url", "");
@@ -184,8 +184,8 @@ SWFUpload.prototype.initSettings = function () {
 	this.customSettings = this.settings.custom_settings;
 	
 	// Update the flash url if needed
-	if (!!this.settings.prevent_swf_caching) {
-		this.settings.flash_url = this.settings.flash_url + (this.settings.flash_url.indexOf("?") < 0 ? "?" : "&") + "preventswfcaching=" + new Date().getTime();
+	if (this.settings.prevent_swf_caching) {
+		//this.settings.flash_url = this.settings.flash_url + (this.settings.flash_url.indexOf("?") < 0 ? "?" : "&") + "preventswfcaching=" + new Date().getTime();
 	}
 	
 	if (!this.settings.preserve_relative_urls) {

@@ -43,60 +43,7 @@ $(function(){
 		return false;
 	});
 
-	$("#talk").keyup(function(){
-		var cc = 140-$(this).val().length;
-		if(cc >= 0){
-			$("#countTxt").text(cc).removeClass("red");
-			$("#restTxt").text("还能输入");
-		}else{
-			$("#countTxt").text(cc).addClass("red");
-			$("#restTxt").text("超出");
-		}
-		
-	});
-
-	//处理请求
-	$.validator.dealAjax = {
-		bt:$("#sendbt"),
-		ok:function(data){
-			//console.log(data);
-			checkNotify = false;
-			$.fancybox(
-			'<p class="fancyMsgBox1" >消息发送成功!</p>',
-			{	'autoDimensions'	: false,
-				'width'         	: 300,
-				'height'        	: 'auto',
-				'transitionIn'		: 'none',
-				'transitionOut'		: 'none',
-				'hideOnContentClick': true
-			});
-			$("#talk").val("");
-			//setTimeout("$.fancybox.close();",800);
-			setTimeout("readNew();",2000);
-		},
-		err:function(){
-			$.fancybox(
-			'<p class="fancyMsgBox2" >消息发送失败.您可能需要重新登录。</p>',
-			{	'autoDimensions'	: false,
-				'width'         	: 300,
-				'height'        	: 'auto',
-				'transitionIn'		: 'none',
-				'transitionOut'		: 'none',
-				'hideOnContentClick': true
-			});
-		}
-	};
-	
-	//开始验证
-	$('#talkForm').validate({
-	    // 设置验证规则
-	    rules: {
-	        talk: {
-	            required:true,
-	            rangelength:[1,140]
-	        }
-	    }
-	});
+	talkForm("#talkForm");
 
 	pageNav.fn = function(p,pn){
 		//按页载入消息
@@ -112,9 +59,72 @@ $(function(){
 	};
 	pageNav.go(<%= p %>,<%= pn %>);
 
+	comms = $("#commsDiv");
+	commsLoading = $("#commsLoading");
+	talkForm("#commForm");
 	setInterval(notify, 10000);
 });
 var checkNotify = true;
+function talkForm(form,readNew){
+    var $form = $(form),$a = $form.find("textarea"),$countTxt = $form.find(".countTxt"),rests = $form.find(".restTxt"),sendbt = $form.find(".sendbt");
+	$a.keyup(function(){
+		var cc = 140-$(this).val().length;
+		$(rests[1]).text("字").removeClass("red");
+		if(cc >= 0){
+			$countTxt.text(cc).removeClass("red");
+			$(rests[0]).text("还能输入");
+		}else{
+			$countTxt.text(cc).addClass("red");
+			$(rests[0]).text("超出");
+		}
+		
+	});
+	
+	$form.submit(function(event) {
+	    event.preventDefault(); 
+       msg = $.trim($a.val()),
+       url = $form.attr( 'action' );
+       if(msg.length <= 0){
+       		$(rests[0]).text("");$countTxt.text("");
+       		$(rests[1]).text("请输入内容").addClass("red").hide().fadeIn('slow');
+       		return;
+       }
+       if(msg.length>140){
+       		$countTxt.parent().hide().fadeIn('slow');
+       		return;
+       }
+	//$(sendbt).
+   $.post( url, $form.serialize(),
+     function( data ) {
+         checkNotify = false;
+		$.fancybox(
+		'<p class="fancyMsgBox1" >消息发送成功!</p>',
+		{	'autoDimensions'	: false,
+			'width'         	: 300,
+			'height'        	: 'auto',
+			'transitionIn'		: 'none',
+			'transitionOut'		: 'none',
+			'hideOnContentClick': true
+		});
+		$a.val("");
+		//setTimeout("$.fancybox.close();",800);
+		var readnew = "readNew();";
+		if(readNew){readnew=readNew+"();";};
+		setTimeout(readnew,2000);
+     }
+   ).error(function(){
+		$.fancybox(
+			'<p class="fancyMsgBox2" >消息发送失败.您可能需要重新登录。</p>',
+			{	'autoDimensions'	: false,
+				'width'         	: 300,
+				'height'        	: 'auto',
+				'transitionIn'		: 'none',
+				'transitionOut'		: 'none',
+				'hideOnContentClick': true
+			});
+	    });
+   });
+}
 function notify(){
 	if(checkNotify){
 		$.getJSON("<%=prefix %>/notify?r="+new Date(),function(data){
@@ -133,11 +143,12 @@ function notify(){
 					s += "有"+data[3]+"条新消息提到您.";
 				}
 				if(s != ""){
-					$("#newsBox a").html(s);$("#newsBox").show();
+					$("#newsBox a").html(s);$("#newsBox").show().click(function(){
+						readNew();
+					});
 				}else{
 					$("#newsBox a").html("");$("#newsBox").hide();
 				}
-				
 			}
 		});
 	}
@@ -145,6 +156,7 @@ function notify(){
 
 function readNew(){
 	checkNotify = false;
+	$("#newsBox a").html("");$("#newsBox").hide();
 	$.getJSON("<%=prefix %>/msg/unread?max=15&uid=<%=userId%>",function(data){
 		var s = "";
 		for(var i = 0,j=data.length;i<j;i++){
@@ -156,23 +168,75 @@ function readNew(){
 	});
 	checkNotify = true;
 }
+
+var comms,commsLoading;
+function readComms(mid,cc,prefix,sPrefix){
+	var $m = $("#m_"+mid);
+	$("#comm_rt_id").val(mid);
+	$("#comm_rt_userId").val($m.find(".r_userId").val());
+	$("#comm_rt_name").val($m.find(".r_name").val());
+	if(cc>0){
+		commsLoading.appendTo($m.find(".msgBox")[0]).show();	
+		$.getJSON(prefix+"/msg/comms?mid="+mid+"&uid=0&r="+new Date(),function(data){
+			var s = "";
+			for(var i = 0,j=data.length;i<j;i++){
+				var d = data[i];
+				s+="<li class='commsLi'><div style='float:left;padding:0 10px;'><img src='";
+				s+=sPrefix;
+				s+="/images/upload/";
+				s+=d.user_name;
+				s+="_3.jpg' alt='' width='40' height='40' /></div> <div style='padding:5px;'>";
+				s+="<a href=\"/";
+				s += prefix;
+				s += "/";
+				s += d.user_name;
+				s += "\" title=\"";
+				s += d.user_screen;
+				s += "(@";
+				s += d.user_name;
+				s += ")\"  target='_blank'>";
+				s += d.user_screen;
+				s += "</a> <span class='commSubInfo'>";
+				s+=sentTime(d.createTime);
+				s+=" 通过 ";
+				s += d.source;
+				s+="</span> <br />";
+				s+=d.text;
+				s+="</div></li>";
+			}
+			comms.find("#commsUL").html(s);
+			commsLoading.hide();
+			comms.appendTo($m.find(".msgBox")[0]);
+			return;
+		}).error(function(){
+			
+		});
+	}
+	commsLoading.hide();
+	comms.find("#commsUL").html("");
+	comms.appendTo($m.find(".msgBox")[0]);
+}
+function addRT(){
+	//if($("#replycheckbox"))
+	
+}
 -->
 </script>
 <% out.println(WBJSPCacheOut.out("@head_main")); %>
 		<div id="sendBox">
-			<form name="talkForm" id="talkForm" action="<%=prefix %>/talk" method="post">
+			<form name="talkForm" id="talkForm" action="/KHunter/talk" method="post">
 			<div id="sendBox_title">来，说点什么吧</div>
 			<div id="sendAreaDiv">
 				<textarea name="talk" id="talk" rows="5" cols="10"></textarea>
-				<input type="hidden" value="" name="pic_url" />
+				<input type="hidden" value="" name="pic_url">
 			</div>
-			<div id="sendsub">
+			<div class="sendsub" id="sendsub">
 			<span class="fleft">
 					<a href="#">图片</a> | <a href="#">话题</a> </span>
 			
-				<input type="submit" name="sendbt" value=" 发布 " id="sendbt"/>
-				<span id="sendtip">
-					<span id="restTxt">还能输入</span> <span id="countTxt">140</span> 字
+				<input type="submit" id="sendbt" name="sendbt" value="发表微博" class="sendbt" />
+				<span class="sendtip">
+					<span class="restTxt">还能输入</span> <span class="countTxt">140</span> <span class="restTxt">字</span>
 				</span>
 <div class="clear"></div>
 			</div>
@@ -184,7 +248,7 @@ function readNew(){
 				所有广播：
 			</div>
 			
-			<div id="newsBox" style="display:none;"><a href="#">有2条新消息,点击查看</a></div>
+			<div id="newsBox" style="display:none;"><a href="#"></a></div>
 			<ul id="msgList" class="ul_inline"><li></li></ul>
 			<div id="pageNav"></div>
 <div class="clear"></div>

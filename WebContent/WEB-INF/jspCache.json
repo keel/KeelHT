@@ -12,10 +12,11 @@
 		
 		{"name":"footer","txt":"jc/footer.txt","type":"str"},
 		{"name":"footer_noSide","txt":"jc/footer_noSide.txt","type":"str"},
+		{"name":"hide","txt":"jc/hide.txt","type":"str"},
 		
 		{"name":"@head_main","txt":["header2","mainTop"],"type":"array"},
 		{"name":"@foot","txt":["mainBottom","sideNav","footer"],"type":"array"},
-		{"name":"@foot_inbox","txt":["mainBottom","sideNav_inbox","footer"],"type":"array"}
+		{"name":"@foot_inbox","txt":["mainBottom","sideNav_inbox","hide"],"type":"array"}
 		
 	],
 	"jspCahe intro":"txt的路径为HTManager.getIniPath()后面的路径;当name为其他jc的组合时,type为array,名称最好加上@以示区别;"
