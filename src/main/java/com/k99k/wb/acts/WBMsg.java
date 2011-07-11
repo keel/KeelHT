@@ -61,7 +61,7 @@ public class WBMsg extends Action {
 			
 			//re = JSONTool.writeFormatedJsonString(WBUserDao.readOnePageMsgs(userId, page, pageSize));
 			re = writeKObjList(WBUserDao.readOnePageMsgs(userId, page, pageSize));
-			
+			 
 		}else if(subact.equals("unread")){
 			String max_str = httpmsg.getHttpReq().getParameter("max");
 //			if (!StringUtil.isDigits(max_str)) {

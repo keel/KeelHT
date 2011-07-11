@@ -81,9 +81,9 @@ function talkLI(d,prefix,sPrefix,userId){
 	s+=prefix;
 	s+="','";
 	s+=sPrefix;
-	s+="');\" class='comt'>评论(";
+	s+="');\" class='comt'>评论(<span class='commNUM'>";
 	s+=d.rt_comm_count;
-	s+=")</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"/p/t/39552051902918\" class=\"comt\">收藏</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"#\" class=\"alarm\">举报</a> </div></div></div>";
+	s+="</span>)</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"/p/t/39552051902918\" class=\"comt\">收藏</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"#\" class=\"alarm\">举报</a> </div></div></div>";
 	s+="<input type='hidden' class='r_userId' value='";
 	s+=d.creatorId;
 	s+="' /><input type='hidden' class='r_name' value='";

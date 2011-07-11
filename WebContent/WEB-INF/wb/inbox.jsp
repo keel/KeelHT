@@ -61,7 +61,15 @@ $(function(){
 
 	comms = $("#commsDiv");
 	commsLoading = $("#commsLoading");
-	talkForm("#commForm");
+	
+	$("#replycheckbox").change(function(){
+		var $me = $(this);
+		if(this.checked){
+			$("#comm_talk_state").val("0");
+		}else{
+			$("#comm_talk_state").val("1");
+		}
+	});
 	setInterval(notify, 10000);
 });
 var checkNotify = true;
@@ -93,28 +101,11 @@ function talkForm(form,readNew){
        		$countTxt.parent().hide().fadeIn('slow');
        		return;
        }
-	//$(sendbt).
-   $.post( url, $form.serialize(),
-     function( data ) {
-         checkNotify = false;
-		$.fancybox(
-		'<p class="fancyMsgBox1" >消息发送成功!</p>',
-		{	'autoDimensions'	: false,
-			'width'         	: 300,
-			'height'        	: 'auto',
-			'transitionIn'		: 'none',
-			'transitionOut'		: 'none',
-			'hideOnContentClick': true
-		});
-		$a.val("");
-		//setTimeout("$.fancybox.close();",800);
-		var readnew = "readNew();";
-		if(readNew){readnew=readNew+"();";};
-		setTimeout(readnew,2000);
-     }
-   ).error(function(){
-		$.fancybox(
-			'<p class="fancyMsgBox2" >消息发送失败.您可能需要重新登录。</p>',
+	   $.post( url, $form.serialize(),function( data ) {
+	         checkNotify = false;
+	       
+			$.fancybox(
+			'<p class="fancyMsgBox1" >消息发送成功!</p>',
 			{	'autoDimensions'	: false,
 				'width'         	: 300,
 				'height'        	: 'auto',
@@ -122,8 +113,24 @@ function talkForm(form,readNew){
 				'transitionOut'		: 'none',
 				'hideOnContentClick': true
 			});
-	    });
-   });
+			$a.val("");
+			setTimeout("$.fancybox.close();",1000);
+			var readnew = "readNew();";
+			if(readNew){readnew=readNew;};
+			setTimeout(readnew,2000);
+	     }
+	   ).error(function(){
+			$.fancybox(
+				'<p class="fancyMsgBox2" >消息发送失败.您可能需要重新登录。</p>',
+				{	'autoDimensions'	: false,
+					'width'         	: 300,
+					'height'        	: 'auto',
+					'transitionIn'		: 'none',
+					'transitionOut'		: 'none',
+					'hideOnContentClick': true
+			});
+		});
+	});
 }
 function notify(){
 	if(checkNotify){
@@ -170,11 +177,21 @@ function readNew(){
 }
 
 var comms,commsLoading;
-function readComms(mid,cc,prefix,sPrefix){
+function readComms(mid,cc,prefix,sPrefix,isON){
+	if(isON){comms.ON = false;};
+	if(comms.ON && (comms.mid==mid)){
+		comms.appendTo($("#hideContent"));
+		comms.ON = false;
+		return;
+	}else{
+		comms.ON = true;
+	}
+	comms.mid = mid;
 	var $m = $("#m_"+mid);
 	$("#comm_rt_id").val(mid);
 	$("#comm_rt_userId").val($m.find(".r_userId").val());
 	$("#comm_rt_name").val($m.find(".r_name").val());
+	talkForm("#commForm","readComms("+mid+",1,'"+prefix+"','"+sPrefix+"',true);");
 	if(cc>0){
 		commsLoading.appendTo($m.find(".msgBox")[0]).show();	
 		$.getJSON(prefix+"/msg/comms?mid="+mid+"&uid=0&r="+new Date(),function(data){
@@ -205,7 +222,9 @@ function readComms(mid,cc,prefix,sPrefix){
 				s+="</div></li>";
 			}
 			comms.find("#commsUL").html(s);
+			$m.find(".commNUM").text(data.length);
 			commsLoading.hide();
+			if(data.length>=10){$("#forAllComms").show();}else{$("#forAllComms").hide()};
 			comms.appendTo($m.find(".msgBox")[0]);
 			return;
 		}).error(function(){
@@ -215,10 +234,7 @@ function readComms(mid,cc,prefix,sPrefix){
 	commsLoading.hide();
 	comms.find("#commsUL").html("");
 	comms.appendTo($m.find(".msgBox")[0]);
-}
-function addRT(){
-	//if($("#replycheckbox"))
-	
+	return false;
 }
 -->
 </script>
