@@ -23,6 +23,8 @@ int cc = Integer.parseInt(user.getProp("statuses_count")+"");
 int pn = (cc%10>0)?cc/10+1:cc/10;
 out.println(WBJSPCacheOut.out("header1"));
 %>
+<link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
+<script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.js" type="text/javascript"></script>
 <script type="text/javascript" src="<%=sPrefix %>/js/pagenav.js"></script>
 <script type="text/javascript" src="<%=sPrefix %>/js/talk.js"></script>
 <script type="text/javascript">
@@ -47,14 +49,29 @@ $(function(){
 			var s = "";
 			for(var i = 0,j=data.length;i<j;i++){
 				var d = data[i];
-				s += talkLI(d,"<%=prefix %>","<%=sPrefix %>",<%=coUser.getId() %>);
+				s += talkLI(d,"<%=prefix %>","<%=sPrefix %>",<%=(coUser==null)?0:coUser.getId() %>);
 			}
 			$("#msgList").html(s);
 			
 		});
 	};
 	pageNav.go(<%= p %>,<%= pn %>);
+	comms = $("#commsDiv");
+	commsLoading = $("#commsLoading");
+	commsTalk = $("#commForm");
+	talkForm(commsTalk);
+	
+	$("#replycheckbox").change(function(){
+		var $me = $(this);
+		if(this.checked){
+			$("#comm_talk_state").val("0");
+		}else{
+			$("#comm_talk_state").val("1");
+		}
+	});
 });
+var checkNotify = true;
+var comms,commsLoading,commsTalk;
 
 -->
 </script>
@@ -97,4 +114,4 @@ $(function(){
 <div class="clear"></div>
 		</div>
 
-<% out.println(WBJSPCacheOut.out("@foot")); %>
+<% out.println(WBJSPCacheOut.out("@foot_sent")); %>

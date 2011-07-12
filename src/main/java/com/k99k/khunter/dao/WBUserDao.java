@@ -347,6 +347,9 @@ public class WBUserDao extends MongoDao {
 		}
 		
 		ArrayList<KObject> list = new ArrayList<KObject>(pageSize);
+		KObject info = new KObject();
+		info.setProp("cc",msgCount);
+		list.add(info);
 		List<Map<String,Object>> msgIds = wbCommDao.query(new BasicDBObject("re_msg_id",msgId).append("state", 0), wbcommProp,prop_id_desc, skip, pageSize, null);
 		for (Iterator<Map<String, Object>> it = msgIds.iterator(); it.hasNext();) {
 			Map<String, Object> m = it.next();

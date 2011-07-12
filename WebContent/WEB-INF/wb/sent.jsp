@@ -20,9 +20,12 @@ int cc = Integer.parseInt(user.getProp("statuses_count")+"");
 int pn = (cc%10>0)?cc/10+1:cc/10;
 out.println(WBJSPCacheOut.out("header1"));
 %>
+<link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
+<script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.js" type="text/javascript"></script>
 <script type="text/javascript" src="<%=sPrefix %>/js/pagenav.js"></script>
 <script type="text/javascript" src="<%=sPrefix %>/js/talk.js"></script>
 <script type="text/javascript">
+<!--
 $(function(){
 	$("#wbUserUrl").empty().append("<%=uName%>");
 	$("#r_follow_num").empty().append("<%=user.getProp("friends_count")%>");
@@ -50,9 +53,24 @@ $(function(){
 		});
 	};
 	pageNav.go(<%= p %>,<%= pn %>);
+	comms = $("#commsDiv");
+	commsLoading = $("#commsLoading");
+	commsTalk = $("#commForm");
+	talkForm(commsTalk);
+	
+	$("#replycheckbox").change(function(){
+		var $me = $(this);
+		if(this.checked){
+			$("#comm_talk_state").val("0");
+		}else{
+			$("#comm_talk_state").val("1");
+		}
+	});
 });
+var checkNotify = true;
+var comms,commsLoading,commsTalk;
 
-
+-->
 </script>
 <% out.println(WBJSPCacheOut.out("@head_main")); %>
 		<div id="profile">
@@ -69,7 +87,7 @@ $(function(){
 				int sex = Integer.parseInt(user.getProp("sex").toString());
 				if(sex==1){sb.append("男");} else if(sex==2){sb.append("女");} else{sb.append("");}
 				sb.append(" , ").append(user.getProp("location")).append("</div><div>");
-				String url = StringUtil.isStringWithLen(user.getProp("user_url").toString(),4)?"<a href='"+user.getProp("user_url")+" target='_blank'>"+user.getProp("user_url")+"</a>":"无,<a href='"+prefix+"/settings'>添加</>";
+				String url = StringUtil.isStringWithLen(user.getProp("user_url").toString(),4)?"<a href='"+user.getProp("user_url")+" target='_blank'>"+user.getProp("user_url")+"</a>":"无,<a href='"+prefix+"/settings'>添加</a>";
 				sb.append("用户主页:").append(url).append("</div><div>简介:<br />");
 				String intro = StringUtil.isStringWithLen(user.getProp("description").toString(),1)?user.getProp("description").toString():"快来<a href='"+prefix+"/settings'>介绍一下自己</>，获得更多人关注吧！";
 				sb.append(intro+"</div>");
@@ -89,4 +107,4 @@ $(function(){
 <div class="clear"></div>
 		</div>
 
-<% out.println(WBJSPCacheOut.out("@foot")); %>
+<% out.println(WBJSPCacheOut.out("@foot_sent")); %>

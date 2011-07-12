@@ -254,7 +254,7 @@ public final class TaskManager {
 			log.error("Task type error:"+type);
 			return false;
 		}
-		log.info("TASK added:"+taskName);
+		//log.info("TASK added:"+taskName);
 		return true;
 	}
 	
