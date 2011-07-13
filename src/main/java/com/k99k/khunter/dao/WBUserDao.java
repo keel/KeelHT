@@ -1094,7 +1094,8 @@ public class WBUserDao extends MongoDao {
 		in.setProp("rt_id", rt_id);
 		in.setState(state);
 		wbInboxDao.save(in);
-		wbUserDao.updateOne(new BasicDBObject("_id",userId), new BasicDBObject("$inc",prop_notify_msg));
+		//自己的消息不用提示
+		//wbUserDao.updateOne(new BasicDBObject("_id",userId), new BasicDBObject("$inc",prop_notify_msg));
 		
 		ArrayList<Long> fansIds = getAllFans(userId);
 		if (fansIds.isEmpty()) {

@@ -10,7 +10,7 @@ blockquote:before, blockquote:after, q:before, q:after { content: ''; content: n
 /* font */
 html{font:0.9em Helvetica,Verdana, Arial, sans-serif;}
 /* bg & mainTxtColor */
-body{background-color: #73CFF1;color:#000;}
+body{background:#C0DEED url('../images/bg.png') no-repeat center top;background-attachment: fixed;color:#000;}
 
 /* link x2 */
 a { color:#2B4A78; text-decoration:none; }
@@ -158,3 +158,8 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px
 #profile{padding:5px 15px;font-size: 90%;}
 #myIcon{float:left;}
 #myInfo{float: right;width:330px;padding:5px;}
+.abox{border: 1px solid #C8DDE9;width:450px;height:250px;background: #FFF;}
+.swfupload{ border: 1px solid #C8DDE9;}
+.aboxTitle{background-color: #E7F2F9;border-bottom:1px solid #C8DDE9;padding:8px; 15px;font-weight: bold;}
+.aboxContent{padding:10px;}
+#swfBT{float:left;}

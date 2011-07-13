@@ -67,8 +67,6 @@ $(function(){
 		}
 	});
 });
-var checkNotify = true;
-var comms,commsLoading,commsTalk;
 
 -->
 </script>

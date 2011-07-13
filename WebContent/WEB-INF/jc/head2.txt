@@ -14,7 +14,7 @@
 	</div>
 
    	<div id="topMenu">
-		<a href="#@prefix@#">我的首页</a> | <a href="#@prefix@#/me">我的微博</a> | <a href="#@prefix@#/fans">好友</a>
+		<a href="#@prefix@#/">我的首页</a> | <a href="#@prefix@#/me">我的微博</a> | <a href="#@prefix@#/fans">好友</a>
     </div>
 	<div id="searchr">
 	<select id="search_select"><option value="wb">微播</option><option value="user">用户</option></select>

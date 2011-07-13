@@ -1,3 +1,6 @@
+var comms,commsLoading,commsTalk;
+var checkNotify = true;
+
 function talkForm($form){
     var $a = $form.find("textarea"),$countTxt = $form.find(".countTxt"),rests = $form.find(".restTxt"),sendbt = $form.find(".sendbt");
 	$a.keyup(function(){
