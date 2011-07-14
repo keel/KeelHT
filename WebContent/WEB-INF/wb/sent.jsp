@@ -22,7 +22,7 @@ out.println(WBJSPCacheOut.out("header1"));
 %>
 <link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 <script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.js" type="text/javascript"></script>
-<script type="text/javascript" src="<%=sPrefix %>/js/pagenav.js"></script>
+<script type="text/javascript" src="<%=sPrefix %>/js/pagenav.min.js"></script>
 <script type="text/javascript" src="<%=sPrefix %>/js/talk.js"></script>
 <script type="text/javascript">
 <!--
@@ -40,6 +40,8 @@ $(function(){
 		window.location="<%=prefix %>/login";
 		return false;
 	});
+	pageNav.pre="上一页";
+ 	pageNav.next="下一页";
 	pageNav.fn = function(p,pn){
 		//按页载入消息
 		$.getJSON("<%=prefix %>/msg/sent?p="+p+"&pz=10&uid=<%=userId%>&r="+new Date(),function(data){

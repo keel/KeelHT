@@ -47,7 +47,8 @@ $(function(){
 	var talkF = $("#talkForm");
 	talkF.readNew = "readNew();";
 	talkForm(talkF);
-	
+	pageNav.pre="上一页";
+ 	pageNav.next="下一页";
 	pageNav.fn = function(p,pn){
 		//按页载入消息
 		$.getJSON("<%=prefix %>/msg/inbox?p="+p+"&pz=10&uid=<%=userId%>&r="+new Date(),function(data){
