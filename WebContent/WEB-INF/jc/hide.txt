@@ -8,7 +8,7 @@
 <!-- hide content -->
 <div style="display:none" id="hideContent">
 <div id="commsLoading" class="commBox">
-	<div style='text-align: center;padding:5px;'><img border="0" src="#@sPrefix@#/images/loading.gif" /></div>
+	<div style='text-align: center;padding:5px;'><img border="0" src="#@sPrefix@#/images/loading.gif" alt="loading" /></div>
 </div>	
 					
 <div id="commsDiv" class="commBox">
@@ -22,18 +22,17 @@
 		<input type="hidden" name="talk_state" value="1" id="comm_talk_state" />
 	</div>
 	<div class="sendsub" style="color: #999;text-align: right;padding:6px 0;">
-<span style="float:left;"><input type="checkbox" id="replycheckbox" class="replaycheckbox" ><label for="replycheckbox">同时转发到我的微博</label></span>
+<span style="float:left;"><input type="checkbox" id="replycheckbox" class="replaycheckbox" /><label for="replycheckbox">同时转发到我的微博</label></span>
 <span>
 <span class="restTxt">还能输入</span> <span class="countTxt" style="font-size:20px;">125</span> <span class="restTxt">字</span>
 </span>			
-<input type="submit" name="sendbt" value="评论" class="sendbt bt_re">
+<input type="submit" name="sendbt" value="评论" class="sendbt bt_re" />
 
 <div class="clear"></div>
 	</div>
 	</form>
 	<div class="comms">
-		<ul class="ul_inline" id="commsUL">
-		</ul>
+		<ul class="ul_inline ul_fix" id="commsUL"><li>empty</li></ul>
 		<div id="forAllComms" style="padding:0 0 20px 20px;display:none;"><a href="" target="_blank">查看所有评论</a></div>
 	</div>
 </div>

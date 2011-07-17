@@ -59,6 +59,11 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px
 .sendtip{float: right; color: #999;line-height: 33px;}
 .countTxt{font:26px Georgia,Tahoma,Arial;}
 .bt_re{border: 0;background: url('../images/sendbtn.gif') no-repeat;width: 60px; height: 19px; text-align: center; font-size: 12px;cursor: pointer; color: #ffffff; line-height: 19px; padding: 0; font-weight: bold;}
+.imgbt{padding:5px 10px 10px 15px;background-position: center left;}
+.hideimg{background: url('../images/hideimg.gif') no-repeat;}
+.rotaLeft{background: url('../images/leftimg.gif') no-repeat;}
+.rotaRight{background: url('../images/righimg.gif') no-repeat;}
+.lookOrg{background: url('../images/viewimg.gif') no-repeat;}
 #wbList{padding:5px 15px;}
 #listTools{padding:5px 15px;background:#E3EAEC;}
 #newsBox{position: relative; height: 27px; margin-top: 4px; border: 1px solid #F4E4B4; background-color: #fff4d8;}
@@ -66,7 +71,8 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px
 .red{color:red;}
 .bold{font-weight: bold;}
 .txtRight{text-align: right;}
-.ul_inline{float:left;list-style: none;width:100%;padding:10px 0;margin:0;}
+.ul_inline{float:left;list-style: none;padding:10px 0;margin:0;}
+.ul_fix{width:100%;}
 #msgList>li{float:left;padding: 12px 0;margin:0;width:100%; border-bottom: 1px dashed #D8D8D8; background: #fff;}
 .userPic{float:left;padding: 0 0 12px 12px;}
 .msgBox{float: right; width: 470px; padding-right: 12px; word-wrap: break-word;}
@@ -79,7 +85,7 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px
 .commsLi{padding:8px;background-color: #fffce9;border-top: 1px dashed #ebdebc;}
 .commSubInfo{color:#888;}
 .mediaWrap { margin: 0 0 6px; }
-.pubInfo{font-size: 12px;line-height: 19px; }
+.pubInfo{font-size: 12px;line-height: 19px;padding:5px 0; }
 .funBox{float:right;}
 .mFunDrop { visibility: hidden; position: absolute; z-index: 51; min-width: 66px; _width: 66px; margin: -2px 0 0 -1px; padding: 1px; white-space: nowrap; border: 1px solid #DCDCDC; background: #fff; }
 .fleft{float:left;}
@@ -90,6 +96,7 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px
 #userNums li{border-right: 1px solid #2B4A78; float: left; padding:5px 2px;min-width:50px;_width: 50px;text-align: center; white-space: nowrap;}
 #badgeBox{padding:5px;}
 .sm_c a,.sm_m a{display: block; width:140px;padding:8px 30px; border-top: 1px dotted #2B4A78;}
+.sm_c{background-color: #fff;width:201px;position: relative; left: -1px;}
 .sm_c a:hover,.sm_m a:hover{text-decoration:none;background: #fff4d8; }
 
 .SC{border-top: 1px dotted #2B4A78;padding:10px 0;}
@@ -142,12 +149,6 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px
 .indexh .taboff {float:left;margin-left:10px;width:77px;height:26px;margin-top:8px;font-weight:normal;font-size:14px;text-align:center;padding-top:6px}
 .indexh .message {float:right;margin:10px 10px 0 0;color:#999;font-size:12px}
 
-.fancyMsgBox{border: 1px solid green;background: #EAF8FD;padding:30px 20px;}
-.fancyMsgBox2 {border: 1px solid #ffa2aa;padding:30px 0 30px 37px;background: #fae8e8 url(../images/msg_red.png) 10px 30px no-repeat;}
-.fancyMsgBox1 {border:1px solid #6cd858;padding:30px 0 30px 37px;background: #e3ffde url(../images/msg_green.png) 10px 30px no-repeat;}
-.fancyMsgBox3 {border:1px solid #d6d61f;padding:30px 0 30px 37px;background: #ffffd3 url(../images/msg_yellow.png) 10px 30px no-repeat;}
-.fancyMsgBox4 {border:1px solid #b4dbe8;padding:30px 0 30px 37px;background: #e3f2f7 url(../images/msg_blue.png) 10px 30px no-repeat;}
-
 .pageNum{border: 1px solid #999;padding:2px 8px;display: inline-block;}
 .cPageNum{font-weight: bold;padding:2px 5px;}
 #pageNav a:hover{text-decoration:none;background: #fff4d8; }
@@ -158,8 +159,13 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px
 #profile{padding:5px 15px;font-size: 90%;}
 #myIcon{float:left;}
 #myInfo{float: right;width:330px;padding:5px;}
-.abox{border: 1px solid #C8DDE9;width:450px;height:250px;background: #FFF;}
+.abox{border: 1px solid #C8DDE9;background: #FFF;}
 .swfupload{ border: 1px solid #C8DDE9;}
 .aboxTitle{background-color: #E7F2F9;border-bottom:1px solid #C8DDE9;padding:8px; 15px;font-weight: bold;}
 .aboxContent{padding:10px;}
+.reOk{background: url(../images/msg_green.png)  no-repeat;background-position: center left;padding-left:20px;}
+.reErr{background: url(../images/msg_red.png)  no-repeat;background-position: center left;padding-left:20px;color:red;font-weight: bold;}
+.reWarn{background: url(../images/msg_yellow.png)  no-repeat;background-position: center left;padding-left:20px;}
+.reInfo{background: url(../images/msg_blue.png)  no-repeat;background-position: center left;padding-left:20px;}
+.aboxBT{display: inline-block;zoom: 1; *display: inline; padding:4px 15px; border: 1px solid #2B4A78;text-align: center;background-color: #EEE;}
 #swfBT{float:left;}

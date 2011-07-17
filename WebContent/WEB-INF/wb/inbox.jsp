@@ -39,11 +39,12 @@ $(function(){
 	
 	$("#logoutBT").click(function(){
 		$.post("<%=prefix %>/login/logout", "uName=<%=uName %>" ,function(data) {
-			window.location="<%=prefix %>";
+			window.location="<%=prefix %>/<%=uName %>";
 		});
 		return false;
 	});
-
+	$.sPrefix = "<%=prefix %>";
+	$.prefix = "<%=sPrefix %>";
 	var talkF = $("#talkForm");
 	talkF.readNew = "readNew();";
 	talkForm(talkF);
@@ -55,7 +56,7 @@ $(function(){
 			var s = "";
 			for(var i = 0,j=data.length;i<j;i++){
 				var d = data[i];
-				s += talkLI(d,"<%=prefix %>","<%=sPrefix %>",<%=user.getId() %>);
+				s += talkLI(d,<%=user.getId() %>);
 			}
 			$("#msgList").html(s);
 			
@@ -67,7 +68,6 @@ $(function(){
 	commsLoading = $("#commsLoading");
 	commsTalk = $("#commForm");
 	talkForm(commsTalk);
-	
 	$("#replycheckbox").change(function(){
 		var $me = $(this);
 		if(this.checked){
@@ -86,6 +86,7 @@ $(function(){
 		'hideOnContentClick': false
 		}
 	);
+	
 	$("#addtopic").click(function(){
 		var ta = document.getElementById("talk"); //文本域
 	    var con = "输入话题"; 
@@ -143,7 +144,7 @@ function readNew(){
 		var s = "";
 		for(var i = 0,j=data.length;i<j;i++){
 			var d = data[i];
-			s += talkLI(d,"<%=prefix %>","<%=sPrefix %>",<%=user.getId() %>);
+			s += talkLI(d,<%=user.getId() %>);
 		}
 		$("#msgList").prepend(s);
 	});
@@ -273,7 +274,7 @@ function uploadError(file, errorCode, message) {
 			<div id="sendBox_title">来，说点什么吧</div>
 			<div id="sendAreaDiv">
 				<textarea name="talk" id="talk" rows="5" cols="10"></textarea>
-				<input type="hidden" value="" name="pic_url" id="pic_url">
+				<input type="hidden" value="" name="pic_url" id="pic_url" />
 			</div>
 			<div class="sendsub" id="sendsub">
 			<div class="fleft smallTxt">
@@ -293,8 +294,8 @@ function uploadError(file, errorCode, message) {
 				所有广播：
 			</div>
 			
-			<div id="newsBox" style="display:none;"><a href="#"></a></div>
-			<ul id="msgList" class="ul_inline"><li></li></ul>
+			<div id="newsBox" style="display:none;"></div>
+			<ul id="msgList" class="ul_inline ul_fix"><li>empty</li></ul>
 			<div id="pageNav"></div>
 <div class="clear"></div>
 		</div>
@@ -308,12 +309,12 @@ function uploadError(file, errorCode, message) {
 				<div id="swfBT">
 					<span id="spanSWFUploadButton"></span> 
 				</div>
-				
-				<div id="uploadInfo" style='font-size: 12px;background-color: #eee; padding:8px;float: right;width:300px;'>图片最大不超过3M,图片格式为jpg,png,gif</div>
-<div class="clear"></div>
+				<div style="padding-left:10px;float: right;width:280px;">
+				<div id="uploadInfo" style='font-size: 12px;background-color: #eee; padding:8px;'>图片最大不超过3M,图片格式为jpg,png,gif</div>
+				</div><div class="clear"></div>
 			</form>
 				<div id="uploadPreview" style='padding-top: 5px;'>
-					<div style='background-color: #eee; padding:58px 0 70px 0;color:#999;text-align: center;'>图片预览</div>
+					<div style='background-color: #eee; padding:30px 0 70px 0;color:#999;text-align: center;'>图片预览</div>
 				</div>
 				</div>
 			</div>

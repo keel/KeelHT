@@ -43,6 +43,8 @@ $(function(){
 		window.location="<%=prefix %>/login";
 		return false;
 	});
+	$.sPrefix = "<%=prefix %>";
+	$.prefix = "<%=sPrefix %>";
 	pageNav.pre="上一页";
  	pageNav.next="下一页";
 	pageNav.fn = function(p,pn){
@@ -51,7 +53,7 @@ $(function(){
 			var s = "";
 			for(var i = 0,j=data.length;i<j;i++){
 				var d = data[i];
-				s += talkLI(d,"<%=prefix %>","<%=sPrefix %>",<%=(coUser==null)?0:coUser.getId() %>);
+				s += talkLI(d,<%=(coUser==null)?0:coUser.getId() %>);
 			}
 			$("#msgList").html(s);
 			
@@ -109,7 +111,7 @@ $(function(){
 			</div>
 			
 			<div id="newsBox"><a href="#">有2条新消息,点击查看</a></div>
-			<ul id="msgList" class="ul_inline"><li></li></ul>
+			<ul id="msgList" class="ul_inline ul_fix"><li></li></ul>
 			<div id="pageNav"></div>
 <div class="clear"></div>
 		</div>

@@ -40,6 +40,8 @@ $(function(){
 		window.location="<%=prefix %>/login";
 		return false;
 	});
+	$.sPrefix = "<%=prefix %>";
+	$.prefix = "<%=sPrefix %>";
 	pageNav.pre="上一页";
  	pageNav.next="下一页";
 	pageNav.fn = function(p,pn){
@@ -48,7 +50,7 @@ $(function(){
 			var s = "";
 			for(var i = 0,j=data.length;i<j;i++){
 				var d = data[i];
-				s += talkLI(d,"<%=prefix %>","<%=sPrefix %>",<%=user.getId() %>);
+				s += talkLI(d,<%=user.getId() %>);
 			}
 			$("#msgList").html(s);
 			
@@ -102,7 +104,7 @@ $(function(){
 				我的所有广播：
 			</div>
 			
-			<ul id="msgList" class="ul_inline"><li></li></ul>
+			<ul id="msgList" class="ul_inline ul_fix"><li></li></ul>
 			<div id="pageNav"></div>
 <div class="clear"></div>
 		</div>
