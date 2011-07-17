@@ -354,8 +354,8 @@ public class WBUserDao extends MongoDao {
 		for (Iterator<Map<String, Object>> it = msgIds.iterator(); it.hasNext();) {
 			Map<String, Object> m = it.next();
 			KObject user = WBUser.findWBUser((Long)m.get("user_id"));
-			m.put("user_name", user.getName());
-			m.put("user_screen", user.getProp("screen_name"));
+			m.put("creatorName", user.getName());
+			m.put("author_screen", user.getProp("screen_name"));
 			list.add(new KObject(m));
 		}
 		return list;
@@ -1006,7 +1006,7 @@ public class WBUserDao extends MongoDao {
 	 * @param talk_state msg的状态,用于控制是否显示
 	 * @return
 	 */
-	public static final boolean addTalk(KObject newMsg,String talkMsg,long userId,String userName,String screenName,String source,String place,String pic_url,ArrayList<String> urls,ArrayList<String> topics,ArrayList<String> mentions,boolean isRT,long rt_id,int talk_state){
+	public static final KObject addTalk(KObject newMsg,String talkMsg,long userId,String userName,String screenName,String source,String place,String pic_url,ArrayList<String> urls,ArrayList<String> topics,ArrayList<String> mentions,boolean isRT,long rt_id,int talk_state){
 		//KObject newO = newMsg;
 		newMsg.setProp("text", talkMsg);
 		newMsg.setProp("creatorId", userId);
@@ -1033,8 +1033,12 @@ public class WBUserDao extends MongoDao {
 		if (urls != null) {
 			newMsg.setProp("urls", urls);
 		}
-		return wbMsgDao.save(newMsg);
-		//return newMsg.getId();
+		if (wbMsgDao.save(newMsg)) {
+			return newMsg;
+		}else{
+			return null;
+		}
+		//return wbMsgDao.save(newMsg);
 	}
 	
 	@SuppressWarnings("unchecked")

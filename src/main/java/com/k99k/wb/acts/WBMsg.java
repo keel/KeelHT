@@ -93,11 +93,13 @@ public class WBMsg extends Action {
 //		}
 		else if(subact.equals("comms")){
 			String msg_str = httpmsg.getHttpReq().getParameter("mid");
+			String max_str = httpmsg.getHttpReq().getParameter("max");
+			int max = (StringUtil.isDigits(max_str))?Integer.parseInt(max_str):this.pageSize;
 			if (!StringUtil.isDigits(msg_str) ) {
 				JOut.err(400, httpmsg);
 				return super.act(msg);
 			}
-			re = writeKObjList(WBUserDao.readComms(Long.parseLong(msg_str), 1, 10));
+			re = writeKObjList(WBUserDao.readComms(Long.parseLong(msg_str), 1, max));
 		}
 		
 		msg.addData("[print]", re);

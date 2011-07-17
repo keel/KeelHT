@@ -147,8 +147,23 @@ public class WBTalk extends Action {
 			//发表/转发/评论(评论无转发时仅加入wbcomm)
 			if (rt_id != 0  && state == 1) {
 				//仅评论，无转发时,不加入到wbmsg表中,仅在wbcomm中添加
+				newMsg.setProp("text", txt);
+				newMsg.setProp("creatorId", user.getId());
+				newMsg.setProp("creatorName", user.getName());
+				newMsg.setProp("author_screen", (String)user.getProp("screen"));
+				newMsg.setProp("source", source);
+				newMsg.setProp("place", place);
+				if (pic_url != null) {
+					newMsg.setProp("pic_url", pic_url);
+				}
+				re = newMsg.toString();
 			}else{
-				re = ""+WBUserDao.addTalk(newMsg,txt, user.getId(),user.getName(), (String)user.getProp("screen"),source, place,pic_url, us,ts,ms,isRT,rt_id,state);
+				KObject newmsg = WBUserDao.addTalk(newMsg,txt, user.getId(),user.getName(), (String)user.getProp("screen"),source, place,pic_url, us,ts,ms,isRT,rt_id,state);
+				if (newmsg == null) {
+					re = "{}";
+				}else{
+					re = newmsg.toString();
+				}
 			}
 			//生成异步任务
 			ActionMsg task = new ActionMsg("talkTask");

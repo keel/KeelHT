@@ -46,7 +46,6 @@ $(function(){
 	$.sPrefix = "<%=prefix %>";
 	$.prefix = "<%=sPrefix %>";
 	var talkF = $("#talkForm");
-	talkF.readNew = "readNew();";
 	talkForm(talkF);
 	pageNav.pre="上一页";
  	pageNav.next="下一页";

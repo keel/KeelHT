@@ -1,5 +1,7 @@
 var comms,commsLoading,commsTalk;
 var checkNotify = true;
+
+/* $form.readNew 为自定义方法 */
 function talkForm($form){
     var $a = $form.find("textarea"),$countTxt = $form.find(".countTxt"),rests = $form.find(".restTxt"),sendbt = $form.find(".sendbt");
 	$a.keyup(function(){
@@ -30,18 +32,31 @@ function talkForm($form){
        		$countTxt.parent().hide().fadeIn('slow');
        		return;
        }
+	var ok = "<div class='reOk'>消息发送成功！<a href='javascript:$.fancybox.close();' class=\"aboxBT\">关闭</a></div>";
+	var err = "<div class='reErr'>消息发送失败.您可能需要重新登录。<a href='javascript:$.fancybox.close();' class=\"aboxBT\">关闭</a></div>";
 	   $.post( url, $form.serialize(),function( data ) {
 	         checkNotify = false;
-			var ok = "<div class='reOk'>消息发送成功！<a href='javascript:$.fancybox.close();' class=\"aboxBT\">关闭</a></div>";
-			abox("发微博",ok);
-			$a.val("");
-			setTimeout("$.fancybox.close();",1000);
-			if($form.readNew){
-				setTimeout($form.readNew,2000);
-			}
+	         var json;
+	         if (data) {
+	         	json=$.parseJSON(data);
+	         	if(json._id){
+	         		console.log(json);
+	         		abox("发微博",ok);
+				$a.val("");
+				setTimeout("$.fancybox.close();",1000);
+				if($form.readNew){
+					setTimeout($form.readNew,2000);
+				}else{
+					var s = talkLI(json,json.creatorId);
+					$("#msgList").prepend(s);	
+				}
+	         	}else{
+	         		abox("发表失败",err);
+	         	}
+	         };
+			
 	     }
 	   ).error(function(){
-			var err = "<div class='reErr'>消息发送失败.您可能需要重新登录。<a href='javascript:$.fancybox.close();' class=\"aboxBT\">关闭</a></div>";
 			abox("发微博",err);
 		});
 	   $form.find("input[type=submit]").removeAttr("disabled");
@@ -77,18 +92,18 @@ function readComms(mid,cc,isON){
 					s+="<li class='commsLi'><div style='float:left;padding:0 10px;'><img src='";
 					s+=$.sPrefix;
 					s+="/images/upload/";
-					s+=d.user_name;
+					s+=d.creatorName;
 					s+="_3.jpg' alt='' width='40' height='40' /></div> <div style='padding:5px;'>";
 					s+="<a href=\"/";
 					s += $.prefix;
 					s += "/";
-					s += d.user_name;
+					s += d.creatorName;
 					s += "\" title=\"";
-					s += d.user_screen;
+					s += d.author_screen;
 					s += "(@";
-					s += d.user_name;
+					s += d.creatorName;
 					s += ")\"  target='_blank'>";
-					s += d.user_screen;
+					s += d.author_screen;
 					s += "</a> <span class='commSubInfo'>";
 					s+=sentTime(d.createTime);
 					s+=" 通过 ";
@@ -115,7 +130,7 @@ function readComms(mid,cc,isON){
 	comms.appendTo($m.find(".msgBox")[0]);
 	return;
 };
-function talkLI(d,userId){
+function talkLI(d,userId,isOne){
 	var s = "<li id='m_";
 	s+=d._id;
 	s+="'><div class=\"userPic\"><a href=\"";
@@ -185,7 +200,7 @@ function talkLI(d,userId){
 		s+="/images/upload/"
 		s+=d.pic_url;
 		s+="' alt='pic' /></a></div>";
-	}
+	};
 	s += "<div class=\"pubInfo\"><span class=\"fleft\"><a class=\"time\" target=\"_blank\" href=\"";
 	s += $.prefix;
 	s += "/m?mid=";
@@ -201,20 +216,23 @@ function talkLI(d,userId){
 		s += "<a href=\"javascript:delCheck(";
 		s+=d._id;
 		s+=");\" class=\"delMsg\">删除</a>&nbsp;&nbsp; |&nbsp;&nbsp;";
-	}
-	s += "<a href=\"javascript:reSend(";
-	s+=d._id;
-	s+=","
-	s+=d.creatorId;
-	s+=",'";
-	s+=d.creatorName;
-	s+="')\" class=\"relay\">转播</a>&nbsp;&nbsp; |&nbsp;&nbsp; <a href=\"javascript:readComms('";
-	s+=d._id;
-	s+="',";
-	s+=d.rt_comm_count;
-	s+=");\" class='comt'>评论(<span class='commNUM'>";
-	s+=d.rt_comm_count;
-	s+="</span>)</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"javascript:favCheck(";
+	};
+	if (isOne) {}else{
+		s += "<a href=\"javascript:reSend(";
+		s+=d._id;
+		s+=","
+		s+=d.creatorId;
+		s+=",'";
+		s+=d.creatorName;
+		s+="')\" class=\"relay\">转播</a>&nbsp;&nbsp; |&nbsp;&nbsp; <a href=\"javascript:readComms('";
+		s+=d._id;
+		s+="',";
+		s+=d.rt_comm_count;
+		s+=");\" class='comt'>评论(<span class='commNUM'>";
+		s+=d.rt_comm_count;
+		s+="</span>)</a> &nbsp;&nbsp;|&nbsp;&nbsp; ";
+	};
+	s+=" <a href=\"javascript:favCheck(";
 	s+=d._id;
 	s+=");\" class=\"comt\">收藏</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"javascript:void(0);\" class=\"alarm\">举报</a> </div></div></div>";
 	s+="<input type='hidden' class='r_userId' value='";
@@ -298,16 +316,14 @@ function abox(title,contentHtml){
 	s+="</div><div class=\"aboxContent\">";
 	s+=contentHtml;
 	s+="</div></div>";
-	$.fancybox(
-			{'autoDimensions'	: false,
-			'width'         		: 'auto',
-			'height'        		: 'auto',
-			'transitionIn'		: 'none',
-			'transitionOut'		: 'none',
-			'hideOnContentClick': false,
-			'content':s
-			}
-		);
+	$.fancybox({
+		'autoDimensions'	: false,
+		'width'         		: 'auto',
+		'height'        		: 'auto',
+		'transitionIn'		: 'none',
+		'transitionOut'	: 'none',
+		'content':s
+	});
 };
 function aboxUpdate(html,title){
 	if (html) { $("#aboxDiv").find(".aboxContent").html(html); };

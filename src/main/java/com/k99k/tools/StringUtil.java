@@ -145,6 +145,16 @@ public final class StringUtil {
 		return true;
 	}
 	
+	public static final boolean isStringWithLen(Object obj,int len){
+		if (obj == null) {
+			return false;
+		}
+		if (obj.toString().trim().length() < len) {
+			return false;
+		}
+		return true;
+	}
+	
 	public static final int[] stringToIntArray(String arrString,String separator){
 		try {
 			String s = arrString.replaceAll("\\s", "");
