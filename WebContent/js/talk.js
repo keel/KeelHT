@@ -201,15 +201,21 @@ function talkLI(d,userId,isOne){
 		s+=d.pic_url;
 		s+="' alt='pic' /></a></div>";
 	};
-	s += "<div class=\"pubInfo\"><span class=\"fleft\"><a class=\"time\" target=\"_blank\" href=\"";
-	s += $.prefix;
-	s += "/m?mid=";
-	s += d._id;
-	s += "\" title=\"";
-	s += new Date(d.createTime).format("yyyy-MM-dd hh:mm:ss");
-	s += "\">";
-	s += sentTime(d.createTime);
-	s += "</a> 来自";
+	s += "<div class=\"pubInfo\"><span class=\"fleft\">";
+	if (isOne) {
+		s += sentTime(d.createTime);
+	}else{
+		s+="<a class=\"time\" target=\"_blank\" href=\"";
+		s += $.prefix;
+		s += "/m?mid=";
+		s += d._id;
+		s += "\" title=\"";
+		s += new Date(d.createTime).format("yyyy-MM-dd hh:mm:ss");
+		s += "\">";
+		s += sentTime(d.createTime);
+		s += "</a> ";	
+	};
+	s+=" 来自";
 	s += d.source;
 	s += "</span><div class=\"funBox\">";
 	if (d.creatorId == userId) {
@@ -292,10 +298,10 @@ function reSend(mid,rt_userId,rt_name){
 	s+="\" id=\"re_rt_userId\"><input type=\"hidden\" name=\"rt_name\" value=\"";
 	s+=rt_name;
 	s+="\" id=\"re_rt_name\"><input type=\"hidden\" name=\"talk_state\" value=\"0\" id=\"re_talk_state\"></div>";
-	s+="<div class=\"sendsub\" style=\"color: #999;text-align: right;padding:6px 0;\"> <span class=\"restTxt\">还能输入</span> <span class=\"countTxt\" style=\"font-size:20px;\">125</span> <span class=\"restTxt\">字</span> <input type=\"submit\" name=\"sendbt\" value=\"转播\" class=\"sendbt bt_re\"> <div class=\"clear\"></div> </div> </form>";
+	s+="<div class=\"sendsub\" style=\"color: #999;text-align: right;padding:6px 0;\"> <span class=\"restTxt\">还能输入</span> <span class=\"countTxt\" style=\"font-size:20px;\">140</span> <span class=\"restTxt\">字</span> <input type=\"submit\" name=\"sendbt\" value=\"转播\" class=\"sendbt bt_re\"> <div class=\"clear\"></div> </div> </form>";
 	abox("转播到我的微博",s);
 	talkForm($("#reSendForm"));
-}
+};
 function delM(mid){
 	var err = "<div class='reErr'>删除失败！建议重新登录.<a href='javascript:$.fancybox.close();' class=\"aboxBT\">关闭</a></div>";
 	var ok = "<div class='reOk'>删除成功！<a href='javascript:$.fancybox.close();' class=\"aboxBT\">关闭</a></div>";
@@ -332,17 +338,19 @@ function aboxUpdate(html,title){
 function sentTime(ms){
 　　var t = new Date(ms);
 　　var now = new Date();
-　　var showDate = 172800000;
-　　var showYestoday = 	86400000;
+　　var dd = now.getTime()-new Date(now.getFullYear(),now.getMonth(),now.getDate(),0,0,0).getTime();
+　　var showDate = dd+86400000;
 　　var lastHour = 3600000;
 　　var pas = now-t;
 　　if (pas>=showDate) {
-　　return (t.format("yyyy-MM-dd hh:mm:ss"));
-　　}else if(pas>=showYestoday && pas<showDate){
+　　	return (t.format("yyyy-MM-dd hh:mm:ss"));
+　　}else if(pas>=dd && pas<showDate){
 　　	return ("昨天:"+t.format("hh:mm:ss"));
-　　}else if(pas>=lastHour && pas<showYestoday){
-　　return ("今天:"+t.format("hh:mm:ss"));
+　　}else if(pas>=lastHour && pas<dd){
+　　	return ("今天:"+t.format("hh:mm:ss"));
+　　}else if(pas<600000){
+　　	return ("刚刚");
 　　}else{
-　　return (Math.floor(pas/60/1000)+"分钟前");
+　　	return (Math.floor(pas/60/1000)+"分钟前");
 　　}
 };

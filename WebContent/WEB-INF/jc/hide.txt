@@ -24,7 +24,7 @@
 	<div class="sendsub" style="color: #999;text-align: right;padding:6px 0;">
 <span style="float:left;"><input type="checkbox" id="replycheckbox" class="replaycheckbox" /><label for="replycheckbox">同时转发到我的微博</label></span>
 <span>
-<span class="restTxt">还能输入</span> <span class="countTxt" style="font-size:20px;">125</span> <span class="restTxt">字</span>
+<span class="restTxt">还能输入</span> <span class="countTxt" style="font-size:20px;">140</span> <span class="restTxt">字</span>
 </span>			
 <input type="submit" name="sendbt" value="评论" class="sendbt bt_re" />
 
