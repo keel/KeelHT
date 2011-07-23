@@ -92,7 +92,7 @@ $(function(){
 				int sex = Integer.parseInt(user.getProp("sex").toString());
 				if(sex==1){sb.append("男");} else if(sex==2){sb.append("女");} else{sb.append("");}
 				sb.append(" , ").append(user.getProp("location")).append("</div><div>");
-				String url = StringUtil.isStringWithLen(user.getProp("user_url").toString(),4)?"<a href='"+user.getProp("user_url")+" target='_blank'>"+user.getProp("user_url")+"</a>":"无";
+				String url = StringUtil.isStringWithLen(user.getProp("user_url").toString(),4)?"<a href='"+user.getProp("user_url")+"' target='_blank'>"+user.getProp("user_url")+"</a>":"无";
 				sb.append("用户主页:").append(url).append("</div><div>简介:<br />");
 				String intro = StringUtil.isStringWithLen(user.getProp("description").toString(),1)?user.getProp("description").toString():"无";
 				sb.append(intro+"</div>");

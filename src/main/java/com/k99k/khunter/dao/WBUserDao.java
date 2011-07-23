@@ -244,6 +244,7 @@ public class WBUserDao extends MongoDao {
 	private static final BasicDBObject prop_fans_both_clear =new BasicDBObject("$set", new BasicDBObject("fans.$.both",0));
 	private static final BasicDBObject prop_rt_comm_count =new BasicDBObject("rt_comm_count",1);
 	private static final BasicDBObject prop_user_new =new BasicDBObject("notify_msg",1).append("notify_fan", 1).append("notify_dmsg", 1).append("notify_mention", 1);
+	private static final BasicDBObject prop_user_namelist =new BasicDBObject("_id",1).append("name", 1).append("screen_name", 1).append("state", 1);
 	
 	public static final int countMsgComms(long msgId){
 		BasicDBObject q = new BasicDBObject("_id",msgId);
@@ -791,6 +792,7 @@ public class WBUserDao extends MongoDao {
 	 * @return 若无则返回null,有则返回指定数量的ArrayList<KObject>
 	 */
 	public static final ArrayList<KObject> readOnePageMsgs(long userId,int page,int pageSize){
+		wbUserDao.updateOne(new BasicDBObject("_id",userId), prop_notify_msg_reset);
 		return readPagedList(wbInboxDao,"inbox_count",userId,page,pageSize);
 	}
 	
@@ -913,6 +915,24 @@ public class WBUserDao extends MongoDao {
 		}
 		return map;
 	}
+	
+	/**
+	 * 根据User的name找出用户必要信息列表，注意这里返回的HashMap中的value为Map
+	 * @param nameList
+	 * @return HashMap<String,Map<String,Object>>
+	 */
+	@SuppressWarnings("unchecked")
+	public static final HashMap<String,Map<String,Object>> getUsersMap(ArrayList<String> nameList){
+		HashMap<String,Map<String,Object>> map = new HashMap<String,Map<String,Object> >(nameList.size());		
+		DBCollection coll = wbUserDao.getColl();
+		DBCursor cur = coll.find(new BasicDBObject("name",new BasicDBObject("$in",nameList)).append("state", 0),prop_user_namelist);
+		while (cur.hasNext()) {
+			Map<String,Object> m = (Map<String,Object>) cur.next();
+			map.put((String)m.get("name"), m);
+		}
+		return map;
+	}
+	
 	
 	/**
 	 * 获取用户的sent msg列表
@@ -1118,6 +1138,7 @@ public class WBUserDao extends MongoDao {
 		}
 		
 	}
+	
 	
 	public static void main(String[] args) {
 		

@@ -21,6 +21,7 @@ public class JSONFormatWriter {
     private Stack<Object> calls = new Stack<Object>();
     boolean emitClassName = true;
     
+    
 //    public static void main(String[] args) {
 //		HashMap m = new HashMap();
 //		m.put("node1", "string1");

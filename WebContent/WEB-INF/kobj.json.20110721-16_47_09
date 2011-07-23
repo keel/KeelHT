@@ -590,7 +590,7 @@
 			"indexes":[
 				{
 					"col":"name",
-					"unique":true,
+					"unique":false,
 					"asc":true,
 					"type":"normal",
 					"intro":"name index"
@@ -604,7 +604,7 @@
 				},
 				{
 					"col":"screen_name",
-					"unique":true,
+					"unique":false,
 					"asc":true,
 					"type":"normal",
 					"intro":"screen_name index"

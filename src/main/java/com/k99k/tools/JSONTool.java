@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.stringtree.json.JSONErrorListener;
-import org.stringtree.json.JSONReader;
 import org.stringtree.json.JSONValidator;
-import org.stringtree.json.JSONWriter;
 
 /**
  * @author keel
@@ -24,62 +22,60 @@ public final class JSONTool {
 	private JSONTool() {
 	}
 	
+	
 	/**
 	 * 使用JSONValidatingReader读取json的String
-	 * FIXME 需要处理异常
 	 * @param in String
-	 * @return HashMap
+	 * @return HashMap or ArrayList or else json object
 	 */
 	@SuppressWarnings("unchecked")
 	public static final HashMap<String,Object> readJsonString(String in){
-		JSONReader jsonReader = new JSONReader();
-		return (HashMap<String,Object>)jsonReader.read(in);
+		Object o = JSON.read(in);
+		if (o != null && (o instanceof HashMap)) {
+			return (HashMap<String,Object>)o;
+		}
+		return null;
 	}
 	
 	/**
-	 * 使用JSONWriter将HashMap转成String形式的json
+	 * 使用JSON将HashMap转成String形式的json
 	 * @param map
 	 * @return json String
 	 */
 	public static final String writeJsonString(HashMap<String,Object> map){
-		JSONWriter jsonWriter = new JSONWriter();
-		return jsonWriter.write(map);
+		return JSON.write(map);
 	}
 	
 	/**
-	 * 使用JSONWriter将List转成String形式的json
+	 * 使用JSON将List转成String形式的json
 	 * @param list
 	 * @return
 	 */
 	public static final String writeJsonString(List<Object> list){
-		JSONWriter jsonWriter = new JSONWriter();
-		return jsonWriter.write(list);
+		return JSON.write(list);
 	}
 	
 	/**
-	 * 使用JSONWriter将HashMap转成String形式的json,并进行format
+	 * 使用JSON将HashMap转成String形式的json,并进行format
 	 * @param map
 	 * @return json String
 	 */
 	public static final String writeFormatedJsonString(HashMap<String,Object> map){
-		JSONFormatWriter jsonWriter = new JSONFormatWriter();
-		return jsonWriter.write(map,6);
+		return JSON.writeFormat(map,6);
 	}
 	
 	public static final String writeFormatedJsonString(Object obj){
-		JSONFormatWriter jsonWriter = new JSONFormatWriter();
-		return jsonWriter.write(obj,6);
+		return JSON.writeFormat(obj,6);
 	}
 	
 	/**
-	 * 使用JSONWriter将HashMap转成String形式的json,并进行format
+	 * 使用JSON将HashMap转成String形式的json,并进行format
 	 * @param map
 	 * @param formatDeep 
 	 * @return json String
 	 */
 	public static final String writeFormatedJsonString(HashMap<String,Object> map,int formatDeep){
-		JSONFormatWriter jsonWriter = new JSONFormatWriter();
-		return jsonWriter.write(map,formatDeep);
+		return JSON.writeFormat(map,formatDeep);
 	}
 	
 	/**

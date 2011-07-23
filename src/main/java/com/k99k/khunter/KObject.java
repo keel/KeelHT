@@ -3,11 +3,11 @@
  */
 package com.k99k.khunter;
 
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import com.k99k.tools.JSON;
 
 /**
  * KObject:基础的可扩展对象,包含一个可扩展的属性列表,(带列表关系的参考KSObject).<br />
@@ -174,8 +174,18 @@ public class KObject {
 	 */
 	@Override
 	public String toString() {
+		
+		return JSON.write(this.propMap);
+		
+		/*
 		StringBuilder sb  = new StringBuilder("{");
 		//处理属性
+		Iterator it = this.propMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry e = (Map.Entry) it.next();
+            
+        }
+		
 		for (Iterator<String> iterator = this.propMap.keySet().iterator(); iterator.hasNext();) {
 			String key = iterator.next();
 			Object o = this.propMap.get(key);
@@ -183,48 +193,17 @@ public class KObject {
 			if (o instanceof String || o instanceof Character) {
 				jsonString(sb,o);
 				//sb.append("\"").append(o).append("\"");
-			}else{
+			} 
+			
+			else{
 				sb.append(o);
 			}
 			sb.append(",");
 		}
-		sb.append("\"_class\":\"").append(this.getClass().getName()).append("\"");
-		sb.append("}");
-		return sb.toString();
+		//sb.append("\"_class\":\"").append(this.getClass().getName()).append("\"");
+		sb.append("\"_class\":\":\"KObject\"}");
+		return sb.toString();*/
 	}
-	
-	private static final void jsonString(StringBuilder sb,Object obj) {
-        sb.append('"');
-        CharacterIterator it = new StringCharacterIterator(obj.toString());
-        for (char c = it.first(); c != CharacterIterator.DONE; c = it.next()) {
-            if (c == '"') {sb.append("\\\"");continue;}
-            else if (c == '\\') {sb.append("\\\\");continue;}
-            else if (c == '/') {sb.append("\\/");continue;}
-            else if (c == '\b') {sb.append("\\b");continue;}
-            else if (c == '\f') {sb.append("\\f");continue;}
-            else if (c == '\n') {sb.append("\\n");continue;}
-            else if (c == '\r') {sb.append("\\r");continue;}
-            else if (c == '\t') {sb.append("\\t");continue;}
-            else if (Character.isISOControl(c)) {
-                unicode(sb,c);continue;
-            } else {
-            	sb.append(c);
-            }
-        }
-        sb.append('"');
-    }
-	private  static char[] hex = "0123456789ABCDEF".toCharArray();
-	
-	private static final void unicode(StringBuilder sb, char c) {
-		sb.append("\\u");
-		int n = c;
-		for (int i = 0; i < 4; ++i) {
-			int digit = (n & 0xf000) >> 12;
-			sb.append(hex[digit]);
-			n <<= 4;
-		}
-	}
-	
 	
 	final int getIntByName(String pName){
 		Object o = this.propMap.get(pName);
@@ -461,5 +440,23 @@ public class KObject {
 		}
 		return sb.toString();
 	}
+	
+//	public static void main(String[] args) {
+//		KObject kobj = new KObject();
+//		kobj.setId(5);
+//		kobj.setName("ssse..dfasd");
+//		Map m = new HashMap();
+//		m.put("sss", "sdfasdfas");
+//		m.put("sfff", "ffee\" 要职");
+//		ArrayList al = new ArrayList<String>();
+//		al.add("sssfeef");
+//		al.add("nnnwew");
+//		long[] lo = new long[]{43234L,333L,33L};
+//		
+//		kobj.setProp("map", m);
+//		kobj.setProp("lo", lo);
+//		kobj.setProp("al", al);
+//		System.out.println(kobj.toString());
+//	}
 	
 }

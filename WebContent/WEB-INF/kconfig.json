@@ -144,12 +144,12 @@
 		},
 		{
 			"_actName":"topic",
-			"_class":"com.k99k.wb.acts.WBTopic",
+			"_class":"com.k99k.wb.acts.WBTopic"
 			
 		},
 		{
 			"_actName":"favor",
-			"_class":"com.k99k.wb.acts.WBFavor",
+			"_class":"com.k99k.wb.acts.WBFavor"
 			
 		},
 		{

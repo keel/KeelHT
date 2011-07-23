@@ -38,6 +38,7 @@ function talkForm($form){
 	         checkNotify = false;
 	         var json;
 	         if (data) {
+	         	 console.log(data);
 	         	json=$.parseJSON(data);
 	         	if(json._id){
 	         		console.log(json);
@@ -144,7 +145,7 @@ function talkLI(d,userId,isOne){
 	s += "_3.jpg\" alt=\"";
 	s += d.creatorName;
 	s += "\" /></a></div>";
-	s += "<div class=\"msgBox\"><div class=\"userName\" ><a href=\"/";
+	s += "<div class=\"msgBox\"><div class=\"userName\" ><a target='_blank' href=\"";
 	s += $.prefix;
 	s += "/";
 	s += d.creatorName;
