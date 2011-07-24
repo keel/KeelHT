@@ -49,7 +49,7 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px
 #wrapper{position: relative; width: 800px; margin: 0 auto; background: #C9F1FF;}
 
 #sideNav{float: right; padding-bottom: 30px; width: 209px;}
-#mainContent{float: left; position: relative; width: 590px; border-right: 1px solid #99DBF2; background: #fff;}
+#mainContent{float: left; position: relative; width: 590px; border-right: 1px solid #99DBF2; background: #fff;min-height: 500px;height: auto !important;height: 500px;overflow: visible;}
 
 #sendBox{height: 170px;}
 #sendBox_title{margin: 0 auto;width: 530px; height: 30px; overflow: hidden; padding-top: 6px; font: normal 18px/29px "MicroSoft YaHei","SimHei"; color: #333;}
@@ -169,3 +169,4 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px
 .reInfo{background: url(../images/msg_blue.png)  no-repeat;background-position: center left;padding-left:20px;}
 .aboxBT{display: inline-block;zoom: 1; *display: inline; padding:4px 15px; border: 1px solid #2B4A78;text-align: center;background-color: #EEE;}
 #swfBT{float:left;}
+.dmDel{float:right;font-size:12px;display:none;}

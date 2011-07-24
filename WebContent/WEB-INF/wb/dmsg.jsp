@@ -13,13 +13,10 @@ if(o != null ){
 	return;
 }
 KObject user = (KObject)data.getData("wbUser");
-Object co = data.getData("coUser");
-//cookie用户
-KObject coUser = (co==null)?null:(KObject)co;
 String uName = user.getName();
 long userId = user.getId();
 int p = (StringUtil.isDigits(request.getParameter("p")))?Integer.parseInt(request.getParameter("p")):1;
-int cc = Integer.parseInt(user.getProp("statuses_count")+"");
+int cc = Integer.parseInt(user.getProp("dmsg_count")+"");
 int pn = (cc%10>0)?cc/10+1:cc/10;
 out.println(WBJSPCacheOut.out("header1"));
 %>
@@ -49,17 +46,28 @@ $(function(){
  	pageNav.next="下一页";
 	pageNav.fn = function(p,pn){
 		//按页载入消息
-		$.getJSON("<%=prefix %>/msg/sent?p="+p+"&pz=10&uid=<%=userId%>&r="+new Date(),function(data){
-			var s = "";
+		$.getJSON("<%=prefix %>/dmsg/list?p="+p+"&pz=10&uid=<%=userId%>&r="+new Date(),function(data){
 			for(var i = 0,j=data.length;i<j;i++){
-				var d = data[i];
-				s += talkLI(d,<%=(coUser==null)?0:coUser.getId() %>);
+				var li = $(dmLI(data[i],"<%=uName %>"));
+				li.hover(function(){$(this).find(".dmDel").show();},function(){$(this).find(".dmDel").hide();});
+				$("#msgList").append(li);
 			}
-			$("#msgList").html(s);
-			
 		});
 	};
 	pageNav.go(<%= p %>,<%= pn %>);
+	var talkF = $("#talkForm");
+	talkF.errTip = "<div class='reErr'>私信发送失败！对方可能并非您的粉丝。<br />请正确填写对方的名称(@后方的名称,非用户呢称),并确保处于登录状态。<a href='javascript:$.fancybox.close();' class=\"aboxBT\">关闭</a></div>";
+	talkF.sucFn = function(json){
+		abox("发送私信","<div class='reOk'>私信发送成功！<a href='javascript:$.fancybox.close();' class=\"aboxBT\">关闭</a></div>");
+		talkF.find("textarea").val("");
+		setTimeout("$.fancybox.close();",1000);
+		var s = $(dmLI(json,json.creatorName));
+		s.hide();
+		$("#msgList").prepend(s);
+		s.fadeIn(3000);	
+	};
+	talkForm(talkF);
+	
 	comms = $("#commsDiv");
 	commsLoading = $("#commsLoading");
 	commsTalk = $("#commForm");
@@ -78,40 +86,32 @@ $(function(){
 -->
 </script>
 <% out.println(WBJSPCacheOut.out("@head_main")); %>
-		<div id="profile">
-			<div id="myIcon" class="icon"><img alt="<%= user.getName() %>" src="<%=user.getProp("icon_url") %>_1.jpg"/></div>
-			<div id="myInfo">
-				<div class="bigTxt"><%= user.getProp("screen_name") %>(@<%= user.getName() %>)</div>
-				<div><a href="<%=prefix %>/<%= user.getName() %>">http://localhost:8080<%=prefix %>/<%= user.getName() %></a></div>
-				<%
-				StringBuilder sb = new StringBuilder();
-				sb.append("<div>微博:<a class='bigTxt' href='").append(prefix).append("/").append(user.getName()).append("'>").append(user.getProp("statuses_count")).append("</a> 条 | ");
-				sb.append("关注:<a class='bigTxt' href='").append(prefix).append("/follow'>").append(user.getProp("friends_count")).append("</a> 人 | ");
-				sb.append("粉丝:<a class='bigTxt' href='").append(prefix).append("/fans'>").append(user.getProp("followers_count")).append("</a> 人 </div><div>");
-				
-				int sex = Integer.parseInt(user.getProp("sex").toString());
-				if(sex==1){sb.append("男");} else if(sex==2){sb.append("女");} else{sb.append("");}
-				sb.append(" , ").append(user.getProp("location")).append("</div><div>");
-				String url = StringUtil.isStringWithLen(user.getProp("user_url").toString(),4)?"<a href='"+user.getProp("user_url")+"' target='_blank'>"+user.getProp("user_url")+"</a>":"无";
-				sb.append("用户主页:").append(url).append("</div><div>简介:<br />");
-				String intro = StringUtil.isStringWithLen(user.getProp("description").toString(),1)?user.getProp("description").toString():"无";
-				sb.append(intro+"</div>");
-				out.println(sb);
-				%> 
-				<div id="followAct">
-					<a href="#" class="followBT">关注</a>
-				</div>
-			</div>
-			<div class="clear"></div>
-		</div>
+<div id="sendBox">
+<form name="talkForm" id="talkForm" action="<%=prefix %>/dmsg/add" method="post">
+<div id="sendBox_title">发送私信<div style="float:right;font-size:12px;color:#555;">私信只能发送给你的粉丝，若想与朋友通过私信交流，请先相互收听</div></div>
+<div id="sendAreaDiv">
+	<textarea name="talk" id="talk" rows="5" cols="10"></textarea>
+	<input type="hidden" value="" name="pic_url" id="pic_url" />
+</div>
+<div class="sendsub" id="sendsub">
+<div class="fleft smallTxt">
+收信人：@<input type="text" id="dmTO" name="dmTO" />
+</div>
+	<input type="submit" id="sendbt" name="sendbt" value="发送私信" class="sendbt" />
+	<span class="sendtip">
+		<span class="restTxt">还能输入</span> <span class="countTxt">140</span> <span class="restTxt">字</span>
+	</span>
+<div class="clear"></div>
+</div>
+</form>
+</div>
 		<div id="wbList">
-			<div id="ad1"></div>
 			<div id="listTools">
-				所有微博：
+				所有私信：
 			</div>
 			<ul id="msgList" class="ul_inline ul_fix"><li></li></ul>
 			<div id="pageNav"></div>
 <div class="clear"></div>
 		</div>
 
-<% out.println(WBJSPCacheOut.out("@foot_sent")); %>
+<% out.println(WBJSPCacheOut.out("@foot_dm")); %>

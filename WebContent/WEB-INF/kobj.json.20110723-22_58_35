@@ -12,6 +12,13 @@
 			},
 			"indexes":[
 				{
+					"col":"to_id",
+					"unique":false,
+					"asc":false,
+					"type":"type",
+					"intro":"to_id index"
+				},
+				{
 					"col":"creatorId",
 					"unique":false,
 					"asc":false,
@@ -24,16 +31,17 @@
 					"asc":false,
 					"type":"type",
 					"intro":"state index"
-				},
-				{
-					"col":"to_name",
-					"unique":false,
-					"asc":false,
-					"type":"type",
-					"intro":"to_name index"
 				}
 			],
 			"columns":[
+				{
+					"col":"to_id",
+					"def":0,
+					"len":0,
+					"required":true,
+					"type":4,
+					"intro":"接收方ID"
+				},
 				{
 					"col":"text",
 					"def":"",
@@ -57,14 +65,6 @@
 					"required":false,
 					"type":0,
 					"intro":"发送方name"
-				},
-				{
-					"col":"to_name",
-					"def":"",
-					"len":0,
-					"required":true,
-					"type":0,
-					"intro":"接收方name"
 				}
 			],
 			"intro":"私信"
@@ -1534,14 +1534,6 @@
 					"required":true,
 					"type":0,
 					"intro":"用户name"
-				},
-				{
-					"col":"rt_id",
-					"def":0,
-					"len":0,
-					"required":false,
-					"type":4,
-					"intro":"rt消息id"
 				}
 			],
 			"intro":"所有提到用户的消息,用于获取某用户被提到的消息集"

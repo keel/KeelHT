@@ -218,6 +218,10 @@ public class WBUserDao extends MongoDao {
 		return true;
 	}
 	
+	public static final boolean checkUserName(String name) {
+		return wbUserDao.checkName(name);
+	}
+	
 	//以下属性是用于查询的静态条件,节省开销
 	private static final BasicDBObject prop_id = new BasicDBObject("_id",1);
 	private static final BasicDBObject prop_msg_rt_id = new BasicDBObject("msg_id",1).append("rt_id", 1);
@@ -318,18 +322,21 @@ public class WBUserDao extends MongoDao {
 		wbMsgDao.updateOne(q, prop_rt_comm_inc);
 	}
 	
-	public static final boolean addDMsg(long userId,long targetId,String talkMsg,String userName){
+	public static final KObject addDMsg(long userId,String dmTO,String talkMsg,String userName){
 		
 		KObject newMsg = wbDMsgTBConfig.getKobjSchema().createEmptyKObj(wbDMsgTBDao);
 		newMsg.setProp("text", talkMsg);
 		newMsg.setProp("creatorId", userId);
-		newMsg.setProp("to_id", targetId);
+		newMsg.setProp("to_name", dmTO);
 		newMsg.setProp("creatorName", userName);
-		wbDMsgTBDao.save(newMsg);
-		
-		BasicDBObject q = new BasicDBObject("_id",userId);
-		return wbUserDao.updateOne(q, prop_dmsg_inc);
+		if (wbDMsgTBDao.save(newMsg)) {
+			BasicDBObject q = new BasicDBObject("_id",userId);
+			wbUserDao.updateOne(q, prop_dmsg_inc);
+			return newMsg;
+		}
+		return null;
 	}
+	
 	
 	/**
 	 * 获取某消息的评论和转发
@@ -593,7 +600,7 @@ public class WBUserDao extends MongoDao {
 		DBCollection coll = wbDMsgTBDao.getColl();
 		BasicDBObject q = new BasicDBObject("state", 0);
 		BasicDBList or = new BasicDBList();
-		or.add(new BasicDBObject("to_id",userId));
+		or.add(new BasicDBObject("to_name",user.getName()));
 		or.add(new BasicDBObject("creatorId",userId));
 		q.append("$or", or);
 		DBCursor cur = coll.find(q).sort(prop_id_desc).skip(skip).limit(pageSize);
@@ -652,8 +659,20 @@ public class WBUserDao extends MongoDao {
 		return o!=null;
 	}
 	
+	public static final boolean isFollow(long userId,String targetName){
+		BasicDBObject q = new BasicDBObject("_id",userId).append("follows.name",targetName);
+		Object o = wbUserDao.findOneMap(q, prop_id);
+		return o!=null;
+	}
+	
 	public static final boolean isFan(long userId,long targetId){
 		BasicDBObject q = new BasicDBObject("_id",userId).append("fans.id",targetId);
+		Object o = wbUserDao.findOneMap(q, prop_id);
+		return o!=null;
+	}
+	
+	public static final boolean isFan(long userId,String targetName){
+		BasicDBObject q = new BasicDBObject("_id",userId).append("fans.name",targetName);
 		Object o = wbUserDao.findOneMap(q, prop_id);
 		return o!=null;
 	}
@@ -978,7 +997,7 @@ public class WBUserDao extends MongoDao {
 	 * @param mentionUserName 提到的用户名
 	 * @param talkId 原消息id
 	 */
-	public static final void addMention(String mentionUserName,long talkId){
+	public static final void addMention(String mentionUserName,long talkId,long rt_id){
 		
 		BasicDBObject q = new BasicDBObject("name",mentionUserName);
 		BasicDBObject u = prop_notify_mention_inc;
@@ -989,6 +1008,8 @@ public class WBUserDao extends MongoDao {
 		KObject mt = wbMentionConfig.getKobjSchema().createEmptyKObj(wbMentionDao);
 		mt.setProp("user_name", mentionUserName);
 		mt.setProp("msg_id", talkId);
+		mt.setProp("rt_id", rt_id);
+		
 		wbMentionDao.save(mt);
 		
 //		//更新wbMention表

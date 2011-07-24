@@ -6,6 +6,9 @@
 		{"name":"header2_noSide","txt":"jc/head2_noSide.txt","type":"str"},
 		
 		{"name":"sideNav","txt":"jc/sideNav.txt","type":"str","intro":"右边部分"},
+		{"name":"sideNav_mention","txt":"jc/sideNav_mention.txt","type":"str","intro":"右边部分"},
+		{"name":"sideNav_fav","txt":"jc/sideNav_fav.txt","type":"str","intro":"右边部分"},
+		{"name":"sideNav_dm","txt":"jc/sideNav_dm.txt","type":"str","intro":"右边部分"},
 		{"name":"sideNav_inbox","txt":"jc/sideNav_inbox.txt","type":"str","intro":"inbox页的右边部分"},
 		{"name":"mainTop","txt":"jc/mainTop.txt","type":"str"},
 		{"name":"mainBottom","txt":"jc/mainBottom.txt","type":"str"},
@@ -17,7 +20,10 @@
 		{"name":"@head_main","txt":["header2","mainTop"],"type":"array"},
 		{"name":"@foot","txt":["mainBottom","sideNav","footer"],"type":"array"},
 		{"name":"@foot_inbox","txt":["mainBottom","sideNav_inbox","hide"],"type":"array"},
-		{"name":"@foot_sent","txt":["mainBottom","sideNav","hide"],"type":"array"}
+		{"name":"@foot_sent","txt":["mainBottom","sideNav","hide"],"type":"array"},
+		{"name":"@foot_mention","txt":["mainBottom","sideNav_mention","hide"],"type":"array"},
+		{"name":"@foot_fav","txt":["mainBottom","sideNav_fav","hide"],"type":"array"},
+		{"name":"@foot_dm","txt":["mainBottom","sideNav_dm","hide"],"type":"array"}
 		
 	],
 	"jspCahe intro":"txt的路径为HTManager.getIniPath()后面的路径;当name为其他jc的组合时,type为array,名称最好加上@以示区别;"

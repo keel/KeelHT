@@ -75,8 +75,13 @@ public class WBMsg extends Action {
 			String pz_str = httpmsg.getHttpReq().getParameter("pz");
 			int page = (StringUtil.isDigits(p_str))?Integer.parseInt(p_str):1;
 			int pageSize = (StringUtil.isDigits(pz_str))?Integer.parseInt(pz_str):this.pageSize;
-			
 			re = writeKObjList(WBUserDao.readSentMsgs(userId, page, pageSize));
+		}else if(subact.equals("mention")){
+			String p_str = httpmsg.getHttpReq().getParameter("p");
+			String pz_str = httpmsg.getHttpReq().getParameter("pz");
+			int page = (StringUtil.isDigits(p_str))?Integer.parseInt(p_str):1;
+			int pageSize = (StringUtil.isDigits(pz_str))?Integer.parseInt(pz_str):this.pageSize;
+			re = writeKObjList(WBUserDao.readMentionList(userId, page, pageSize));
 		}
 //		else if(subact.equals("one")){
 //			String msg_str = httpmsg.getHttpReq().getParameter("mid");
@@ -105,7 +110,6 @@ public class WBMsg extends Action {
 		msg.addData("[print]", re);
 		return super.act(msg);
 	}
-
 
 	/**
 	 * 输出ArrayList<KObject>

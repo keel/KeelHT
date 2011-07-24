@@ -42,6 +42,28 @@ public final class MongoConn implements DataSourceInterface{
 		//init();
 	}
 	
+	/*
+	public static void main(String[] args) {
+		//test for mongolab.com test
+		MongoConn mongo = new MongoConn();
+		mongo.setIp("dbh13.mongolab.com");
+		mongo.setPort(27137);
+		mongo.setDbName("fwall");
+		mongo.setUser("keelsike");
+		mongo.setPwd("crystalthing");
+		if (mongo.init()) {
+			DBCollection conn = mongo.getColl("test");
+			DBCursor cur = conn.find();
+			if (cur.hasNext()) {
+				System.out.println(cur.next());
+			}
+		}else{
+			System.out.println("err!");
+		}
+		
+		
+	}
+	*/
 	/**
 	 * @param ip
 	 * @param port

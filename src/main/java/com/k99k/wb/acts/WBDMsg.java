@@ -55,15 +55,14 @@ public class WBDMsg extends Action {
 			int pz = StringUtil.isDigits(pz_str)?Integer.parseInt(pz_str):this.pageSize;
 			re = WBMsg.writeKObjList(WBUserDao.readDMsg(user.getId(), page, pz));
 		}else if(subact.equals("add")){
-			String dmsg_str = httpmsg.getHttpReq().getParameter("dmsg");
-			String targetId_str = httpmsg.getHttpReq().getParameter("targetId");
-			if (!StringUtil.isDigits(targetId_str) || !StringUtil.isStringWithLen(dmsg_str, 1)) {
+			String dmsg_str = httpmsg.getHttpReq().getParameter("talk");
+			String dmto_str = httpmsg.getHttpReq().getParameter("dmTO");
+			if (!StringUtil.isStringWithLen(dmto_str,4) || !StringUtil.isStringWithLen(dmsg_str, 1) || !WBUserDao.isFan(user.getId(),dmto_str)) {
 				JOut.err(401, httpmsg);
 				return super.act(msg);
 			}
-			long targetId = Long.parseLong(targetId_str);
 			String txt = dealMention(dmsg_str).toString();
-			re = String.valueOf(WBUserDao.addDMsg(user.getId(), targetId, txt, user.getName()));
+			re = String.valueOf(WBUserDao.addDMsg(user.getId(), dmto_str, txt, user.getName()));
 		}else if(subact.equals("del")){
 			String dmsgId_str = httpmsg.getHttpReq().getParameter("dmsgId");
 			if (!StringUtil.isDigits(dmsgId_str)) {
@@ -90,7 +89,7 @@ public class WBDMsg extends Action {
 		while(matcher.find()){   
 			//TODO 处理@号的链接
 			String re = matcher.group(1);
-			matcher.appendReplacement(buffer, JOut.templetOut(mentionReStr,new String[]{"?mention="+re,re}));           
+			matcher.appendReplacement(buffer, JOut.templetOut(mentionReStr,new String[]{KFilter.getPrefix()+"/"+re,re}));           
 		}
 		matcher.appendTail(buffer);
 		return buffer;

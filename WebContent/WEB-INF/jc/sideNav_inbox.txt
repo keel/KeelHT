@@ -28,9 +28,9 @@
 			<ul class="ul_inline">
 				<li class="sm_c"><a href="#@prefix@#/"><img src="#@prefix@#/images/side_home.png" alt="我的主页" />&nbsp;&nbsp; 我的主页</a></li>
 				<li class="sm_m"><a href="#@prefix@#/me"><img src="#@prefix@#/images/side_gb.png" alt="我的广播" />&nbsp;&nbsp; 我的广播</a></li>
-				<li class="sm_m"><a href="#@prefix@#/mention"><img src="#@prefix@#/images/side_td.png" alt="提到我的" />&nbsp;&nbsp; 提到我的</a></li>
+				<li class="sm_m"><a href="#@prefix@#/at"><img src="#@prefix@#/images/side_td.png" alt="提到我的" />&nbsp;&nbsp; 提到我的</a></li>
 				<li class="sm_m"><a href="#@prefix@#/fav"><img src="#@prefix@#/images/side_fav.png" alt="我的收藏" />&nbsp;&nbsp; 我的收藏</a></li>
-				<li class="sm_m"><a href="#@prefix@#/dmsg"><img src="#@prefix@#/images/side_dmsg.png" alt="私信" />&nbsp;&nbsp; 私信</a></li>
+				<li class="sm_m"><a href="#@prefix@#/dm"><img src="#@prefix@#/images/side_dmsg.png" alt="私信" />&nbsp;&nbsp; 私信</a></li>
 			</ul>
 <div class="clear"></div>
 		</div>

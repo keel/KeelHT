@@ -53,7 +53,9 @@ public class WBTalkTask extends Action {
 			ArrayList<String> ts = (ArrayList<String>)msg.getData("topics");
 			ArrayList<String> ms = (ArrayList<String>)msg.getData("mentions");
 			//被转用户提到消息+1,addMention
-			WBUserDao.addMention(rt_name, rt_id);
+			if (state == 0) {
+				WBUserDao.addMention(rt_name,msgId, rt_id);
+			}
 			//更新原消息的转发次数,addComm
 			WBUserDao.addComm(WBUserDao.newComm(), rt_id, rt_userId, userId, txt, source, place, ts, ms,true);
 		}
@@ -64,14 +66,8 @@ public class WBTalkTask extends Action {
 			//向所有的fans发送消息,处理fans的inbox
 			WBUserDao.pushMsgToFans(userId, msgId,state,rt_id);
 		}
-		
-		
-		
 		return super.act(msg);
 	}
-
-
-
 
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#exit()

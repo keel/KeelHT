@@ -158,7 +158,7 @@ public class WBTalk extends Action {
 				}
 				re = newMsg.toString();
 			}else{
-				KObject newmsg = WBUserDao.addTalk(newMsg,txt, user.getId(),user.getName(), (String)user.getProp("screen"),source, place,pic_url, us,ts,ms,isRT,rt_id,state);
+				KObject newmsg = WBUserDao.addTalk(newMsg,txt, user.getId(),user.getName(), (String)user.getProp("screen_name"),source, place,pic_url, us,ts,ms,isRT,rt_id,state);
 				if (newmsg == null) {
 					re = "{}";
 				}else{

@@ -9,6 +9,7 @@ import java.util.Iterator;
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.dao.WBUserDao;
+import com.k99k.tools.StringUtil;
 
 /**
  * 提到的用户(@someone),用于Task处理
@@ -35,10 +36,12 @@ public class WBMentionTask extends Action {
 	public ActionMsg act(ActionMsg msg) {
 		ArrayList<String> mentions = (ArrayList<String>) msg.getData("mentions");
 		long msgId = (Long)msg.getData("msgId");
+		Object ort = msg.getData("rt_id");
+		long rt_id = (StringUtil.isDigits(ort))?(Long)ort:0;
 		if (mentions != null) {
 			for (Iterator<String> it = mentions.iterator(); it.hasNext();) {
 				String mt = it.next();
-				WBUserDao.addMention(mt, msgId);
+				WBUserDao.addMention(mt, msgId,rt_id);
 			}
 		}
 		

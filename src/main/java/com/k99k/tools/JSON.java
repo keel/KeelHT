@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.k99k.khunter.KIoc;
-
 /**
  * JSON工具,注意对象中不能有自我引用!本类不作此检测.本类不支持bean的解析(bean将直接输出toString).
  * @author keel

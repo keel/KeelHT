@@ -140,7 +140,7 @@
 			"_actName":"dmsg",
 			"_class":"com.k99k.wb.acts.WBDMsg",
 			"pageSize":20,
-			"mentionReStr":["<a href='","'>","</a>"]
+			"mentionReStr":["<a href='","' target='_blank'>","</a>"]
 		},
 		{
 			"_actName":"topic",
@@ -165,6 +165,21 @@
 		{
 			"_actName":"fans",
 			"_class":"com.k99k.wb.acts.WBFans",
+			"pageSize":20
+		},
+		{
+			"_actName":"fav",
+			"_class":"com.k99k.wb.acts.WBFav",
+			"pageSize":20
+		},
+		{
+			"_actName":"dm",
+			"_class":"com.k99k.wb.acts.WBDm",
+			"pageSize":20
+		},
+		{
+			"_actName":"at",
+			"_class":"com.k99k.wb.acts.WBMention",
 			"pageSize":20
 		},
 		{

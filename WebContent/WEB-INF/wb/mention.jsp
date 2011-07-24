@@ -1,7 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,com.k99k.tools.*,com.k99k.wb.acts.*" session="false" %>
-<%
+<%!
 String sPrefix = KFilter.getStaticPrefix();
 String prefix = KFilter.getPrefix();
+%>
+<%
 Object o = request.getAttribute("[jspAttr]");
 HttpActionMsg data = null;
 if(o != null ){
@@ -14,7 +16,7 @@ KObject user = (KObject)data.getData("wbUser");
 String uName = user.getName();
 long userId = user.getId();
 int p = (StringUtil.isDigits(request.getParameter("p")))?Integer.parseInt(request.getParameter("p")):1;
-int cc = Integer.parseInt(user.getProp("inbox_count")+"");
+int cc = Integer.parseInt(user.getProp("mention_count")+"");
 int pn = (cc%10>0)?cc/10+1:cc/10;
 out.println(WBJSPCacheOut.out("header1"));
 %>
@@ -23,11 +25,9 @@ out.println(WBJSPCacheOut.out("header1"));
 <script type="text/javascript" src="<%=sPrefix %>/js/pagenav.min.js"></script>
 <script type="text/javascript" src="<%=sPrefix %>/js/talk.js"></script>
 <script type="text/javascript" src="<%=sPrefix %>/js/swfupload.min.js"></script>
-
 <script type="text/javascript">
-<!-- 
+<!--
 $(function(){
-	
 	$("#wbUserUrl").empty().append("<%=uName%>");
 	$("#r_follow_num").empty().append("<%=user.getProp("friends_count")%>");
 	$("#r_fans_num").empty().append("<%=user.getProp("followers_count")%>");
@@ -35,23 +35,19 @@ $(function(){
 	$("#r_mgs_num").empty().append("<%=user.getProp("statuses_count")%>");
 	$("#r_icon_1").empty().append("<img src='<%=sPrefix+"/images/upload/"+uName+"_2.jpg"%>' height='60' width='60' alt='me' />");
 	$("#r_location").empty().append("<%=user.getProp("location")%>");
-
 	
+	$("#logoutBT").text("登录");
 	$("#logoutBT").click(function(){
-		$.post("<%=prefix %>/login/logout", "uName=<%=uName %>" ,function(data) {
-			window.location="<%=prefix %>/<%=uName %>";
-		});
+		window.location="<%=prefix %>/login";
 		return false;
 	});
 	$.sPrefix = "<%=prefix %>";
 	$.prefix = "<%=sPrefix %>";
-	var talkF = $("#talkForm");
-	talkForm(talkF,true);
 	pageNav.pre="上一页";
  	pageNav.next="下一页";
 	pageNav.fn = function(p,pn){
 		//按页载入消息
-		$.getJSON("<%=prefix %>/msg/inbox?p="+p+"&pz=10&uid=<%=userId%>&r="+new Date(),function(data){
+		$.getJSON("<%=prefix %>/msg/mention?p="+p+"&pz=10&uid=<%=userId%>&r="+new Date(),function(data){
 			var s = "";
 			for(var i = 0,j=data.length;i<j;i++){
 				var d = data[i];
@@ -62,11 +58,13 @@ $(function(){
 		});
 	};
 	pageNav.go(<%= p %>,<%= pn %>);
-
+	var talkF = $("#talkForm");
+	talkForm(talkF,true);
 	comms = $("#commsDiv");
 	commsLoading = $("#commsLoading");
 	commsTalk = $("#commForm");
 	talkForm(commsTalk);
+	
 	$("#replycheckbox").change(function(){
 		var $me = $(this);
 		if(this.checked){
@@ -78,8 +76,8 @@ $(function(){
 	initUpload("<%=uName %>");
 	$("#single_image").fancybox(
 		{'autoDimensions'	: false,
-		'width'         	: 'auto',
-		'height'        	: 'auto',
+		'width'         		: 'auto',
+		'height'        		: 'auto',
 		'transitionIn'		: 'none',
 		'transitionOut'		: 'none',
 		'hideOnContentClick': false
@@ -105,51 +103,7 @@ $(function(){
 	    } 
 	    return false;
 	}); 
-	setInterval(notify, 10000);
 });
-function notify(){
-	if(checkNotify){
-		$.getJSON("<%=prefix %>/notify?r="+new Date(),function(data){
-			if(data && data.length == 4){
-				var s = "";
-				if(data[0] > 0){
-					s += "有"+data[0]+"条新消息.";
-				}
-				if(data[1] > 0){
-					s += "有"+data[1]+"个新粉丝.";
-				}
-				if(data[2] > 0){
-					s += "有"+data[2]+"条新私信.";
-				}
-				if(data[3] > 0){
-					s += "有"+data[3]+"条新消息提到您.";
-				}
-				if(s != ""){
-					$("#newsBox a").html(s);$("#newsBox").show().click(function(){
-						readNew();
-					});
-				}else{
-					$("#newsBox a").html("");$("#newsBox").hide();
-				}
-			}
-		});
-	}
-}
-
-function readNew(){
-	checkNotify = false;
-	$("#newsBox a").html("");$("#newsBox").hide();
-	$.getJSON("<%=prefix %>/msg/unread?max=15&uid=<%=userId%>",function(data){
-		var s = "";
-		for(var i = 0,j=data.length;i<j;i++){
-			var d = data[i];
-			s += talkLI(d,<%=user.getId() %>);
-		}
-		$("#msgList").prepend(s);
-	});
-	checkNotify = true;
-}
-
 
 -->
 </script>
@@ -176,15 +130,14 @@ function readNew(){
 		<div id="wbList">
 			<div id="ad1"></div>
 			<div id="listTools">
-				所有微博：
+				提到我的微博：
 			</div>
 			
-			<div id="newsBox" style="display:none;"><a href="#"></a></div>
-			<ul id="msgList" class="ul_inline ul_fix"><li>empty</li></ul>
+			<ul id="msgList" class="ul_inline ul_fix"><li></li></ul>
 			<div id="pageNav"></div>
-<div class="clear"></div>
+	<div class="clear"></div>
 		</div>
-		<div style="display:none">
+<div style="display:none">
 			<div id="data" class="abox">
 				<div class="aboxTitle">
 					图片上传
@@ -204,4 +157,4 @@ function readNew(){
 				</div>
 			</div>
 		</div>
-<% out.println(WBJSPCacheOut.out("@foot_inbox")); %>
+<% out.println(WBJSPCacheOut.out("@foot_mention")); %>

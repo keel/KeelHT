@@ -24,6 +24,7 @@ out.println(WBJSPCacheOut.out("header1"));
 <script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.js" type="text/javascript"></script>
 <script type="text/javascript" src="<%=sPrefix %>/js/pagenav.min.js"></script>
 <script type="text/javascript" src="<%=sPrefix %>/js/talk.js"></script>
+<script type="text/javascript" src="<%=sPrefix %>/js/swfupload.min.js"></script>
 <script type="text/javascript">
 <!--
 $(function(){
@@ -57,6 +58,8 @@ $(function(){
 		});
 	};
 	pageNav.go(<%= p %>,<%= pn %>);
+	var talkF = $("#talkForm");
+	talkForm(talkF,true);
 	comms = $("#commsDiv");
 	commsLoading = $("#commsLoading");
 	commsTalk = $("#commForm");
@@ -70,43 +73,88 @@ $(function(){
 			$("#comm_talk_state").val("1");
 		}
 	});
+	initUpload("<%=uName %>");
+	$("#single_image").fancybox(
+		{'autoDimensions'	: false,
+		'width'         		: 'auto',
+		'height'        		: 'auto',
+		'transitionIn'		: 'none',
+		'transitionOut'		: 'none',
+		'hideOnContentClick': false
+		}
+	);
+	
+	$("#addtopic").click(function(){
+		var ta = document.getElementById("talk"); //文本域
+	    var con = "输入话题"; 
+	    //转载文字 
+	    ta.value += " #"+con+"#"; 
+	    var l = ta.value.length; 
+	    //创建选择区域	
+	    if(ta.createTextRange){//IE浏览器 
+	        var range = ta.createTextRange(); 
+	        range.moveEnd("character",-l)         
+	        range.moveEnd("character",l-1); 
+	        range.moveStart("character", l-1-con.length); 
+	        range.select(); 
+	    }else{ 
+	        ta.setSelectionRange(l-1-con.length,l-1); 
+	        ta.focus(); 
+	    } 
+	    return false;
+	}); 
 });
 
 -->
 </script>
 <% out.println(WBJSPCacheOut.out("@head_main")); %>
-		<div id="profile">
-			<div id="myIcon" class="icon"><img alt="<%= user.getName() %>" src="<%=user.getProp("icon_url") %>_1.jpg"/></div>
-			<div id="myInfo">
-				<div class="bigTxt"><%= user.getProp("screen_name") %>(@<%= user.getName() %>)</div>
-				<div><a href="<%=prefix %>/<%= user.getName() %>">http://localhost:8080<%=prefix %>/<%= user.getName() %></a></div>
-				<%
-				StringBuilder sb = new StringBuilder();
-				sb.append("<div>微博:<a class='bigTxt' href='").append(prefix).append("/").append(user.getName()).append("'>").append(user.getProp("statuses_count")).append("</a> 条 | ");
-				sb.append("关注:<a class='bigTxt' href='").append(prefix).append("/follow'>").append(user.getProp("friends_count")).append("</a> 人 | ");
-				sb.append("粉丝:<a class='bigTxt' href='").append(prefix).append("/fans'>").append(user.getProp("followers_count")).append("</a> 人 </div><div>");
-				
-				int sex = Integer.parseInt(user.getProp("sex").toString());
-				if(sex==1){sb.append("男");} else if(sex==2){sb.append("女");} else{sb.append("");}
-				sb.append(" , ").append(user.getProp("location")).append("</div><div>");
-				String url = StringUtil.isStringWithLen(user.getProp("user_url").toString(),4)?"<a href='"+user.getProp("user_url")+"' target='_blank'>"+user.getProp("user_url")+"</a>":"无,<a href='"+prefix+"/settings'>添加</a>";
-				sb.append("用户主页:").append(url).append("</div><div>简介:<br />");
-				String intro = StringUtil.isStringWithLen(user.getProp("description").toString(),1)?user.getProp("description").toString():"快来<a href='"+prefix+"/settings'>介绍一下自己</>，获得更多人关注吧！";
-				sb.append(intro+"</div>");
-				out.println(sb);
-				%> 
+		<div id="sendBox">
+			<form name="talkForm" id="talkForm" action="<%=prefix %>/talk" method="post">
+			<div id="sendBox_title">来，说点什么吧</div>
+			<div id="sendAreaDiv">
+				<textarea name="talk" id="talk" rows="5" cols="10"></textarea>
+				<input type="hidden" value="" name="pic_url" id="pic_url" />
 			</div>
-			<div class="clear"></div>
+			<div class="sendsub" id="sendsub">
+			<div class="fleft smallTxt">
+					<a href="#data" id="single_image" style="background:url('<%=sPrefix %>/images/addpic.png') no-repeat;background-position:center left;padding: 0 5px 0 20px;"> 图片</a> |  <a href="#" id="addtopic"  style="background:url('<%=sPrefix %>/images/addpic.png') no-repeat;background-position:center left;padding: 0 5px 0 20px;"> 话题</a> 
+			</div>
+				<input type="submit" id="sendbt" name="sendbt" value="发表微博" class="sendbt" />
+				<span class="sendtip">
+					<span class="restTxt">还能输入</span> <span class="countTxt">140</span> <span class="restTxt">字</span>
+				</span>
+<div class="clear"></div>
+			</div>
+			</form>
 		</div>
 		<div id="wbList">
 			<div id="ad1"></div>
 			<div id="listTools">
-				我的所有广播：
+				我发送的微博：
 			</div>
 			
 			<ul id="msgList" class="ul_inline ul_fix"><li></li></ul>
 			<div id="pageNav"></div>
 <div class="clear"></div>
 		</div>
-
+<div style="display:none">
+			<div id="data" class="abox">
+				<div class="aboxTitle">
+					图片上传
+				</div>
+				<div class="aboxContent">
+				<form name="picupload" id="picupload" action="../picupload" method="post" enctype="multipart/form-data">
+				<div id="swfBT">
+					<span id="spanSWFUploadButton"></span> 
+				</div>
+				<div style="padding-left:10px;float: right;width:280px;">
+				<div id="uploadInfo" style='font-size: 12px;background-color: #eee; padding:8px;'>图片最大不超过3M,图片格式为jpg,png,gif</div>
+				</div><div class="clear"></div>
+			</form>
+				<div id="uploadPreview" style='padding-top: 5px;'>
+					<div style='background-color: #eee; padding:30px 0 70px 0;color:#999;text-align: center;'>图片预览</div>
+				</div>
+				</div>
+			</div>
+		</div>
 <% out.println(WBJSPCacheOut.out("@foot_sent")); %>

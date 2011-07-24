@@ -6,10 +6,10 @@
 		<a href="#">广播大厅</a>
 		<a href="#">排行榜</a>
 		<a href="#">找朋友</a>
-		<a href="#@prefix@#/mine" id="wbUserUrl"></a>
+		<a href="#@prefix@#/me" id="wbUserUrl"></a>
 		<a href="#">模板</a> 
 		<a href="#@prefix@#/settings">设置</a> 
-		<a href="#@prefix@#/dmsgs">私信</a> 
+		<a href="#@prefix@#/dm">私信</a> 
 		<a href="#" id="logoutBT">退出</a>
 	</div>
 
