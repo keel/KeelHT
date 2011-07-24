@@ -58,7 +58,10 @@ public class WBFollow extends Action {
 			String pz_str = httpmsg.getHttpReq().getParameter("pz");
 			int page = StringUtil.isDigits(p_str)?Integer.parseInt(p_str):1;
 			int pz = StringUtil.isDigits(pz_str)?Integer.parseInt(pz_str):this.pageSize;
-			re = JSONTool.writeFormatedJsonString(WBUserDao.getFollows(userId, page, pz));
+			re = JSONTool.writeJsonString(WBUserDao.getFollows(userId, page, pz));
+			if (re == null || re.equals("null")) {
+				re = "[]";
+			}
 		}else if(subact.equals("follow")){
 			//TODO 做一个新任务,将对方新发表的内容也送到自己的inbox
 			String tar_str = httpmsg.getHttpReq().getParameter("tid");

@@ -45,7 +45,7 @@ $(function(){
 	
 	$("#logoutBT").click(function(){
 		$.post("<%=prefix %>/login/logout", "uName=<%=uName %>" ,function(data) {
-			window.location="<%=prefix %>";
+			window.location="<%=prefix %>/";
 		});
 		return false;
 	});

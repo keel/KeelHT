@@ -74,7 +74,7 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px
 .ul_inline{float:left;list-style: none;padding:10px 0;margin:0;}
 .ul_fix{width:100%;}
 #msgList>li{float:left;padding: 12px 0;margin:0;width:100%; border-bottom: 1px dashed #D8D8D8; background: #fff;}
-.userPic{float:left;padding: 0 0 12px 12px;}
+.userPic{float:left;padding: 0 0 2px 12px;}
 .msgBox{float: right; width: 470px; padding-right: 12px; word-wrap: break-word;}
 .msgCnt { display: inline; }
 .replyBox { margin: 4px 0 8px; line-height: 19px; border: 1px solid #DCDCDC; background: #F8F8F8; font-size: 12px; }
@@ -161,12 +161,12 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px
 #myInfo{float: right;width:330px;padding:5px;}
 .abox{border: 1px solid #C8DDE9;background: #FFF;}
 .swfupload{ border: 1px solid #C8DDE9;}
-.aboxTitle{background-color: #E7F2F9;border-bottom:1px solid #C8DDE9;padding:8px; 15px;font-weight: bold;}
+.aboxTitle{background-color: #E7F2F9;border-bottom:1px solid #C8DDE9;padding:8px;font-weight: bold;}
 .aboxContent{padding:10px;}
 .reOk{background: url(../images/msg_green.png)  no-repeat;background-position: center left;padding-left:20px;}
 .reErr{background: url(../images/msg_red.png)  no-repeat;background-position: center left;padding-left:20px;color:red;font-weight: bold;}
 .reWarn{background: url(../images/msg_yellow.png)  no-repeat;background-position: center left;padding-left:20px;}
 .reInfo{background: url(../images/msg_blue.png)  no-repeat;background-position: center left;padding-left:20px;}
-.aboxBT{display: inline-block;zoom: 1; *display: inline; padding:4px 15px; border: 1px solid #2B4A78;text-align: center;background-color: #EEE;}
+.aboxBT{display: inline-block;zoom: 1; display: inline; padding:4px 15px; border: 1px solid #2B4A78;text-align: center;background-color: #EEE;}
 #swfBT{float:left;}
 .dmDel{float:right;font-size:12px;display:none;}

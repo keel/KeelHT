@@ -79,8 +79,9 @@
 			]
 		},
 		{
-			"_actName":"wbUser",	
-			"_class":"com.k99k.wb.acts.WBUser"
+			"_actName":"user",	
+			"_class":"com.k99k.wb.acts.WBUser",
+			"pageSize":20
 		},
 		{
 			"_actName":"jc",	

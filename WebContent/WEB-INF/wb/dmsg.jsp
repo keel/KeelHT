@@ -47,11 +47,13 @@ $(function(){
 	pageNav.fn = function(p,pn){
 		//按页载入消息
 		$.getJSON("<%=prefix %>/dmsg/list?p="+p+"&pz=10&uid=<%=userId%>&r="+new Date(),function(data){
-			for(var i = 0,j=data.length;i<j;i++){
+			var i = 0;
+			for(var j=data.length;i<j;i++){
 				var li = $(dmLI(data[i],"<%=uName %>"));
 				li.hover(function(){$(this).find(".dmDel").show();},function(){$(this).find(".dmDel").hide();});
 				$("#msgList").append(li);
 			}
+			if(i>0){$("#emptyLI").remove();};
 		});
 	};
 	pageNav.go(<%= p %>,<%= pn %>);
@@ -109,7 +111,7 @@ $(function(){
 			<div id="listTools">
 				所有私信：
 			</div>
-			<ul id="msgList" class="ul_inline ul_fix"><li></li></ul>
+			<ul id="msgList" class="ul_inline ul_fix"><li id="emptyLI" style="text-align: center;">暂无</li></ul>
 			<div id="pageNav"></div>
 <div class="clear"></div>
 		</div>

@@ -3,6 +3,7 @@
  */
 package com.k99k.wb.acts;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,10 +12,14 @@ import javax.servlet.http.HttpServletRequest;
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.DaoManager;
+import com.k99k.khunter.HttpActionMsg;
+import com.k99k.khunter.KFilter;
 import com.k99k.khunter.KObjManager;
 import com.k99k.khunter.KObjSchema;
 import com.k99k.khunter.KObject;
 import com.k99k.khunter.dao.WBUserDao;
+import com.k99k.tools.JSONTool;
+import com.k99k.tools.StringUtil;
 import com.k99k.tools.encrypter.Base64Coder;
 
 /**
@@ -38,6 +43,8 @@ public class WBUser extends Action {
 	private static WBUserDao wbUserDao = null;
 	
 	private static KObjSchema wbUserSchema = null;
+	
+	private int pageSize = 20;
 	
 	/**
 	 * 
@@ -67,35 +74,28 @@ public class WBUser extends Action {
 	 */
 	@Override
 	public ActionMsg act(ActionMsg msg) {
-		
-		/*
-		String subact = KFilter.actPath(msg, 3, "");
-		//用户查找
-		if (subact.equals("find")) {
-			Object ido = msg.getData("wbUId");
-			//id查找
-			if (ido != null) {
-				long id = Long.parseLong(ido.toString());
-				msg.addData("wbUser", findWBUser(id));
-				return super.act(msg);
-			}else {
-				Object nameo = msg.getData("wbUName");
-				if (nameo != null) {
-					msg.addData("wbUser", findWBUser(nameo.toString()));
-					return super.act(msg);
-				}
-			}
-		}
-		//更新用户信息
-		else if(subact.equals("update")){
-			
-		}
-		//请求参数错误,直接返回
-		else{
+		String subact = KFilter.actPath(msg, 2, "fans");
+		HttpActionMsg httpmsg = (HttpActionMsg)msg;
+		String re = null;
+		//验证用户请求是否合法
+		KObject user = WBLogin.cookieAuth(httpmsg);
+		if (user == null) {
+			JOut.err(401, httpmsg);
 			return super.act(msg);
 		}
-		*/
-		
+		String p_str = httpmsg.getHttpReq().getParameter("p");
+		String pz_str = httpmsg.getHttpReq().getParameter("pz");
+		int page = StringUtil.isDigits(p_str)?Integer.parseInt(p_str):1;
+		int pz = StringUtil.isDigits(pz_str)?Integer.parseInt(pz_str):this.pageSize;
+		if (subact.equals("fans")) {
+			re = JSONTool.writeJsonString(WBUserDao.getFans(user.getId(), page, pz));
+		}else if(subact.equals("follows")){
+			re = JSONTool.writeJsonString(WBUserDao.getFollows(user.getId(), page, pz));
+		}
+		if (re == null || re.equals("null")) {
+			re = "[]";
+		}
+		msg.addData("[print]", re);
 		return super.act(msg);
 	}
 
@@ -195,20 +195,18 @@ public class WBUser extends Action {
 		wbUserSchema = KObjManager.findSchema("wbuser");
 	}
 
-	/* (non-Javadoc)
-	 * @see com.k99k.khunter.Action#exit()
+	/**
+	 * @return the pageSize
 	 */
-	@Override
-	public void exit() {
-
+	public final int getPageSize() {
+		return pageSize;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.k99k.khunter.Action#getIniPath()
+	/**
+	 * @param pageSize the pageSize to set
 	 */
-	@Override
-	public String getIniPath() {
-		return null;
+	public final void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
 	}
 
 }

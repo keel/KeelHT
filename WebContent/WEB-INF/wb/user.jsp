@@ -109,7 +109,7 @@ $(function(){
 			<div id="listTools">
 				所有微博：
 			</div>
-			<ul id="msgList" class="ul_inline ul_fix"><li></li></ul>
+			<ul id="msgList" class="ul_inline ul_fix"><li>em</li></ul>
 			<div id="pageNav"></div>
 <div class="clear"></div>
 		</div>

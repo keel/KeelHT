@@ -47,6 +47,9 @@ public class WBFavor extends Action {
 			int page = StringUtil.isDigits(p_str)?Integer.parseInt(p_str):1;
 			int pz = StringUtil.isDigits(pz_str)?Integer.parseInt(pz_str):this.pageSize;
 			re = WBMsg.writeKObjList(WBUserDao.readFavList(user.getId(), page, pz));
+			if (re == null || re.equals("null")) {
+				re = "[]";
+			}
 		}else if(subact.equals("add")){
 			String msg_str = httpmsg.getHttpReq().getParameter("msgid");
 			if (!StringUtil.isDigits(msg_str)) {

@@ -59,7 +59,7 @@ public class WBFans extends Action {
 			int page = StringUtil.isDigits(p_str)?Integer.parseInt(p_str):1;
 			int pz = StringUtil.isDigits(pz_str)?Integer.parseInt(pz_str):this.pageSize;
 			
-			re = JSONTool.writeFormatedJsonString(WBUserDao.getFans(userId, page, pz));
+			re = JSONTool.writeJsonString(WBUserDao.getFans(userId, page, pz));
 		}
 		msg.addData("[print]", re);
 		return super.act(msg);

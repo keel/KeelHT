@@ -89,7 +89,7 @@ function readNew(d){
 		</div>
 		<div id="wbList">
 			<div id="ad1"></div>
-			<ul id="msgList" class="ul_inline ul_fix" style="border-top:1px dashed #D8D8D8;"><li></li></ul>
+			<ul id="msgList" class="ul_inline ul_fix" style="border-top:1px dashed #D8D8D8;"><li>em</li></ul>
 			<div id="pageNav"></div>
 <div class="clear"></div>
 		</div>

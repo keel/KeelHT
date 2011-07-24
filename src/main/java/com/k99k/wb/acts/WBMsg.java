@@ -59,7 +59,7 @@ public class WBMsg extends Action {
 			int pageSize = (StringUtil.isDigits(pz_str))?Integer.parseInt(pz_str):this.pageSize;
 			
 			
-			//re = JSONTool.writeFormatedJsonString(WBUserDao.readOnePageMsgs(userId, page, pageSize));
+			//re = JSONTool.writeJsonString(WBUserDao.readOnePageMsgs(userId, page, pageSize));
 			re = writeKObjList(WBUserDao.readOnePageMsgs(userId, page, pageSize));
 			 
 		}else if(subact.equals("unread")){

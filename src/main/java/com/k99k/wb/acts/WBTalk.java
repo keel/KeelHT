@@ -228,7 +228,7 @@ public class WBTalk extends Action {
 				topics = new ArrayList<String>();
 			}
 			topics.add(topic);
-			matcher.appendReplacement(buffer, JOut.templetOut(topicReStr,new String[]{"?topic="+topic,topic}));           
+			matcher.appendReplacement(buffer, JOut.templetOut(topicReStr,new String[]{"?topic="+topic," #"+topic+"# "}));           
 		}
 		matcher.appendTail(buffer);
 		if (topics != null) {
@@ -279,7 +279,7 @@ public class WBTalk extends Action {
 				mentions = new ArrayList<String>();
 			}
 			mentions.add(re);
-			matcher.appendReplacement(buffer, JOut.templetOut(mentionReStr,new String[]{"?mention="+re,re}));           
+			matcher.appendReplacement(buffer, JOut.templetOut(mentionReStr,new String[]{"?mention="+re,"@"+re}));           
 		}
 		matcher.appendTail(buffer);
 		if (mentions != null) {

@@ -39,11 +39,11 @@ public final class JSONTool {
 	
 	/**
 	 * 使用JSON将HashMap转成String形式的json
-	 * @param map
+	 * @param Object
 	 * @return json String
 	 */
-	public static final String writeJsonString(HashMap<String,Object> map){
-		return JSON.write(map);
+	public static final String writeJsonString(Object obj){
+		return JSON.write(obj);
 	}
 	
 	/**

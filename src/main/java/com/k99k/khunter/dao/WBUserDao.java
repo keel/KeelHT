@@ -248,7 +248,8 @@ public class WBUserDao extends MongoDao {
 	private static final BasicDBObject prop_fans_both_clear =new BasicDBObject("$set", new BasicDBObject("fans.$.both",0));
 	private static final BasicDBObject prop_rt_comm_count =new BasicDBObject("rt_comm_count",1);
 	private static final BasicDBObject prop_user_new =new BasicDBObject("notify_msg",1).append("notify_fan", 1).append("notify_dmsg", 1).append("notify_mention", 1);
-	private static final BasicDBObject prop_user_namelist =new BasicDBObject("_id",1).append("name", 1).append("screen_name", 1).append("state", 1);
+	private static final BasicDBObject prop_user_namelist =new BasicDBObject("_id",1).append("name", 1).append("screen_name", 1).append("verified", 1);
+	private static final BasicDBObject prop_user_fanlist =new BasicDBObject("_id",1).append("name", 1).append("screen_name", 1).append("verified", 1).append("statuses_count", 1).append("friends_count", 1).append("followers_count", 1).append("lastMsg", 1);
 	
 	public static final int countMsgComms(long msgId){
 		BasicDBObject q = new BasicDBObject("_id",msgId);
@@ -448,19 +449,25 @@ public class WBUserDao extends MongoDao {
 		int msgCount = Integer.parseInt(user.getProp("followers_count").toString());
 		
 		int[] slice = pagedSkipForSlice(page,msgCount,pageSize);
-		ArrayList<Map<String, Object>> userIdList = new ArrayList<Map<String, Object>>(pageSize);
+		ArrayList<Long> userIdList = new ArrayList<Long>(pageSize);
 		BasicDBObject fields = prop_id;
 		fields.append("fans", new BasicDBObject("$slice",slice));
-		List<Map<String,Object>> msgIds = wbUserDao.query(new BasicDBObject("_id",userId),fields,null, 0, 1, null);
-		if (!msgIds.isEmpty()) {
-			Map<String, Object> u = msgIds.get(0);
-			List<Map<String,Object>> msgIdList = (List<Map<String, Object>>) u.get("fans");
-			for (Iterator<Map<String, Object>> it = msgIdList.iterator(); it.hasNext();) {
+		List<Map<String,Object>> userIds = wbUserDao.query(new BasicDBObject("_id",userId),fields,null, 0, 1, null);
+		HashMap<String,Object> relationMap = new HashMap<String, Object>();
+		if (!userIds.isEmpty()) {
+			Map<String, Object> u = userIds.get(0);
+			List<Map<String,Object>> fansList = (List<Map<String, Object>>) u.get("fans");
+			for (Iterator<Map<String, Object>> it = fansList.iterator(); it.hasNext();) {
 				Map<String, Object> m = it.next();
-				userIdList.add(m);
+				long uid = (Long)m.get("id");
+				userIdList.add(uid);
+				relationMap.put(String.valueOf(uid), m.get("both"));
 			}
+			ArrayList<Map<String, Object>> re = readUsersList(userIdList);
+			re.add(0, relationMap);
+			return re;
 		}
-		return userIdList;
+		return null;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -468,20 +475,25 @@ public class WBUserDao extends MongoDao {
 		KObject user = wbUserDao.findOne(userId);
 		int msgCount = Integer.parseInt(user.getProp("friends_count").toString());
 		int[] slice = pagedSkipForSlice(page,msgCount,pageSize);
-		ArrayList<Map<String, Object>> userIdList = new ArrayList<Map<String, Object>>(pageSize);
+		ArrayList<Long> userIdList = new ArrayList<Long>(pageSize);
 		BasicDBObject fields = prop_id;
 		fields.append("follows", new BasicDBObject("$slice",slice));
-		List<Map<String,Object>> msgIds = wbUserDao.query(new BasicDBObject("_id",userId),fields,null, 0, 1, null);
-		if (!msgIds.isEmpty()) {
-			Map<String, Object> u = msgIds.get(0);
-			List<Map<String,Object>> msgIdList = (List<Map<String, Object>>) u.get("follows");
-			for (Iterator<Map<String, Object>> it = msgIdList.iterator(); it.hasNext();) {
+		List<Map<String,Object>> userIds = wbUserDao.query(new BasicDBObject("_id",userId),fields,null, 0, 1, null);
+		HashMap<String,Object> relationMap = new HashMap<String, Object>();
+		if (!userIds.isEmpty()) {
+			Map<String, Object> u = userIds.get(0);
+			List<Map<String,Object>> followsList = (List<Map<String, Object>>) u.get("follows");
+			for (Iterator<Map<String, Object>> it = followsList.iterator(); it.hasNext();) {
 				Map<String, Object> m = it.next();
-				userIdList.add(m);
+				long uid = (Long)m.get("id");
+				userIdList.add(uid);
+				relationMap.put(String.valueOf(uid), m.get("both"));
 			}
+			ArrayList<Map<String, Object>> re = readUsersList(userIdList);
+			re.add(0, relationMap);
+			return re;
 		}
-		
-		return userIdList;
+		return null;
 	}
 	
 	
@@ -941,10 +953,10 @@ public class WBUserDao extends MongoDao {
 	 * @return HashMap<String,Map<String,Object>>
 	 */
 	@SuppressWarnings("unchecked")
-	public static final HashMap<String,Map<String,Object>> getUsersMap(ArrayList<String> nameList){
+	public static final HashMap<String,Map<String,Object>> readUsersSmallInfo(ArrayList<String> nameList){
 		HashMap<String,Map<String,Object>> map = new HashMap<String,Map<String,Object> >(nameList.size());		
 		DBCollection coll = wbUserDao.getColl();
-		DBCursor cur = coll.find(new BasicDBObject("name",new BasicDBObject("$in",nameList)).append("state", 0),prop_user_namelist);
+		DBCursor cur = coll.find(new BasicDBObject("state", 0).append("name",new BasicDBObject("$in",nameList)),prop_user_namelist);
 		while (cur.hasNext()) {
 			Map<String,Object> m = (Map<String,Object>) cur.next();
 			map.put((String)m.get("name"), m);
@@ -952,7 +964,22 @@ public class WBUserDao extends MongoDao {
 		return map;
 	}
 	
-	
+	/**
+	 * 根据User的name找出用户必要信息列表，注意这里返回的HashMap中的value为Map
+	 * @param nameList
+	 * @return HashMap<String,Map<String,Object>>
+	 */
+	@SuppressWarnings("unchecked")
+	public static final ArrayList<Map<String,Object>> readUsersList(ArrayList<Long> idList){
+		ArrayList<Map<String,Object>> list = new ArrayList<Map<String,Object> >(idList.size());		
+		DBCollection coll = wbUserDao.getColl();
+		DBCursor cur = coll.find(new BasicDBObject("state", 0).append("_id",new BasicDBObject("$in",idList)),prop_user_fanlist);
+		while (cur.hasNext()) {
+			Map<String,Object> m = (Map<String,Object>) cur.next();
+			list.add( m);
+		}
+		return list;
+	}
 	/**
 	 * 获取用户的sent msg列表
 	 * @param userId
@@ -1082,6 +1109,11 @@ public class WBUserDao extends MongoDao {
 		//return wbMsgDao.save(newMsg);
 	}
 	
+	/**
+	 * 获取某用户的所有粉丝
+	 * @param userId
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static final ArrayList<Long> getAllFans(long userId){
 //		DBCollection coll = wbFansDao.getColl();
@@ -1160,9 +1192,4 @@ public class WBUserDao extends MongoDao {
 		
 	}
 	
-	
-	public static void main(String[] args) {
-		
-	}
-
 }
