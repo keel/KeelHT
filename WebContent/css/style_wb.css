@@ -46,10 +46,10 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:300px
 #topMenu{position: absolute; top: 50px; right: 340px;}
 #searchr{position: absolute; top: 40px; right: 0; height: 25px;}
 
-#wrapper{position: relative; width: 800px; margin: 0 auto; background: #C9F1FF;}
+#wrapper{position: relative; width: 800px; margin: 0 auto; background: #C9F1FF;overflow:hidden;}
 
-#sideNav{float: right; padding-bottom: 30px; width: 209px;}
-#mainContent{float: left; position: relative; width: 590px; border-right: 1px solid #99DBF2; background: #fff;min-height: 500px;height: auto !important;height: 500px;overflow: visible;}
+#sideNav{float: right;  width: 209px;padding-bottom:10000px; margin-bottom:-10000px;}
+#mainContent{float: left; position: relative; width: 590px; border-right: 1px solid #99DBF2; background: #fff;padding-bottom:10000px; margin-bottom:-10000px;}
 
 #sendBox{height: 170px;}
 #sendBox_title{margin: 0 auto;width: 530px; height: 30px; overflow: hidden; padding-top: 6px; font: normal 18px/29px "MicroSoft YaHei","SimHei"; color: #333;}

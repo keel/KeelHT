@@ -58,8 +58,10 @@ public class WBFans extends Action {
 			String pz_str = httpmsg.getHttpReq().getParameter("pz");
 			int page = StringUtil.isDigits(p_str)?Integer.parseInt(p_str):1;
 			int pz = StringUtil.isDigits(pz_str)?Integer.parseInt(pz_str):this.pageSize;
-			
 			re = JSONTool.writeJsonString(WBUserDao.getFans(userId, page, pz));
+			if (re == null || re.equals("null")) {
+				re = "[]";
+			}
 		}
 		msg.addData("[print]", re);
 		return super.act(msg);

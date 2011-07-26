@@ -12,11 +12,19 @@ if(o != null ){
 	out.print("ERROR:100404");
 	return;
 }
-KObject user = (KObject)data.getData("wbUser");
-String uName = user.getName();
-long userId = user.getId();
+//cookie用户
+Object userObj = data.getData("wbUser");
+KObject user = null;
+String uName = "null";
+long userId = 0;
+if(userObj!=null){
+	user = (KObject)userObj;
+	uName = user.getName();
+	userId = user.getId();
+}
 int p = (StringUtil.isDigits(request.getParameter("p")))?Integer.parseInt(request.getParameter("p")):1;
-int cc = Integer.parseInt(user.getProp("mention_count")+"");
+int cc = Integer.parseInt(data.getData("sum")+"");
+if(cc>50){cc=50;};
 int pn = (cc%10>0)?cc/10+1:cc/10;
 out.println(WBJSPCacheOut.out("header1"));
 %>
@@ -28,36 +36,25 @@ out.println(WBJSPCacheOut.out("header1"));
 <script type="text/javascript">
 <!--
 $(function(){
-	$("#wbUserUrl").empty().append("<%=uName%>");
-	$("#r_follow_num").empty().append("<%=user.getProp("friends_count")%>");
-	$("#r_fans_num").empty().append("<%=user.getProp("followers_count")%>");
-	$("#r_uname").empty().append("<%=uName%>");
-	$("#r_mgs_num").empty().append("<%=user.getProp("statuses_count")%>");
-	$("#r_icon_1").empty().append("<img src='<%=sPrefix+"/images/upload/"+uName+"_2.jpg"%>' height='60' width='60' alt='me' />");
-	$("#r_location").empty().append("<%=user.getProp("location")%>");
 	
-	$("#logoutBT").text("登录");
-	$("#logoutBT").click(function(){
-		window.location="<%=prefix %>/login";
-		return false;
-	});
 	$.sPrefix = "<%=prefix %>";
 	$.prefix = "<%=sPrefix %>";
 	pageNav.pre="上一页";
  	pageNav.next="下一页";
 	pageNav.fn = function(p,pn){
 		//按页载入消息
-		$.getJSON("<%=prefix %>/msg/mention?p="+p+"&pz=10&uid=<%=userId%>&r="+new Date(),function(data){
+		$.getJSON("<%=prefix %>/topic/list?t=<%=data.getData("topic")%>&p="+p+"&pz=10&r="+new Date(),function(data){
 			var s = "";
 			for(var i = 0,j=data.length;i<j;i++){
 				var d = data[i];
-				s += talkLI(d,<%=user.getId() %>);
+				s += talkLI(d,0);
 			}
 			$("#msgList").html(s);
 			
 		});
 	};
-	pageNav.go(<%= p %>,<%= pn %>);
+	
+	pageNav.go(<%= p %>,<%= p %>);
 	var talkF = $("#talkForm");
 	talkForm(talkF,true);
 	comms = $("#commsDiv");
@@ -75,15 +72,14 @@ $(function(){
 	});
 	initUpload("<%=uName %>");
 	$("#single_image").fancybox(
-		{'autoDimensions'	: false,
-		'width'         		: 'auto',
-		'height'        		: 'auto',
-		'transitionIn'		: 'none',
-		'transitionOut'		: 'none',
-		'hideOnContentClick': false
-		}
-	);
-	
+			{'autoDimensions'	: false,
+			'width'         		: 'auto',
+			'height'        		: 'auto',
+			'transitionIn'		: 'none',
+			'transitionOut'		: 'none',
+			'hideOnContentClick': false
+			}
+		);
 	$("#addtopic").click(function(){
 		var ta = document.getElementById("talk"); //文本域
 	    var con = "输入话题"; 
@@ -110,9 +106,9 @@ $(function(){
 <% out.println(WBJSPCacheOut.out("@head_main")); %>
 		<div id="sendBox">
 			<form name="talkForm" id="talkForm" action="<%=prefix %>/talk" method="post">
-			<div id="sendBox_title">来，说点什么吧</div>
+			<div id="sendBox_title">说点和此话题相关的</div>
 			<div id="sendAreaDiv">
-				<textarea name="talk" id="talk" rows="5" cols="10"></textarea>
+				<textarea name="talk" id="talk" rows="5" cols="10">#<%=data.getData("topic") %># </textarea>
 				<input type="hidden" value="" name="pic_url" id="pic_url" />
 			</div>
 			<div class="sendsub" id="sendsub">
@@ -130,12 +126,11 @@ $(function(){
 		<div id="wbList">
 			<div id="ad1"></div>
 			<div id="listTools">
-				提到我的微博：
+				此话题相关的微博：
 			</div>
-			
 			<ul id="msgList" class="ul_inline ul_fix"><li id="emptyLI" style="text-align: center;">暂无</li></ul>
 			<div id="pageNav"></div>
-	<div class="clear"></div>
+<div class="clear"></div>
 		</div>
 <div style="display:none">
 			<div id="data" class="abox">
@@ -157,4 +152,4 @@ $(function(){
 				</div>
 			</div>
 		</div>
-<% out.println(WBJSPCacheOut.out("@foot_mention")); %>
+<% out.println(WBJSPCacheOut.out("@foot_inbox")); %>

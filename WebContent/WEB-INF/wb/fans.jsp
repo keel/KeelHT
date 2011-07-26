@@ -21,6 +21,7 @@ out.println(WBJSPCacheOut.out("header1"));
 <link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 <script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.js" type="text/javascript"></script>
 <script type="text/javascript" src="<%=sPrefix %>/js/pagenav.min.js"></script>
+<script type="text/javascript" src="<%=sPrefix %>/js/follow.js"></script>
 <script type="text/javascript">
 <!-- 
 $(function(){
@@ -38,16 +39,21 @@ $(function(){
 		});
 		return false;
 	});
-
+	$.sPrefix = "<%=prefix %>";
+	$.prefix = "<%=sPrefix %>";
 	pageNav.pre="上一页";
  	pageNav.next="下一页";
 	pageNav.fn = function(p,pn){
 		//按页载入消息
 		$.getJSON("<%=prefix %>/user/fans?p="+p+"&pz=10&uid=<%=userId%>&r="+new Date(),function(data){
-			console.log(data);
-			if(data && data.length>0){
+			if(data && data.length>1){
 				$("#emptyLI").remove();
-				
+				var s = "",m = data[0];
+				for(var i = 1,j=data.length;i<j;i++){
+					var d = data[i];
+					s += uLI(d,m);
+				}
+				$("#msgList").html(s);
 			}
 		});
 	};
@@ -63,15 +69,9 @@ $(function(){
 		</div>
 		<div id="wbList">
 			<ul id="msgList" class="ul_inline ul_fix"><li id="emptyLI" style="text-align: center;">暂无</li>
-			
-			<li id="m_250"><div class="userPic"><a href="/KHunter/aaaa" class="icon"> <img src="/KHunter/images/upload/aaaa_3.jpg" alt="aaaa" /></a></div>
-			<div class="msgBox"><div class="userName"><a target="_blank" href="/KHunter/aaaa" title="我是aaaa(@aaaa)">我是aaaa(@aaaa)</a></div>
-			<div class="msgCnt">收听 17 人    听众 47 人    广播 6 条</div>
-			<div class="funBox"><a href="javascript:reSend(250,6,'aaaa')" class="relay">已关注</a> | <a href="#">取消</a></div></div>
-			</li>
 			</ul>
 			<div id="pageNav"></div>
 <div class="clear"></div>
 		</div>
 		
-<% out.println(WBJSPCacheOut.out("@foot_inbox")); %>
+<% out.println(WBJSPCacheOut.out("@foot")); %>

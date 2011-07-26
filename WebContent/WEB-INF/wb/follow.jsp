@@ -13,11 +13,15 @@ if(o != null ){
 KObject user = (KObject)data.getData("wbUser");
 String uName = user.getName();
 long userId = user.getId();
+int p = (StringUtil.isDigits(request.getParameter("p")))?Integer.parseInt(request.getParameter("p")):1;
+int cc = Integer.parseInt(user.getProp("friends_count")+"");
+int pn = (cc%10>0)?cc/10+1:cc/10;
 out.println(WBJSPCacheOut.out("header1"));
 %>
 <link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 <script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.js" type="text/javascript"></script>
 <script type="text/javascript" src="<%=sPrefix %>/js/pagenav.min.js"></script>
+<script type="text/javascript" src="<%=sPrefix %>/js/follow.js"></script>
 <script type="text/javascript">
 <!-- 
 $(function(){
@@ -35,9 +39,25 @@ $(function(){
 		});
 		return false;
 	});
-
-
-	
+	$.sPrefix = "<%=prefix %>";
+	$.prefix = "<%=sPrefix %>";
+	pageNav.pre="上一页";
+ 	pageNav.next="下一页";
+	pageNav.fn = function(p,pn){
+		//按页载入消息
+		$.getJSON("<%=prefix %>/user/follows?p="+p+"&pz=10&uid=<%=userId%>&r="+new Date(),function(data){
+			if(data && data.length>1){
+				$("#emptyLI").remove();
+				var s = "",m = data[0];
+				for(var i = 1,j=data.length;i<j;i++){
+					var d = data[i];
+					s += uLI(d,m);
+				}
+				$("#msgList").html(s);
+			}
+		});
+	};
+	pageNav.go(<%= p %>,<%= pn %>);
 });
 
 -->
@@ -47,8 +67,10 @@ $(function(){
 			<div class="tabon">我的关注</div>
 			<div class="taboff"><a href="<%=prefix %>/fans">我的粉丝</a></div>
 		</div>
-		<div class="mainBox">
-		
+		<div id="wbList">
+			<ul id="msgList" class="ul_inline ul_fix"><li id="emptyLI" style="text-align: center;">暂无</li>
+			</ul>
+			<div id="pageNav"></div>
+<div class="clear"></div>
 		</div>
-		
-<% out.println(WBJSPCacheOut.out("@foot_inbox")); %>
+<% out.println(WBJSPCacheOut.out("@foot")); %>

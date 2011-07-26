@@ -31,21 +31,12 @@ public class WBSent extends Action {
 	@Override
 	public ActionMsg act(ActionMsg msg) {
 		HttpActionMsg httpmsg = (HttpActionMsg)msg;
-		String reqUserStr = WBUrl.getCookieValue(httpmsg.getHttpReq().getCookies(),"wbu","");
-		if (reqUserStr.equals("")) {
-			JOut.err(401, (HttpActionMsg)msg);
+		KObject user = WBLogin.cookieAuth(httpmsg);
+		if (user != null) {
+			//转向自己的sent
+			httpmsg.addData("wbUser", user);
+			httpmsg.addData("[jsp]", "/WEB-INF/wb/sent.jsp");
 			return super.act(msg);
-		}
-		String[] u_p = Base64Coder.decodeString(reqUserStr).split(":");
-		if (u_p.length >= 2) {
-			//验证cookie
-			KObject wbUser = WBLogin.auth(u_p[0], u_p[1]);
-			if (wbUser != null) {
-				//转向自己的inbox
-				httpmsg.addData("wbUser", wbUser);
-				httpmsg.addData("[jsp]", "/WEB-INF/wb/sent.jsp");
-				return super.act(msg);
-			}
 		}
 		//401
 		JOut.err(401, (HttpActionMsg)msg);

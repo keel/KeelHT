@@ -228,7 +228,7 @@ public class WBTalk extends Action {
 				topics = new ArrayList<String>();
 			}
 			topics.add(topic);
-			matcher.appendReplacement(buffer, JOut.templetOut(topicReStr,new String[]{"?topic="+topic," #"+topic+"# "}));           
+			matcher.appendReplacement(buffer, JOut.templetOut(topicReStr,new String[]{KFilter.getPrefix()+"/topic/"+topic,topic}));           
 		}
 		matcher.appendTail(buffer);
 		if (topics != null) {
@@ -275,11 +275,14 @@ public class WBTalk extends Action {
 		while(matcher.find()){   
 			//TODO 处理@号的链接
 			String re = matcher.group(1);
-			if (mentions == null) {
-				mentions = new ArrayList<String>();
+			Map<String,Object> m = WBUserDao.getUserShow(re);
+			if (m != null) {
+				if (mentions == null) {
+					mentions = new ArrayList<String>();
+				}
+				mentions.add(re);
+				matcher.appendReplacement(buffer, JOut.templetOut(mentionReStr,new String[]{KFilter.getPrefix()+"/"+re,(String)m.get("screen_name"),re}));           
 			}
-			mentions.add(re);
-			matcher.appendReplacement(buffer, JOut.templetOut(mentionReStr,new String[]{"?mention="+re,"@"+re}));           
 		}
 		matcher.appendTail(buffer);
 		if (mentions != null) {
@@ -325,7 +328,7 @@ public class WBTalk extends Action {
 			if(!initKeywords(keywordsString)){
 				log.error("WBTalk initKeywords Error!");
 			}
-			topicReStr = m.get("topicReplace").toString().split("###");
+			topicReStr = m.get("topicReplace").toString().split("@@@");
 			mentionReStr =  m.get("mentionReplace").toString().split("###");
 			urlReStr = m.get("urlReplace").toString().split("###");
 			//userDao = (WBUserDao)DaoManager.findDao("wbUserDao");

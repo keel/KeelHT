@@ -84,7 +84,6 @@ $(function(){
 		}
 	});
 });
-
 -->
 </script>
 <% out.println(WBJSPCacheOut.out("@head_main")); %>

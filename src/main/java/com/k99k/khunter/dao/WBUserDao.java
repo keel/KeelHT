@@ -250,6 +250,7 @@ public class WBUserDao extends MongoDao {
 	private static final BasicDBObject prop_user_new =new BasicDBObject("notify_msg",1).append("notify_fan", 1).append("notify_dmsg", 1).append("notify_mention", 1);
 	private static final BasicDBObject prop_user_namelist =new BasicDBObject("_id",1).append("name", 1).append("screen_name", 1).append("verified", 1);
 	private static final BasicDBObject prop_user_fanlist =new BasicDBObject("_id",1).append("name", 1).append("screen_name", 1).append("verified", 1).append("statuses_count", 1).append("friends_count", 1).append("followers_count", 1).append("lastMsg", 1);
+	private static final BasicDBObject prop_user_screen =new BasicDBObject("_id",1).append("name", 1).append("screen_name", 1).append("verified", 1);
 	
 	public static final int countMsgComms(long msgId){
 		BasicDBObject q = new BasicDBObject("_id",msgId);
@@ -461,7 +462,7 @@ public class WBUserDao extends MongoDao {
 				Map<String, Object> m = it.next();
 				long uid = (Long)m.get("id");
 				userIdList.add(uid);
-				relationMap.put(String.valueOf(uid), m.get("both"));
+				relationMap.put("u"+uid, m.get("both"));
 			}
 			ArrayList<Map<String, Object>> re = readUsersList(userIdList);
 			re.add(0, relationMap);
@@ -487,7 +488,7 @@ public class WBUserDao extends MongoDao {
 				Map<String, Object> m = it.next();
 				long uid = (Long)m.get("id");
 				userIdList.add(uid);
-				relationMap.put(String.valueOf(uid), m.get("both"));
+				relationMap.put("u"+uid, m.get("both"));
 			}
 			ArrayList<Map<String, Object>> re = readUsersList(userIdList);
 			re.add(0, relationMap);
@@ -523,9 +524,17 @@ public class WBUserDao extends MongoDao {
 			ArrayList<Long> ll = (ArrayList<Long>) mm.get("tag_ids");
 			msgIdList = ll;
 		}
-		
 		ArrayList<KObject> list = getMsgList(msgIdList,pageSize,prop_id_desc);	
 		return list;
+	}
+	
+	public static final int getTopicSum(String topic){
+		Map<String,Object> t = wbTagsDao.findOneMap(new BasicDBObject("name",topic),prop_sum);
+		if (t == null || t.isEmpty()) {
+			return 0;
+		}
+		int msgCount = Integer.parseInt(t.get("sum").toString());
+		return msgCount;
 	}
 	
 	/**
@@ -693,6 +702,16 @@ public class WBUserDao extends MongoDao {
 		BasicDBObject q = new BasicDBObject("_id",userId).append("follows.id",targetId).append("follows.both",1);
 		Object o = wbUserDao.findOneMap(q, prop_id);
 		return o!=null;
+	}
+	
+	/**
+	 * 按name查找用户最基础的显示信息,screen_name,vetified
+	 * @param name
+	 * @return
+	 */
+	public static final Map<String,Object> getUserShow(String name){
+		Map<String,Object> m = wbUserDao.findOneMap(new BasicDBObject("name",name), prop_user_screen);
+		return m;
 	}
 	
 	/**
@@ -1005,7 +1024,9 @@ public class WBUserDao extends MongoDao {
 			tp = wbTagConfig.getKobjSchema().createEmptyKObj(wbTagsDao);
 			tp.setProp("name", topic);
 			tp.setProp("sum", 1);
-			tp.setProp("tag_ids", new ArrayList<Long>().add(talkId));
+			ArrayList<Long> l = new ArrayList<Long>();
+			l.add(talkId);
+			tp.setProp("tag_ids",l);
 			wbTagsDao.save(tp);
 		}else{
 			//FIXME 在数量达到峰值时，需要保存到另外的存储表

@@ -19,8 +19,8 @@
 	},
 	"wbTalk":{
 		"keywords":"江泽民,胡锦涛",
-		"topicReplace":"<a href='###'>###</a>",
-		"mentionReplace":"<a href='###'>###</a>",
+		"topicReplace":" <a href='@@@' target='_blank'>#@@@#</a> ",
+		"mentionReplace":" <a href='###' target='_blank'>###(@###)</a> ",
 		"urlReplace":"<a href='###' target='_blank'>###</a>"
 	}
 }
