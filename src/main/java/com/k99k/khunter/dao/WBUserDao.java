@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -259,6 +260,74 @@ public class WBUserDao extends MongoDao {
 			return 0;
 		}
 		return Integer.parseInt(re.get("rt_comm_count").toString());
+	}
+	
+	/**
+	 * 查找msg,最多100条
+	 * @param key
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static final ArrayList<KObject> searchMsg(String key,int skip,int max){
+		Pattern p = Pattern.compile(key); 
+		BasicDBObject q = new BasicDBObject("text",p);
+		ArrayList<KObject> list = new ArrayList<KObject>();
+		try {
+			BasicDBObject field = null;
+			DBCollection coll = wbMsgDao.getColl();
+			DBCursor cur = null;
+			cur = coll.find(q, field).sort(prop_id_desc).skip(skip).limit(max);
+	        while(cur.hasNext()) {
+	        	HashMap<String, Object> m = (HashMap<String, Object>) cur.next();
+	        	list.add(new KObject(m));
+	        }
+	        return list;
+		} catch (Exception e) {
+			log.error("query error!", e);
+			return null;
+		}
+	}
+	
+	public static final int searchMsgCounnt(String key){
+		Pattern p = Pattern.compile(key); 
+		BasicDBObject q = new BasicDBObject("text",p);
+		try {
+			DBCollection coll = wbMsgDao.getColl();
+			int re = coll.find(q).sort(prop_id_desc).limit(100).count();
+	        return re;
+		} catch (Exception e) {
+			log.error("query error!", e);
+			return 0;
+		}
+	}
+	/**
+	 * 查找用户,最多50个
+	 * @param key
+	 * @return
+	 */
+	public static final List<Map<String,Object>> searchUser(String key){
+		Pattern p = Pattern.compile(key);  
+		BasicDBObject q = new BasicDBObject("screen_name",p);
+		try {
+			DBCollection coll = wbMsgDao.getColl();
+			int re = coll.find(q, field).sort(prop_id_desc).limit(100).count();
+	        return re;
+		} catch (Exception e) {
+			log.error("query error!", e);
+			return 0;
+		}
+		return wbUserDao.query(q, prop_user_fanlist, prop_id_desc, 0, 50, null);
+	}
+	
+	/**
+	 * 查找用户,最多50个
+	 * @param key
+	 * @return
+	 */
+	public static final List<Map<String,Object>> searchUserCount(String key){
+		Pattern p = Pattern.compile(key);  
+		BasicDBObject q = new BasicDBObject("screen_name",p);
+		return wbUserDao.query(q, prop_user_fanlist, prop_id_desc, 0, 50, null);
 	}
 	
 	public static final String hasNew(String userName){
